@@ -5,7 +5,7 @@ const fs = require("fs"), vm = require("vm"), path = require("path");
 const A = path.join(__dirname, "..", "app") + "/";
 const ctx = { localStorage: { getItem: () => null, setItem: () => {} }, console, Math, JSON };
 ctx.window = ctx; vm.createContext(ctx);
-const files = ["js/core.js", "js/engine.js", "scenarios/harbour.js", "scenarios/nordline.js", "scenarios/quill.js", "scenarios/data-configs.js", "scenarios/task-configs.js", "scenarios/inspired.js", "scenarios/days.js", "content/frameworks.js", "content/cases.js"];
+const files = ["js/core.js", "js/engine.js", "scenarios/harbour.js", "scenarios/nordline.js", "scenarios/quill.js", "scenarios/data-configs.js", "scenarios/task-configs.js", "scenarios/inspired.js", "scenarios/days.js", "content/frameworks.js", "content/cases.js", "content/studies.js"];
 for (const f of files) vm.runInContext(fs.readFileSync(A + f, "utf8"), ctx);
 const M = ctx.MDS;
 const groups = {};
@@ -24,6 +24,7 @@ for (const id of M.order) {
 }
 M.content.frameworks.forEach(q => add("frameworks", q.q.slice(0, 60), q.o, q.a));
 M.content.cases.forEach(c => add("library", c.id, c.decision.o, c.decision.a));
+(M.content.studies || []).forEach(c => add("studies", c.id, c.decision.options, c.decision.best));
 let fail = false;
 for (const [g, items] of Object.entries(groups)) {
   const share = items.filter(x => x.longest).length / items.length, avgRatio = items.reduce((a, x) => a + x.ratio, 0) / items.length;

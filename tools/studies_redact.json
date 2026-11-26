@@ -1,0 +1,44 @@
+{
+  "_note": "Phrases hidden in pre-reveal text (context, risks, situation, question, options, analysis). Longest match is applied first. Names stay in the reveal fields.",
+  "netcall-cloud-migration": {
+    "Netcall sells its Liberty low-code automation": "The company sells a low-code automation",
+    "(Govtech and Parble)": "(a public-sector software firm and an AI document-processing firm)",
+    "bundling Liberty AI modules": "bundling its AI modules",
+    "Liberty": "its platform",
+    "Netcall": "the company"
+  },
+  "idox-margin-plateau": {
+    "Idox supplies": "The company supplies",
+    "(Emapsite, now Idox Geospatial, in August 2023; Plianz in May 2025)": "(a geospatial data business in August 2023; a small compliance-software firm in May 2025)",
+    "out-developing Idox": "out-developing the company",
+    "Idox Cloud upgrades": "cloud upgrades",
+    "Idox": "the company",
+    "after the Plianz deal": "after its latest acquisition",
+    "Plianz-sized deals": "deals of a similar size to the latest one",
+    "Plianz": "a small acquisition"
+  },
+  "tracsis-flat-revenue-new-ceo": {
+    "Tracsis sells": "The group sells",
+    " (including the TRACS Enterprise platform)": "",
+    "Tracsis": "the group"
+  },
+  "pulsar-adjusted-vs-cash": {
+    "The group (Vuelio, Pulsar, ResponseSource and the Australian business Isentia) sells": "The group sells, through several brands including a large Australian business,",
+    " It renamed itself Pulsar Group in May 2024.": " It renamed itself after one of its brands in May 2024.",
+    "Since buying Isentia": "Since buying the Australian business",
+    "Integration of Isentia": "Integration of the Australian business",
+    "the APAC (Isentia) business": "the APAC business",
+    "Isentia": "the Australian business",
+    "Pulsar": "the group"
+  },
+  "pennant-going-concern-pivot": {
+    "Pennant combines": "The company combines",
+    " (now the unified Auxilium suite)": "",
+    "Pennant": "the company",
+    "Auxilium has just launched": "Its unified software suite has just launched",
+    "Back the Auxilium launch hard": "Back the new software suite hard",
+    "Auxilium": "the new suite",
+    "The large Apache training contract": "The large helicopter training contract",
+    "Apache": "attack-helicopter"
+  }
+}

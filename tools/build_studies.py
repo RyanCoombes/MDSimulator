@@ -39,6 +39,28 @@ def check(c):
     return errs
 
 
+REDACT = json.loads((ROOT / "tools/studies_redact.json").read_text()) if (ROOT / "tools/studies_redact.json").exists() else {}
+
+
+def redact(c):
+    """Hide names in text shown before the reveal (identity stays in company/what_happened/wins/challenges)."""
+    rules = sorted(REDACT.get(c["id"], {}).items(), key=lambda kv: -len(kv[0]))
+    def sub(t):
+        for k, v in rules:
+            t = t.replace(k, v)
+        return t
+    c["context"] = sub(c["context"])
+    c["risks"] = [sub(x) for x in c["risks"]]
+    d = c["decision"]
+    for f in ("situation", "question"):
+        d[f] = sub(d[f])
+    d["options"] = [sub(x) for x in d["options"]]
+    for q in c["analysis"]:
+        q["q"], q["working"] = sub(q["q"]), sub(q["working"])
+    leaks = [w for w in c["company"].replace(",", " ").split() if len(w) > 3 and w.lower() not in ("group", "international", "holdings", "limited", "software", "systems", "technology", "solutions") and w in (c["context"] + " ".join(c["risks"]) + d["situation"] + d["question"] + " ".join(d["options"]))]
+    return leaks
+
+
 def main():
     cases, bad = [], 0
     for p in sys.argv[1:]:
@@ -48,6 +70,9 @@ def main():
                 bad += 1
                 print(f"REJECT {c.get('id')}: {'; '.join(e)}")
                 continue
+            leaks = redact(c)
+            if leaks:
+                print(f"WARNING {c['id']}: company name still visible before reveal: {leaks}")
             cases.append(c)
     ids = [c["id"] for c in cases]
     assert len(ids) == len(set(ids)), "duplicate ids"

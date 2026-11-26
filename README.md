@@ -14,19 +14,28 @@ sensitivities. It shows cause and effect, and it isn't a forecast of any real bu
 | Nordline Fleet | Hard | Churn, a stalled cloud migration, co-founder dynamics, Swedish union consultation |
 | Quill Legal | Very hard | Loss-making turnaround, integrating two acquisitions (UK and Spain), AI revenue, data protection |
 
-## Tests
+## Tasks and tests
 
-Each case has six tabs:
+Each case has ten tabs:
 
-1. **Data room**: the PM's brief and targets, profile, KPIs, P&L with drivers, interview notes.
-2. **Find the levers**: pick three of ten options. Some are traps.
-3. **Lever lab**: a 3-year driver-based forecast.
+1. **Brief**: the PM's brief and targets, profile, KPIs, P&L with drivers, interview notes.
+2. **Investigate**: raw datasets that reconcile to the P&L, with planted root causes.
+   - **Datasets:** customers, churned accounts, PS projects, consultant time, tickets, supplier contracts, headcount and the R&D portfolio.
+   - **Tools:** filter, calculated columns (formula language), group-by with aggregates, charts, sorting, a findings notebook and copy-as-CSV.
+   - **Questions:** twelve diagnostic questions that can only be answered from the data.
+3. **Build the model**: a named-row financial model where every cell is a number or formula.
+   - **Building it:** `prev()`, `act_…` actuals, functions, your own rows, and scenarios as cell overrides.
+   - **Review:** tie-out to actuals, structure, evidence-based realism checks and targets.
+4. **Stakeholders**: power, interest, stance and engagement approach (Mendelow grid), checked against the evidence.
+5. **100-day plan**: phase and owner for each activity, assessed on dependencies, real deadlines (renewal months, notice periods, Swedish MBL consultation, UK consultation) and your personal capacity.
+6. **Find the levers**: pick three of ten options. Some are traps.
+7. **Lever lab**: a 3-year driver-based forecast.
    - **Constraints:** a change budget for a team of one (16 points), so overloading it slows delivery, and benefits phase in.
    - **What you see:** a downside stress test, stakeholder meters and second-order warnings.
    - **Score (out of 100):** base-case targets 40, downside resilience 20, people 20, realism 20.
-4. **Modelling drill**: ten calculations to do yourself, timed, with fresh numbers each attempt. Covers PS revenue, NRR, uplift maths, payback, break-even utilisation, the Rule of 40 and more.
-5. **Challenges**: six situations with four responses each. Consequences carry forward.
-6. **Workshop**: build an agenda and invite list, then get assessed against facilitation practice.
+8. **Modelling drill**: ten calculations to do yourself, timed, with fresh numbers each attempt. Covers PS revenue, NRR, uplift maths, payback, break-even utilisation, the Rule of 40 and more.
+9. **Challenges**: six situations with four responses each. Consequences carry forward.
+10. **Workshop**: build an agenda and invite list, then get assessed against facilitation practice.
    This covers objectives, pre-read, diverge then converge, the decider in the room, actions, breaks, timing, presenting share and group size.
 
 **Frameworks and operating models** is a separate test, drawn from a bank of situational questions.

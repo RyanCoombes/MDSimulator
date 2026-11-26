@@ -60,6 +60,6 @@ MDS.tests.room = (sc, el) => {
       <div class="tblwrap" style="max-width:560px"><table>${MDS.plTable([y0], ["Actual"], { drivers: true })}</table></div>
       <p class="small dim">Costs are fully loaded (salary, on-costs, tools).</p></div>
     <div class="panel"><h2>Interview notes</h2><div class="g2" style="margin-top:8px">${sc.interviews.map(([q, w]) => `<blockquote>"${MDS.esc(q)}"<footer>${MDS.esc(w)}</footer></blockquote>`).join("")}</div></div>
-    <div><a class="btn" href="#${sc.id}-find">Next: find the levers →</a></div>
+    <div class="row"><a class="btn" href="#${sc.id}-investigate">Next: investigate the raw data →</a><a class="btn ghost" href="#${sc.id}-model">Build the model</a></div>
   </div>`;
 };

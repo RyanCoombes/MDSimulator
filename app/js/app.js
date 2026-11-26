@@ -1,6 +1,10 @@
 /* App shell: home, case pages and routing via plain #name hashes (e.g. #harbour-lab). */
 MDS.TESTS = [
-  { id: "room", label: "Data room", scored: false },
+  { id: "room", label: "Brief", scored: false },
+  { id: "investigate", label: "Investigate", scored: true },
+  { id: "model", label: "Build the model", scored: true },
+  { id: "stake", label: "Stakeholders", scored: true },
+  { id: "plan", label: "100-day plan", scored: true },
   { id: "find", label: "Find the levers", scored: true },
   { id: "lab", label: "Lever lab", scored: true },
   { id: "drill", label: "Modelling drill", scored: true },
@@ -39,7 +43,7 @@ MDS.home = view => {
       <div class="panel">
         <div class="eyebrow">Practice for MD, GM and transformation roles in software</div>
         <h1 style="margin-top:6px">Run the business before you run the interview.</h1>
-        <p class="dim" style="max-width:68ch">Each case is a newly acquired vertical software company. Read the data room, find the value, build a 3-year plan under a one-person change budget, do the maths yourself, handle the people, and design the workshop that gets it agreed. Every test is scored, and your best score is kept in this browser.</p>
+        <p class="dim" style="max-width:68ch">Each case is a newly acquired vertical software company. Dig through the raw data, build your own financial model, map the stakeholders, write the 100-day plan, test levers under a one-person change budget, do the maths, handle the people and design the workshop that gets it agreed. Every task is scored, and your best score is kept in this browser.</p>
       </div>
       <div class="cases">${MDS.order.map(id => {
         const sc = MDS.scenarios[id];

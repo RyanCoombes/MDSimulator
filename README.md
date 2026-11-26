@@ -38,7 +38,11 @@ Each case has ten tabs:
 10. **Workshop**: build an agenda and invite list, then get assessed against facilitation practice.
    This covers objectives, pre-read, diverge then converge, the decider in the room, actions, breaks, timing, presenting share and group size.
 
-11. **Run the transformation**: 12 monthly turns of delivery.
+11. **A day in the life**: a playable working day.
+   - **The workspace:** a live clock, an inbox of emails, Teams messages, calls and walk-ups, meetings that pull you in when the time comes, and a deliverable due mid-afternoon that needs focus blocks.
+   - **How it plays:** every response costs minutes, and unhandled items escalate at their deadline. Some items are noise.
+   - **Score:** priorities 40, relationships 25, deliverable 20, looking after yourself 15, with an item-by-item review.
+12. **Run the transformation**: 12 monthly turns of delivery.
    - **Each month:** you have 16 days to spend on 1:1s, co-design sessions, coaching owners, pushing workstreams, doing it yourself, escalating, all-hands and celebrating wins.
    - **What gets in the way:** workstreams stall when owners or required stakeholders aren't on board, they wait on dependencies, and they miss contract and renewal deadlines.
    - **Pressures:** change fatigue and your own energy, with events triggered by the current state (owners going quiet, founders going around you, resignations, outages, customer pushback, union and data-protection gates, a PM wanting faster value).

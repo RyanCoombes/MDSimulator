@@ -1,24 +1,43 @@
 # MD Simulator
 
-A practice simulator for MD / GM / Business Transformation roles in software businesses.
+Practice cases for MD, GM and Business Transformation roles in software businesses, especially
+buy-and-hold vertical market software groups.
 
-## Case 01: Harbour Systems (first 100 days)
+All companies, people and figures are fictional. The forecast is a teaching model with invented
+sensitivities. It shows cause and effect, and it isn't a forecast of any real business.
 
-A fictional, founder-led UK vertical software company that's just been acquired. You:
+## Cases
 
-1. **Data room**: read the P&L, operating data and interview notes.
-2. **Find the levers**: pick the top three value levers and get feedback on your judgement.
-3. **Lever lab**: set pricing, professional services, support/AI, R&D and cost levers and see a
-   3-year driver-based forecast, target checks, stakeholder reactions and second-order effects.
+| Case | Difficulty | Focus |
+|---|---|---|
+| Harbour Systems | Standard | Pricing, professional services, R&D focus, founder management |
+| Nordline Fleet | Hard | Churn, a stalled cloud migration, co-founder dynamics, Swedish union consultation |
+| Quill Legal | Very hard | Loss-making turnaround, integrating two acquisitions (UK and Spain), AI revenue, data protection |
 
-All figures are invented for practice. Benchmarks in the hints are rough industry ranges, not any
-company's real numbers.
+## Tests
+
+Each case has six tabs:
+
+1. **Data room**: the PM's brief and targets, profile, KPIs, P&L with drivers, interview notes.
+2. **Find the levers**: pick three of ten options. Some are traps.
+3. **Lever lab**: a 3-year driver-based forecast.
+   - **Constraints:** a change budget for a team of one (16 points), so overloading it slows delivery, and benefits phase in.
+   - **What you see:** a downside stress test, stakeholder meters and second-order warnings.
+   - **Score (out of 100):** base-case targets 40, downside resilience 20, people 20, realism 20.
+4. **Modelling drill**: ten calculations to do yourself, timed, with fresh numbers each attempt. Covers PS revenue, NRR, uplift maths, payback, break-even utilisation, the Rule of 40 and more.
+5. **Challenges**: six situations with four responses each. Consequences carry forward.
+6. **Workshop**: build an agenda and invite list, then get assessed against facilitation practice.
+   This covers objectives, pre-read, diverge then converge, the decider in the room, actions, breaks, timing, presenting share and group size.
+
+**Frameworks and operating models** is a separate test, drawn from a bank of situational questions.
+Topics include ADKAR, Kotter, Bridges, the Operating Model Canvas, 7S, RAPID, RACI, the price waterfall,
+utilisation vs realisation, NRR/GRR, the Rule of 40, Theory of Constraints, DMAIC, OKRs, Cynefin and pre-mortems.
+
+Scores are kept per browser (localStorage). Nothing is sent anywhere.
 
 ## Run it
 
-It's a single static page (`app/index.html`), with no backend or build step.
-
-Locally:
+No backend and no dependencies. Serve the `app/` folder:
 
 ```bash
 python3 -m http.server 8080 --directory app
@@ -33,12 +52,23 @@ docker build -t mdsim .
 docker run -d --restart unless-stopped -p 8080:80 --name mdsim mdsim
 ```
 
-## Editing the case
+To get a single self-contained HTML file (`dist/index.html`):
 
-The scenario data sits at the top of the `<script>` in `app/index.html`:
+```bash
+python3 tools/build.py
+```
 
-- `BASE`: the company's starting numbers
-- `LEVERS`: the controls and their hints
-- `OPTIONS`: the lever-finding answers and feedback
+## Adding a case
 
-The forecast logic lives in `model()`, the stakeholder scores in `people()`, and the feedback rules in `warnings()`.
+Copy `app/scenarios/harbour.js`, change the data and add a `<script>` line in `app/index.html`.
+A scenario defines:
+
+- the base numbers and sensitivities
+- targets
+- people
+- its own initiatives, each with effects per year
+- ten lever-finder options
+- six challenge events
+- a workshop brief
+
+The shared model is in `app/js/engine.js`. The tests are in `app/js/tests/`.

@@ -135,6 +135,274 @@ MDS.content.studies = [
   "caveats": "Staff costs are the employee benefit expense as reported: net of internal development costs capitalised and including share-based payments. capitalised_dev is internal staff cost capitalised (cash paid for software development was £2,267k, £2,322k and £3,226k). deferred_income is total contract liabilities (current plus non-current). FY2023 and FY2024 come from the FY2024 report and FY2025 from the FY2026 report's comparatives; the FY2025 report showed the same headline figures."
  },
  {
+  "id": "onefile",
+  "company": "ONEFILE LTD",
+  "number": "04404879",
+  "sector": "Apprenticeship / learning e-portfolio software (UK education & training)",
+  "owner": "Constellation Software UK Holdco Ltd (PSC since 26 Oct 2021); ultimate parent Constellation Software Inc.",
+  "difficulty": "easy",
+  "anon": "UK apprenticeship e-portfolio software company",
+  "years": [
+   {
+    "fy": "FY2023",
+    "period_end": "2023-12-31",
+    "revenue": 8793,
+    "gross_profit": 6768,
+    "operating_profit": 2672,
+    "pbt": 2669,
+    "staff_costs": 3775,
+    "headcount": 70,
+    "cash": 680,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": null
+   },
+   {
+    "fy": "FY2024",
+    "period_end": "2024-12-31",
+    "revenue": 9917,
+    "gross_profit": 7905,
+    "operating_profit": 3606,
+    "pbt": 3606,
+    "staff_costs": 3899,
+    "headcount": 70,
+    "cash": 1002,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": null
+   },
+   {
+    "fy": "FY2025",
+    "period_end": "2025-12-31",
+    "revenue": 10758,
+    "gross_profit": 8715,
+    "operating_profit": 4366,
+    "pbt": 4366,
+    "staff_costs": 3809,
+    "headcount": 67,
+    "cash": 883,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": null
+   }
+  ],
+  "context": "A UK provider of a learning-platform / e-portfolio product used by apprenticeship training providers, acquired by a serial software acquirer's UK holding company in October 2021 (the FY2022 accounts were a nine-month period). All revenue is UK. In March 2023 it bought the trade and assets of a complementary learner-record product, and it reports to the group on revenue and cash generation. Cash is swept to the group: amounts owed by group undertakings were £7.5m to £8.8m, against an operating cash balance of about £1m.",
+  "challenges": [
+   "UK e-portfolio market is described as highly competitive, so the company has to keep investing in its core products.",
+   "Customers depend on government apprenticeship funding rules, so policy or funding changes are a standing political/regulatory risk.",
+   "It holds personal learner data, so a cyber or data-security breach would hurt customers (mitigated with ISO27001 and mandatory staff training).",
+   "Headcount drifted down from 70 to 67 while the product range widened (Engage, a drop-out reduction product), stretching a small team."
+  ],
+  "wins": [
+   "Revenue grew from £8.8m (FY2023) to £10.8m (FY2025), driven by selling more to existing customers, winning new customers, price rises and a full year of the Tracker acquisition.",
+   "Launched a product in autumn 2024 aimed at reducing apprenticeship drop-out (a government target), and key customers adopted it.",
+   "Deferred income rose each year (by £953k, £752k and £272k as disclosed), which the company puts down to sales growth, new products and longer-term customer agreements.",
+   "Operating margin rose from about 30% to about 41% with headcount flat to down, and paid £7m of dividends to the parent over FY2024 and FY2025."
+  ],
+  "risks": [
+   "Competition in the UK e-portfolio market",
+   "Data security / cyber attack / IT systems failure",
+   "Political and regulatory risk to apprenticeship funding streams",
+   "Credit risk on customers; liquidity described as low risk because the business generates cash",
+   "Price risk, managed through ongoing commercial price and competitor reviews"
+  ],
+  "decision": {
+   "as_of": "FY2024",
+   "situation": "FY2024 accounts: revenue £9.9m (+12.8%), gross profit £7.9m, operating profit £3.6m (36% margin), average headcount 70 (unchanged from FY2023), staff costs £3.9m. Growth came from new and existing products sold to the existing base plus a full year of the acquired product; a drop-out reduction product launched in the autumn and is being adopted. Deferred income grew by £752k. All revenue is UK and depends on apprenticeship funding. Cash at year end was £1.0m with £8.8m owed by group companies; a first £2.0m dividend was paid to the parent.",
+   "question": "As incoming transformation lead, which priority should anchor the FY2025 plan?",
+   "options": [
+    "Cut list prices to take share from rival e-portfolio providers before they copy the drop-out product.",
+    "Hold headcount flat; grow from the installed base via annual price reviews and cross-selling the new products.",
+    "Run a search for a second learner-data tuck-in like the last one and pause organic product work until it closes.",
+    "Hire around 15 sales and product staff to push into further-education colleges and international apprenticeship markets."
+   ],
+   "best": 1,
+   "why": [
+    "Gives away the pricing power that drove the margin gains; the filings name competition as a risk but give no sign of share loss.",
+    "Best: the numbers show growth coming from the existing base and pricing with flat headcount, which is the highest-return lever in a regulated, funding-dependent niche.",
+    "Tuck-ins can make sense in a buy-and-hold group, but pausing product work in a market where the company says it must keep investing to stay competitive is the wrong trade.",
+    "Adds a large fixed cost to enter markets the filings never mention, eroding a 36% margin on a bet with no evidence behind it."
+   ],
+   "what_happened": "FY2025 accounts: revenue £10.8m (+8.5%) from existing customers, new customers and price increases; operating profit £4.4m (40.6% margin); average headcount fell to 67 and staff costs fell slightly to £3.8m. Deferred income rose another £272k. A £5.0m dividend (more than the year's £3.4m post-tax profit) took year-end cash to £0.9m."
+  },
+  "analysis": [
+   {
+    "q": "By how many percentage points did the operating margin change between FY2023 and FY2025?",
+    "answer": 10.2,
+    "unit": "pp",
+    "tol": 0.3,
+    "working": "FY2023 2,672/8,793 = 30.4%; FY2025 4,366/10,758 = 40.6%; 40.6 - 30.4 = +10.2pp."
+   },
+   {
+    "q": "What share of the FY2023 to FY2025 revenue increase came through as extra operating profit (incremental margin)?",
+    "answer": 86.2,
+    "unit": "%",
+    "tol": 1.0,
+    "working": "(4,366 - 2,672) / (10,758 - 8,793) = 1,694 / 1,965 = 86.2%."
+   },
+   {
+    "q": "What was revenue per average employee in FY2025 (in £k)?",
+    "answer": 160.6,
+    "unit": "£k",
+    "tol": 1.0,
+    "working": "10,758 / 67 = £160.6k (FY2023: 8,793 / 70 = £125.6k)."
+   }
+  ],
+  "sources": [
+   {
+    "label": "Full accounts FY2023 (filed 27 Sep 2024)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/04404879/filing-history"
+   },
+   {
+    "label": "Full accounts FY2024 (filed 05 Sep 2025)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/04404879/filing-history"
+   },
+   {
+    "label": "Full accounts FY2025 (filed 28 Sep 2026)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/04404879/filing-history"
+   },
+   {
+    "label": "Persons with significant control register",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/04404879/persons-with-significant-control"
+   }
+  ],
+  "confidence": "high: every figure was read from the filed statements (OCR of scanned PDFs) and checked against next year's comparatives and the staff-cost totals.",
+  "caveats": "Deferred income is not disclosed as a separate balance; only 'accruals and deferred income' (FY2023 £6.09m, FY2024 £6.77m, FY2025 £7.21m) and the yearly increases quoted in the notes are given, so deferred_income is null. No recurring/subscription split is disclosed. Capitalised development is 0: the only intangibles are £190k of customer relationships and IP bought with Tracker. FY2022 was a nine-month period, so FY2023 growth rates against it are not comparable. One OCR misread (FY2024 cash shown as 7,002,086) was corrected to £1,002,086 using the strategic report and the FY2024 accounts."
+ },
+ {
+  "id": "cultura-technologies",
+  "company": "CULTURA TECHNOLOGIES LTD",
+  "number": "01250877",
+  "sector": "Agribusiness / grain & feed trading ERP software",
+  "owner": "Volaris Group UK Holdco Ltd (Constellation Software Inc. group)",
+  "difficulty": "easy",
+  "anon": "UK agribusiness ERP software company",
+  "years": [
+   {
+    "fy": "FY2023",
+    "period_end": "2023-12-31",
+    "revenue": 6119,
+    "gross_profit": 1529,
+    "operating_profit": 888,
+    "pbt": 888,
+    "staff_costs": 2152,
+    "headcount": 42,
+    "cash": 36,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": 0.829
+   },
+   {
+    "fy": "FY2024",
+    "period_end": "2024-12-31",
+    "revenue": 6498,
+    "gross_profit": 1867,
+    "operating_profit": 1335,
+    "pbt": 1328,
+    "staff_costs": 2262,
+    "headcount": 39,
+    "cash": 36,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": 0.836
+   },
+   {
+    "fy": "FY2025",
+    "period_end": "2025-12-31",
+    "revenue": 6532,
+    "gross_profit": 1905,
+    "operating_profit": 1395,
+    "pbt": 1387,
+    "staff_costs": 2303,
+    "headcount": 37,
+    "cash": 45,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": 0.842
+   }
+  ],
+  "context": "A long-established company, owned by a serial software acquirer, that supplies and supports business software for agribusiness customers, mostly in the UK (about 86% of FY2025 revenue) with the rest overseas. Maintenance revenue is 83-84% of turnover, with smaller services and licence lines. The parent group's KPIs are sales growth, operating profit and operating margin. Cash is pooled: the company holds under £50k at the bank while £7.8m is owed to it by fellow group companies.",
+  "challenges": [
+   "Organic growth is low single-digit: turnover rose 4.8%, 6.2% and then only 0.5% in FY2025.",
+   "New licence revenue is shrinking (from £379k in FY2022 to £199k in FY2025), so growth relies on the maintenance base.",
+   "Gross margin is under 30% because cost of sales (about £4.6m a year) is large next to staff costs of about £2.3m. The accounts do not explain the mix, which limits room for margin gains.",
+   "Headcount fell from 42 to 37 in two years, which concentrates product knowledge in a smaller team."
+  ],
+  "wins": [
+   "Inflation-linked price clauses in contracts let the company raise prices in line with inflation.",
+   "From FY2024, growth in the customer base and lower customer attrition than the year before.",
+   "Administrative expenses fell from £641k to £511k (about -20%) through lower utility, repairs and maintenance and internal software costs.",
+   "Operating margin rose from 14.5% (FY2023) to 20.5% (FY2024) and 21.4% (FY2025)."
+  ],
+  "risks": [
+   "Directors call risks low and manageable: revenue comes from a diversified pool of clients and products, with no single customer or product material.",
+   "A large share of revenue is long-term recurring business with a loyal customer base.",
+   "Little use of financial instruments, so credit, liquidity and cash-flow risk are described as immaterial."
+  ],
+  "decision": {
+   "as_of": "FY2023",
+   "situation": "FY2023 accounts: turnover £6.12m (+4.8%), operating profit £0.89m (14.5% margin), gross margin 25%. Maintenance revenue £5.07m (83% of turnover); licence revenue fell to £283k from £379k. Average headcount 42 (down from 44); staff costs £2.15m; administrative expenses £641k (up from £565k). The strategic report credits growth mainly to inflation-linked price increases. The company has no significant borrowings and cash is held at group level.",
+   "question": "Which single lever should the FY2024 plan lean on to lift operating margin?",
+   "options": [
+    "Set up a four-person new-licence sales team to reverse the licence decline and broaden the product footprint.",
+    "Fund a cloud re-platform of the core product by roughly doubling the six-person R&D team over two years.",
+    "Apply inflation-linked uplifts in full across maintenance and trim non-staff admin; hold headcount.",
+    "Offer all maintenance customers a two-year price freeze in exchange for longer renewals to lock in retention."
+   ],
+   "best": 2,
+   "why": [
+    "Licence revenue is only about 5% of turnover and falling; a dedicated team would cost more than the line earns.",
+    "May be needed in the long run, but it would wipe out a £0.9m operating profit without any evidence of customers asking for cloud.",
+    "Best: maintenance is 83% of revenue and contractually indexed, and admin overhead is a controllable cost line, so the margin gain is quick and low-risk.",
+    "Gives up the contractual indexation that is the main source of growth in exchange for retention the directors already describe as loyal."
+   ],
+   "what_happened": "FY2024: turnover +6.2% to £6.50m on inflation-linked price rises, a larger customer base and lower attrition; admin expenses fell to £532k; operating profit up 50% to £1.33m (20.5% margin); headcount 39. FY2025: turnover +0.5% to £6.53m, admin £511k, operating profit £1.39m (21.4%), headcount 37."
+  },
+  "analysis": [
+   {
+    "q": "By how many percentage points did operating margin change from FY2023 to FY2025?",
+    "answer": 6.8,
+    "unit": "pp",
+    "tol": 0.3,
+    "working": "FY2023 888/6,119 = 14.5%; FY2025 1,395/6,532 = 21.4% (21.35% unrounded); change +6.8pp."
+   },
+   {
+    "q": "Operating profit rose by how much for each £1 of extra revenue between FY2023 and FY2025 (incremental profit / incremental revenue)?",
+    "answer": 1.23,
+    "unit": "x",
+    "tol": 0.05,
+    "working": "(1,395 - 888) / (6,532 - 6,119) = 507 / 413 = 1.23x. Profit grew faster than revenue because costs fell (admin -20%, headcount 42 to 37)."
+   },
+   {
+    "q": "What was revenue per average employee in FY2025 (in £k)?",
+    "answer": 176.5,
+    "unit": "£k",
+    "tol": 1.0,
+    "working": "6,532 / 37 = £176.5k (FY2023: 6,119 / 42 = £145.7k)."
+   }
+  ],
+  "sources": [
+   {
+    "label": "Full accounts FY2023 (filed 05 Aug 2024)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/01250877/filing-history"
+   },
+   {
+    "label": "Full accounts FY2024 (filed 16 Sep 2025)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/01250877/filing-history"
+   },
+   {
+    "label": "Full accounts FY2025 (filed 25 Sep 2026)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/01250877/filing-history"
+   },
+   {
+    "label": "Persons with significant control register",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/01250877/persons-with-significant-control"
+   }
+  ],
+  "confidence": "high: P&L, staff, headcount and revenue-split figures were read from the filed accounts and reconcile (the class-of-business lines sum to turnover and the staff components sum to the totals).",
+  "caveats": "recurring_share = maintenance revenue / turnover, using the class-of-business note. Deferred income is not disclosed separately (only 'accruals and deferred income': FY2023 £1.58m, FY2024 £1.71m, FY2025 £1.53m), so it is null. Capitalised development is 0: the only intangible additions are small purchased IP (£2.4k, £1.9k, £3.1k). The accounts do not explain the large cost of sales. FY2025 PBT is after £7.6k lease interest."
+ },
+ {
   "id": "idox-margin-plateau",
   "company": "Idox Limited (Idox plc until July 2026)",
   "number": "03984070",
@@ -430,6 +698,143 @@ MDS.content.studies = [
   "caveats": "recurring_share = recurring software licence revenue (KPI: £17.5m, £19.4m, £21.8m, £23.2m) divided by revenue. It excludes transactional and 'routinely repeating' revenue, so the true repeatable share is higher. Headcount is average FTE (permanent plus casual); the statutory headcount is higher (1,357 in FY2025). capitalised_dev is internally generated intangible additions (FY2022: none shown in the cash flow). FY2024 figures come from the FY2025 report's comparatives (the FY2024 cash flow was re-presented there). The FY2024 report itself was not read."
  },
  {
+  "id": "kinetic-solutions",
+  "company": "KINETIC SOLUTIONS LIMITED",
+  "number": "03169474",
+  "sector": "Student accommodation & conferencing software for higher education (also a Volaris acquisition platform)",
+  "owner": "Volaris Group UK Holdco Limited (PSC since 26 Mar 2018); ultimate parent Constellation Software Inc.",
+  "difficulty": "medium",
+  "anon": "UK higher-education accommodation software company",
+  "years": [
+   {
+    "fy": "FY2023",
+    "period_end": "2023-12-31",
+    "revenue": 11273,
+    "gross_profit": 8676,
+    "operating_profit": 3050,
+    "pbt": 2565,
+    "staff_costs": 7314,
+    "headcount": 90,
+    "cash": 100,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": null
+   },
+   {
+    "fy": "FY2024",
+    "period_end": "2024-12-31",
+    "revenue": 13196,
+    "gross_profit": 10466,
+    "operating_profit": 2656,
+    "pbt": 1190,
+    "staff_costs": 8455,
+    "headcount": 96,
+    "cash": 121,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": null
+   },
+   {
+    "fy": "FY2025",
+    "period_end": "2025-12-31",
+    "revenue": 13999,
+    "gross_profit": 10675,
+    "operating_profit": 2297,
+    "pbt": 5896,
+    "staff_costs": 10044,
+    "headcount": 108,
+    "cash": 2343,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": null
+   }
+  ],
+  "context": "The company supplies, installs and supports software for university accommodation and conferencing, mainly in the UK (the strategic report claims more than 350 institutions worldwide). It also serves as an acquisition vehicle inside its software-acquirer group. It bought four businesses in 2023 and four more in 2024, which took investments to £88.5m. Reported operating profit includes large royalty, licence and management-fee income from fellow group companies, and fair-value charges on earn-outs.",
+  "challenges": [
+   "Before group income, the trading business loses money: gross profit minus administrative expenses was -£2.8m (FY2023), -£1.4m (FY2024) and -£5.4m (FY2025).",
+   "Earn-out (contingent consideration) fair-value charges of £1.8m, £4.4m and £2.8m, plus interest on deferred and contingent consideration of up to £1.5m a year, absorb much of the operating result.",
+   "UK universities are under financial pressure: the FY2025 report cites the regulator's forecast that about 45% of English providers will run a deficit in 2025-26.",
+   "Staff costs grew faster than revenue: £7.3m to £10.0m (+37%) against revenue +24% over FY2023-FY2025, with headcount up from 90 to 108.",
+   "A minority stake in a rental-tech start-up was reclassified as an associate and fully impaired (£1.73m) in FY2025."
+  ],
+  "wins": [
+   "Revenue grew 26% (FY2023), 17% (FY2024) and 6% (FY2025) to £14.0m.",
+   "Eight company acquisitions in 2023-24 (plus a small trade-and-assets purchase and a minority stake) broadened the portfolio into the Netherlands, Portugal and UK proptech.",
+   "Group royalty and licence income rose to £9.0m (FY2025), showing the value of Kinetic-owned IP across the group.",
+   "The FY2025 report says the software is mission-critical with high switching costs and mostly recurring revenue; strategy centres on an AI-native platform, pricing optimisation and geographic expansion."
+  ],
+  "risks": [
+   "Financial pressure in the higher-education sector reducing technology spend",
+   "Cybersecurity and data protection (sensitive student data), with AI-enabled threats",
+   "AI-native competitors entering education software",
+   "Bad debts as customers come under financial strain",
+   "Macro: inflation and interest rates raising costs and delaying customer purchases",
+   "Relies on parent's letter of financial support and group cash pooling (net current liabilities of £65.7m at FY2024 and £72.1m at FY2025)"
+  ],
+  "decision": {
+   "as_of": "FY2024",
+   "situation": "FY2024 accounts: revenue £13.2m (+17.1%), operating profit £2.66m (-12.9%), average headcount 96 (+6), staff costs £8.46m. Operating profit includes £8.50m of other operating income (mainly £7.83m of sales to group undertakings, plus R&D tax credits and management fees) and £4.44m of fair-value charges on earn-outs. Before those items, gross profit minus admin was -£1.40m. Below operating profit, £1.47m of interest on deferred and contingent consideration took PBT to £1.19m, and profit after tax was only £29k. Four acquisitions were made in 2024 after four in 2023. Contingent and deferred consideration outstanding was about £17.4m, cash £121k, and the company relies on a parent support letter. R&D (£2.9m) is fully expensed.",
+   "question": "What should be the main operating priority for FY2025?",
+   "options": [
+    "Impose an immediate 10% list-price rise across all UK university customers to fund the cost growth.",
+    "Keep acquiring at the 2023-24 pace: the earn-out charges show the acquired businesses are beating their plans.",
+    "Pause large deals for a year; cap core UK costs against gross profit and reprice at each renewal.",
+    "Cut expensed R&D back towards the FY2023 level of £2.4m to restore operating profit within the year."
+   ],
+   "best": 2,
+   "why": [
+    "Pricing is a real lever given high switching costs, but a blanket rise in a sector under severe financial strain risks churn and bad debts; targeted renewal pricing is safer.",
+    "There is some truth in it (earn-out increases usually mean outperformance), but £5.9m of combined earn-out and consideration-interest charges against weakening core profit makes more of the same risky.",
+    "Best: the core trading line is loss-making before group income and earn-out costs are eating the result, so slowing deals and fixing unit economics treats the cause.",
+    "Quick to do, but it undermines a product the company calls mission-critical just as AI-native competitors and cyber threats become bigger risks."
+   ],
+   "what_happened": "FY2025: revenue +6.1% to £14.0m; operating profit fell again to £2.30m as admin expenses rose to £16.1m and staff costs to £10.0m (108 people); R&D expensed rose to £3.7m. Group royalty/licence and management-fee income rose to £10.1m (other operating income £10.5m in total); earn-out charges were £2.75m. M&A slowed to small stakes, and the associate stake was fully impaired (£1.73m). £6.55m of subsidiary dividends was received and £6.55m paid up to the parent; year-end cash £2.3m. The strategic focus moved to an AI-native platform, pricing optimisation and selective M&A."
+  },
+  "analysis": [
+   {
+    "q": "In FY2024, what was gross profit minus administrative expenses (i.e., operating result before other operating income and fair-value movements), in £k?",
+    "answer": -1401,
+    "unit": "£k",
+    "tol": 5,
+    "working": "10,466 - 11,867 = -1,401 (FY2023: 8,676 - 11,524 = -2,848; FY2025: 10,675 - 16,112 = -5,437)."
+   },
+   {
+    "q": "How many times larger than reported FY2024 operating profit was other operating income?",
+    "answer": 3.2,
+    "unit": "x",
+    "tol": 0.1,
+    "working": "8,497 / 2,656 = 3.2x."
+   },
+   {
+    "q": "What was the staff-cost-to-revenue ratio in FY2025?",
+    "answer": 71.7,
+    "unit": "%",
+    "tol": 0.5,
+    "working": "10,044 / 13,999 = 71.7% (FY2023: 7,314 / 11,273 = 64.9%)."
+   }
+  ],
+  "sources": [
+   {
+    "label": "Full accounts FY2023 (filed 11 Oct 2024)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/03169474/filing-history"
+   },
+   {
+    "label": "Full accounts FY2024 (filed 04 Oct 2025)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/03169474/filing-history"
+   },
+   {
+    "label": "Full accounts FY2025 (filed 06 Oct 2026)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/03169474/filing-history"
+   },
+   {
+    "label": "Persons with significant control register",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/03169474/persons-with-significant-control"
+   }
+  ],
+  "confidence": "medium-high: the P&L lines reconcile arithmetically each year. Some FY2024 comparatives were restated in the FY2025 accounts (see caveats).",
+  "caveats": "FY2024 figures are as originally filed. In the FY2025 accounts the FY2024 comparatives were restated: cost of sales £2,723k (was £2,731k), gross profit £10,473k (was £10,466k), admin £11,874k (was £11,867k), and staff costs £7,856k (originally £8,455k, a £600k difference that is not explained). Operating profit was unchanged. The group income line was called 'sales to other group undertakings' up to FY2024 and 'royalty and license income' in FY2025. Deferred income is disclosed only in combination with accruals (and a small non-current deferred-income amount), so it is null. No recurring split is given; the report says only that the majority of revenue is recurring. R&D is expensed (£2.4m, £2.9m, £3.7m), so capitalised_dev = 0. Turnover is only part of the economics, as it excludes group royalty income."
+ },
+ {
   "id": "pulsar-adjusted-vs-cash",
   "company": "Pulsar Group plc (formerly Access Intelligence plc)",
   "number": "04799195",
@@ -698,5 +1103,280 @@ MDS.content.studies = [
   ],
   "confidence": "Medium-high. Statutory figures are from OCR of the filed scans, with subtotals recomputed and one figure checked against the page image. Adjusted EBITDA is only disclosed rounded to £0.1m.",
   "caveats": "adj_ebitda is the company's rounded figure in £m converted to £k (FY2022 is described as 'EBITDA of £1.0m' alongside the FY2023 adjusted figure). Cash is the balance-sheet cash; the group also had bank overdrafts of £1,533k (FY2022), £2,978k (FY2023) and £3,330k (FY2024), so net cash was negative. FY2024 figures are from the FY2025 report's comparatives. The FY2024 report's statements were not separately read. Recurring share is not disclosed (only ARR of £2.4m at end-2025). capitalised_dev is product development costs capitalised per the notes."
+ },
+ {
+  "id": "ssp-limited",
+  "company": "SSP LIMITED",
+  "number": "04234499",
+  "sector": "General insurance broker & insurer software and transaction services",
+  "owner": "SSP Holdings Limited (immediate PSC); indirect parent SSP Midco 2 Limited is owned by Volaris Group UK Holdco Limited; ultimate parent Constellation Software Inc.",
+  "difficulty": "hard",
+  "anon": "UK insurance-broker software company",
+  "years": [
+   {
+    "fy": "FY2023",
+    "period_end": "2023-12-31",
+    "revenue": 39748,
+    "gross_profit": 17114,
+    "operating_profit": -861,
+    "pbt": 20871,
+    "staff_costs": 13358,
+    "headcount": 209,
+    "cash": 282,
+    "deferred_income": 2608,
+    "capitalised_dev": 0,
+    "recurring_share": 0.627
+   },
+   {
+    "fy": "FY2024",
+    "period_end": "2024-12-31",
+    "revenue": 40430,
+    "gross_profit": 12499,
+    "operating_profit": 5053,
+    "pbt": 27938,
+    "staff_costs": 14278,
+    "headcount": 206,
+    "cash": 233,
+    "deferred_income": 1514,
+    "capitalised_dev": 0,
+    "recurring_share": 0.64
+   },
+   {
+    "fy": "FY2025",
+    "period_end": "2025-12-31",
+    "revenue": 36135,
+    "gross_profit": 8995,
+    "operating_profit": 8249,
+    "pbt": 32283,
+    "staff_costs": 13442,
+    "headcount": 186,
+    "cash": 94,
+    "deferred_income": 2082,
+    "capitalised_dev": 0,
+    "recurring_share": 0.707
+   }
+  ],
+  "context": "A major supplier of software and electronic transaction services to general-insurance brokers and insurers, mainly in the UK and Ireland, with smaller APAC, Africa, US and European revenue. It is owned through a holding chain by a serial software acquirer. Revenue comes from support (bundled licence plus support), per-transaction fees and professional services. Its reported profit before tax is dominated by interest on a receivable from group companies of about £270m, and it has no development capitalisation in progress; the development asset is running off.",
+  "challenges": [
+   "Transaction revenue is in steady decline: £11.9m (FY2022), £9.7m (FY2023), £8.9m (FY2024), £6.8m (FY2025).",
+   "Professional services are volatile and fell 33% in FY2025 to £3.8m.",
+   "Gross margin fell from 43% (FY2023) to 31% (FY2024) and 25% (FY2025). Part of the FY2024 move coincides with cost-line shifts the accounts do not explain.",
+   "Headline operating profit relies more and more on 'other operating income' (£1.9m in FY2024, £7.2m in FY2025), which the filings do not explain.",
+   "The FY2023 operating loss included a £5.3m impairment of capitalised development, and no new development has been capitalised since. Intangibles other than goodwill fell to £1.5m.",
+   "Industry risks: broker consolidation and insurers moving pricing and rating onto their own systems."
+  ],
+  "wins": [
+   "Support revenue, the largest stream, rose from £22.2m (FY2022) to £25.9m (FY2024) and held at £25.5m in FY2025.",
+   "Infrastructure was overhauled: servers and data centres moved to external/cloud providers, and £18.8m of fully depreciated assets were disposed of in FY2025.",
+   "The cost base was cut: headcount fell from 220 (FY2022) to 186 (FY2025), and admin plus distribution costs fell sharply after FY2023.",
+   "Headline KPIs improved: operating margin went from -2.2% (FY2023) to 12.5% (FY2024) and 22.8% (FY2025)."
+  ],
+  "risks": [
+   "Economic risk: customers delaying IT investment (SaaS offered as the mitigation)",
+   "Industry model change: broker/insurer consolidation; insurers moving pricing and rating in-house",
+   "Competitor product development targeting market share",
+   "Credit risk on trade receivables",
+   "Capability risk: retaining key skilled staff",
+   "Infrastructure and security risk: service failure or security breach"
+  ],
+  "decision": {
+   "as_of": "FY2024",
+   "situation": "FY2024 accounts: revenue £40.4m (+1.7%); operating profit £5.05m (12.5%) after a FY2023 operating loss of £0.86m that included a £5.26m development impairment. FY2024 operating profit includes £1.88m of other operating income that is not explained. Gross profit fell to £12.5m from £17.1m, while admin and distribution costs fell from £18.0m to £9.3m. By stream: support £25.9m (up), transactions £8.9m (down for the third year), professional services £5.6m. Headcount was 206 (from 209), staff costs £14.3m. Contract liabilities fell to £1.5m from £2.6m. PBT of £27.9m is mostly £24.8m of investment income, chiefly interest on £234m owed by group companies. Cash was £233k (group cash pooling). No development has been capitalised since at least FY2022, and the development asset's book value is down to £2.7m.",
+   "question": "The group wants FY2025 headline operating margin above 20%. What should the transformation lead recommend?",
+   "options": [
+    "Deliver the 20% through another round of headcount and overhead cuts, as the FY2024 margin jump shows cost-out works.",
+    "Stop across-the-board cuts; put a retention and roadmap team on top broker accounts in the eroding lines.",
+    "Restart a capitalised development programme for the broker platform so the spend sits on the balance sheet, not the P&L.",
+    "Run off the shrinking transactions business and concentrate all product and service resources on support contracts."
+   ],
+   "best": 1,
+   "why": [
+    "Tempting because it hits the headline target, but the FY2024 gain was helped by unexplained other income while transaction revenue kept falling, so more cuts risk hollowing out the product and service.",
+    "Best: support is about 64% of revenue and still growing, but transactions and services are eroding. Protecting the revenue base matters more than another point of headline margin.",
+    "Defensible if the platform really needs modernising, but framed this way it is mainly a cosmetic profit boost. It would also repeat the FY2023 pattern, where capitalised development later had to be impaired.",
+    "Transactions are still about 22% of revenue and are tied to how brokers use the platform; running them off would speed up the decline without a clear cost saving."
+   ],
+   "what_happened": "FY2025: revenue fell 10.6% to £36.1m (transactions -23% to £6.8m, professional services -33% to £3.8m, support -1% to £25.5m; UK and Ireland down from £35.3m to £31.0m). Headcount was cut to 186 and staff costs to £13.4m. Headline operating profit rose to £8.25m (22.8%), but £7.23m of it was unexplained other operating income, so operating profit without it was about £1.0m, down from about £3.2m. Gross profit fell to £9.0m. PBT reached £32.3m on £25.4m of group investment income; cash was £94k."
+  },
+  "analysis": [
+   {
+    "q": "What was FY2025 operating profit excluding other operating income (in £k)?",
+    "answer": 1019,
+    "unit": "£k",
+    "tol": 5,
+    "working": "8,249 - 7,230 = 1,019 (FY2024: 5,053 - 1,880 = 3,173), so the underlying result fell by about two-thirds while headline operating profit rose 63%."
+   },
+   {
+    "q": "What share of FY2025 profit before tax came from investment income (mostly interest from group companies)?",
+    "answer": 78.7,
+    "unit": "%",
+    "tol": 0.5,
+    "working": "25,407 / 32,283 = 78.7%."
+   },
+   {
+    "q": "By what percentage did transaction revenue change between FY2024 and FY2025?",
+    "answer": -23.4,
+    "unit": "%",
+    "tol": 0.3,
+    "working": "(6,835 - 8,926) / 8,926 = -23.4%."
+   }
+  ],
+  "sources": [
+   {
+    "label": "Full accounts FY2023 (filed 30 Sep 2024)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/04234499/filing-history"
+   },
+   {
+    "label": "Full accounts FY2024 (filed 26 Sep 2025)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/04234499/filing-history"
+   },
+   {
+    "label": "Full accounts FY2025 (filed 30 Sep 2026)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/04234499/filing-history"
+   },
+   {
+    "label": "Persons with significant control register",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/04234499/persons-with-significant-control"
+   }
+  ],
+  "confidence": "high for the statement figures, which are given in £'000 in the filings and checked against the comparatives. medium for interpretation, because the nature of other operating income and the cost reclassification between lines are not disclosed.",
+  "caveats": "deferred_income uses contract liabilities, which the accounts say relate mainly to annual support contracts. recurring_share = support revenue / revenue; transaction fees are also usage-recurring but are excluded. The filings do not explain other operating income (£1.88m FY2024, £7.23m FY2025). The big FY2024 shift from admin and distribution costs into cost of sales looks like a reclassification, but this is inferred, not stated. The auditor changed from BDO (FY2023) to PM+M (FY2024 onward). The FY2022 accounts were filed late (June 2024). capitalised_dev = 0 because there were no intangible additions in FY2022-FY2025."
+ },
+ {
+  "id": "amt-sybex",
+  "company": "AMT-SYBEX LIMITED",
+  "number": "03036807",
+  "sector": "Utilities / energy and aviation-leasing software and services (EAM mobility, meter/settlement systems, Leasepoint)",
+  "owner": "Jonas Computing (UK) Limited (PSC since 1 Jan 2022; previously Capita International Limited); ultimate parent Constellation Software Inc.",
+  "difficulty": "hard",
+  "anon": "UK utilities and aviation-leasing software company",
+  "years": [
+   {
+    "fy": "FY2023",
+    "period_end": "2023-12-31",
+    "revenue": 20606,
+    "gross_profit": 14008,
+    "operating_profit": 1863,
+    "pbt": 1172,
+    "staff_costs": 9191,
+    "headcount": 118,
+    "cash": 58,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": null
+   },
+   {
+    "fy": "FY2024",
+    "period_end": "2024-12-31",
+    "revenue": 19944,
+    "gross_profit": 13260,
+    "operating_profit": -2050,
+    "pbt": -2782,
+    "staff_costs": 11740,
+    "headcount": 130,
+    "cash": 82,
+    "deferred_income": null,
+    "capitalised_dev": 0,
+    "recurring_share": null
+   },
+   {
+    "fy": "FY2025",
+    "period_end": "2025-12-31",
+    "revenue": 18328,
+    "gross_profit": 13148,
+    "operating_profit": -288,
+    "pbt": -908,
+    "staff_costs": 11186,
+    "headcount": 125,
+    "cash": 46,
+    "deferred_income": null,
+    "capitalised_dev": 297,
+    "recurring_share": null
+   }
+  ],
+  "context": "A business carved out of a UK outsourcer and bought by a serial software acquirer at the start of 2022. It runs three lines: EAM and mobile/geospatial software (partly reselling a third-party enterprise asset management product), a utilities line serving UK utilities and energy (with a big programme for the market-wide half-hourly settlement reform going live in 2027), and SaaS for aircraft leasing. About 80% of revenue is UK, with Europe growing. The parent group's KPIs are gross-profit growth ('net revenue growth') and EBITDA.",
+  "challenges": [
+   "Revenue is falling: £20.6m (FY2023), £19.9m (FY2024), £18.3m (FY2025), with UK revenue down 13% in FY2025.",
+   "EAM customers are moving away from the third-party products the company resells, a trend described in both FY2024 and FY2025.",
+   "In FY2024 headcount rose from 118 to 130 and staff costs by 28% while revenue fell, turning a £1.9m operating profit into a £2.0m loss.",
+   "A £1.56m goodwill impairment on the Northern Ireland cash-generating unit (FY2024); £11.9m of goodwill remains, tested with a 14.5% discount rate.",
+   "In FY2025 the £6.68m deferred tax asset on losses was written off as unlikely to be recovered, giving a £7.6m loss after tax, but a £1.05m dividend was still paid.",
+   "The strategic report's account (that FY2024 development spend 'provided revenue and EBITDA growth in FY25') does not match the filed revenue, which fell 8%."
+  ],
+  "wins": [
+   "FY2023 turnaround: gross profit +24%, and operating profit of £1.86m after a FY2022 loss that included £1.5m of exceptional costs.",
+   "Regulatory demand: MHHS deployments under way, with go-live due in 2027.",
+   "Leasepoint SaaS is winning new customers, existing customers started migrating in 2025, and management expects extra growth from a competitor leaving the market.",
+   "EBITDA improved from about -£2.05m to -£0.18m in FY2025 as cost of sales fell £1.5m and headcount eased to 125; capitalisation of internal development restarted (£297k)."
+  ],
+  "risks": [
+   "Strategic: market conditions, contract pricing and competition",
+   "Financial: failures in internal control systems and lack of corporate stability",
+   "Operational: recruiting and keeping staff, reputation, supplier and customer relationships, IT and information-security failures",
+   "Compliance with a wide range of laws and regulations",
+   "Judgement areas: revenue recognition on complex contracts (including onerous-contract assessment), goodwill impairment, recoverability of deferred tax"
+  ],
+  "decision": {
+   "as_of": "FY2024",
+   "situation": "FY2024 accounts: revenue £19.9m (-3.2%), gross profit £13.3m (-5.3%), admin £13.7m (+13%), £1.56m goodwill impairment, operating loss £2.05m (about -£0.49m before the impairment). Average headcount rose to 130 (deployment/support staff from 91 to 107), and staff costs rose to £11.7m (59% of revenue, from 45%). Management says the loss reflects deliberate investment in development, all of it expensed (no intangible additions). It expects higher-than-normal aviation-leasing growth in 2025 from a competitor's exit, settlement-reform project revenue up to the 2027 go-live, and opportunities via the parent's acquisition of a similar business. EAM customers continue to move away from the resold third-party product. The balance sheet carries a £6.68m deferred tax asset on losses and £11.9m of goodwill; cash is £82k under group treasury.",
+   "question": "What should the FY2025 operating plan prioritise?",
+   "options": [
+    "Keep the enlarged 130-person team intact so there is capacity for the expected aviation-leasing and settlement-reform growth.",
+    "Start capitalising settlement-reform and geospatial development to show the investment properly and restore reported profit.",
+    "Shrink EAM resale and services capacity to match attrition; keep funding settlement reform and aviation leasing.",
+    "Fold the business into the parent's newly acquired similar company to capture overlapping cost savings quickly."
+   ],
+   "best": 2,
+   "why": [
+    "Follows management's view, but it locks in a cost base that grew 28% while revenue fell, on growth that has not appeared yet.",
+    "Capitalising qualifying development is allowed, but doing it to 'restore profit' changes the accounting, not the cash or the trend, and goodwill and deferred-tax judgements are already stretched.",
+    "Best: it matches capacity to the line the filings say is shrinking and protects the two lines with outside tailwinds (regulatory go-live, competitor exit).",
+    "Could create synergies later, but a merger mid-way through the MHHS programme adds integration risk and does not fix the cost-to-revenue mismatch in the current lines."
+   ],
+   "what_happened": "FY2025: revenue fell a further 8.1% to £18.3m (UK -13%, Europe +18%). Gross profit was almost flat at £13.1m as cost of sales fell, admin eased to £13.4m, headcount dropped to 125 and staff costs to £11.2m. The operating loss narrowed to £0.29m (EBITDA -£0.18m) and £297k of development was capitalised. The £6.68m deferred tax asset was written off, giving a £7.59m loss after tax, and a £1.05m dividend was paid. The strategic report still credited FY2024 investment with 'revenue and EBITDA growth' in FY2025."
+  },
+  "analysis": [
+   {
+    "q": "By how many percentage points did the staff-cost-to-revenue ratio rise from FY2023 to FY2024?",
+    "answer": 14.3,
+    "unit": "pp",
+    "tol": 0.3,
+    "working": "FY2023 9,191/20,606 = 44.6%; FY2024 11,740/19,944 = 58.9%; difference +14.3pp."
+   },
+   {
+    "q": "What was the FY2024 operating result before the goodwill impairment (in £k)?",
+    "answer": -490,
+    "unit": "£k",
+    "tol": 3,
+    "working": "-2,050 + 1,560 = -490."
+   },
+   {
+    "q": "What percentage of the FY2025 loss after tax (£7,589k) was the tax charge, which was mainly the deferred tax asset write-off?",
+    "answer": 88.0,
+    "unit": "%",
+    "tol": 0.5,
+    "working": "Tax charge 6,682 / 7,589 = 88.0% (the deferred tax element alone, 6,681, gives the same 88.0%)."
+   }
+  ],
+  "sources": [
+   {
+    "label": "Full accounts FY2023 (filed 15 Oct 2024)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/03036807/filing-history"
+   },
+   {
+    "label": "Full accounts FY2024 (filed 13 Aug 2025)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/03036807/filing-history"
+   },
+   {
+    "label": "Full accounts FY2025 (filed 23 Sep 2026)",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/03036807/filing-history"
+   },
+   {
+    "label": "Persons with significant control register",
+    "url": "https://find-and-update.company-information.service.gov.uk/company/03036807/persons-with-significant-control"
+   }
+  ],
+  "confidence": "high for the statement figures (the P&L, staff totals and headcount reconcile across years). medium for the mix of business lines, because the filings give revenue only by geography.",
+  "caveats": "Revenue by stream (licence / professional services / maintenance) is described in the accounting policy but not quantified, so recurring_share is null. Deferred income is shown only as 'accruals and deferred income' (FY2023 £5.15m, FY2024 £4.49m, FY2025 £4.11m current), so it is null. capitalised_dev: no intangible additions in FY2023 or FY2024; FY2025 had £296,857 of internal additions. The FY2024 strategic report quotes EBITA as -£2,049,892 (equal to the operating loss including impairment) and in one place mistypes it as -£2,409,892. The company name appears as 'AMT-SYBEX LIMTED' in the report headers."
  }
 ];

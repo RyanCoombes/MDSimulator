@@ -40,5 +40,52 @@
     "Auxilium": "the new suite",
     "The large Apache training contract": "The large helicopter training contract",
     "Apache": "attack-helicopter"
+  },
+  "onefile": {
+    "Manchester-based provider": "A UK provider",
+    "Constellation Software's UK holding company": "a serial software acquirer's UK holding company",
+    " (Tracker)": "",
+    "a full year of Tracker": "a full year of the acquired product",
+    "like Tracker": "like the last one",
+    "Tracker": "the acquired product",
+    "Onefile": "the company",
+    "OneFile": "the company"
+  },
+  "cultura-technologies": {
+    "A long-established Volaris company based in Chorley that supplies": "A long-established company, owned by a serial software acquirer, that supplies",
+    "Volaris": "the parent group",
+    "Chorley": "Lancashire",
+    "Cultura": "the company"
+  },
+  "kinetic-solutions": {
+    "Kinetic supplies": "The company supplies",
+    "It bought Corbett Engineering, Vision Group, HGEM and DisplayNote in 2023, and Sentean, Bullet Solutions, Zupa Tech and Letme/AgentOS in 2024, which": "It bought four businesses in 2023 and four more in 2024, which",
+    "inside Volaris": "inside its software-acquirer group",
+    "Volaris": "the parent group",
+    "Kinetic": "the company"
+  },
+  "ssp-limited": {
+    "by Volaris (Constellation Software)": "by a serial software acquirer",
+    "Volaris": "the parent group",
+    "Constellation Software": "the parent group",
+    "SSP": "the company"
+  },
+  "amt-sybex": {
+    "A former Capita business bought by Jonas (Constellation Software) at the start of 2022.": "A business carved out of a UK outsourcer and bought by a serial software acquirer at the start of 2022.",
+    "Flui Technologies serving": "a utilities line serving",
+    "and Leasepoint, SaaS for aircraft leasing": "and SaaS for aircraft leasing",
+    "higher-than-normal Leasepoint growth": "higher-than-normal aviation-leasing growth",
+    "the expected Leasepoint and MHHS growth": "the expected aviation-leasing and settlement-reform growth",
+    "MHHS and Geofield development": "settlement-reform and geospatial development",
+    "funding MHHS and Leasepoint": "funding settlement reform and aviation leasing",
+    "MHHS project revenue": "settlement-reform project revenue",
+    "Leasepoint": "the aviation-leasing product",
+    "MHHS": "settlement reform",
+    "Geofield": "geospatial",
+    "Flui": "the utilities line",
+    "Capita": "a UK outsourcer",
+    "Jonas": "the parent group",
+    "AMT-Sybex": "the company",
+    "Sybex": "the company"
   }
 }

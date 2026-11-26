@@ -33,6 +33,7 @@ MDS.route = () => {
   view.style.animation = "none"; void view.offsetWidth; view.style.animation = "";
   if (h === "frameworks") { MDS.brief(null); MDS.tests.frameworks(view); return; }
   if (h === "interview") { MDS.brief(null); MDS.tests.interview(view); return; }
+  if (h === "library") { MDS.brief(null); MDS.tests.library(view); return; }
   const [id, test] = h.split("-");
   const sc = MDS.scenarios[id];
   MDS.brief(sc || null);
@@ -83,6 +84,10 @@ MDS.home = view => {
           <div class="phasebars">${bars}</div>
           <div class="row"><a class="btn" href="#${id}-${st.done ? "exec" : "room"}">${st.done ? "Continue" : "Open case"}</a><a class="btn ghost" href="#${id}-day">A day in the life</a></div></div>`;
       }).join("")}
+        <div class="panel casecard">
+          <div class="cc-top"><div><div class="diff eyebrow">Real cases</div><h2 style="margin-top:4px">Case library</h2></div>${MDS.ring(MDS.getScore("global", "library") || 0, MDS.getScore("global", "library") != null ? MDS.getScore("global", "library") : "–")}</div>
+          <div class="dim small">${MDS.content.cases.length} real, sourced cases (Broadcom–VMware, Unity, Klarna, P&amp;O Ferries, Atlassian, HP–Autonomy and more), each paused at the key decision, with what happened and where to practise it.</div>
+          <div><a class="btn" href="#library">Open the library</a></div></div>
         <div class="panel casecard">
           <div class="cc-top"><div><div class="diff eyebrow">Interview room</div><h2 style="margin-top:4px">Mock interviews</h2></div>${MDS.ring(iv || 0, iv != null ? iv : "–")}</div>
           <div class="dim small">A Portfolio Manager round and an HR round for a Business Transformation Leader role. AI interviewer, follow-up questions, competency feedback. Practise out loud.</div>

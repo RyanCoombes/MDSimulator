@@ -9,7 +9,7 @@ MDS.tests.events = (sc, el) => {
     answered = false;
     el.innerHTML = `<div class="stack">
       <div class="panel">${meters()}</div>
-      <div class="panel"><div class="eyebrow">Situation ${i + 1} of ${order.length}</div><h2 style="margin-top:4px">${MDS.esc(ev.title)}</h2><p>${MDS.esc(ev.text)}</p>
+      <div class="panel"><div class="eyebrow">Situation ${i + 1} of ${order.length}</div><h2 style="margin-top:4px">${MDS.esc(ev.title)}</h2>${ev.inspired ? (() => { const c = MDS.content.cases.find(x => x.id === ev.inspired); return c ? `<div class="small"><span class="pill">Fictional</span> Inspired by a real case: <a href="#library">${MDS.esc(c.title)} (${MDS.esc(c.years)})</a></div>` : ""; })() : ""}<p>${MDS.esc(ev.text)}</p>
         <p class="small dim">What do you do?</p>
         <div class="stack" id="opts">${ev.options.map((o, j) => `<button type="button" class="opt" data-j="${j}" style="text-align:left;font:inherit;color:inherit">${MDS.esc(o.t)}</button>`).join("")}</div>
         <div id="fb" style="margin-top:12px"></div></div></div>`;

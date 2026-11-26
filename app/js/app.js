@@ -34,6 +34,7 @@ MDS.route = () => {
   if (h === "frameworks") { MDS.brief(null); MDS.tests.frameworks(view); return; }
   if (h === "interview") { MDS.brief(null); MDS.tests.interview(view); return; }
   if (h === "library") { MDS.brief(null); MDS.tests.library(view); return; }
+  if (h === "studies") { MDS.brief(null); MDS.tests.studies(view); return; }
   const [id, test] = h.split("-");
   const sc = MDS.scenarios[id];
   MDS.brief(sc || null);
@@ -84,6 +85,10 @@ MDS.home = view => {
           <div class="phasebars">${bars}</div>
           <div class="row"><a class="btn" href="#${id}-${st.done ? (MDS.TESTS.find(t => t.scored && MDS.getScore(id, t.id) == null) || { id: "room" }).id : "room"}">${st.done ? "Continue" : "Open case"}</a><a class="btn ghost" href="#${id}-day">A day in the life</a></div></div>`;
       }).join("")}
+        <div class="panel casecard">
+          <div class="cc-top"><div><div class="diff eyebrow">Real accounts</div><h2 style="margin-top:4px">Real company studies</h2></div>${MDS.ring(MDS.getScore("global", "studies") || 0, MDS.getScore("global", "studies") != null ? MDS.getScore("global", "studies") : "–")}</div>
+          <div class="dim small">${(MDS.content.studies || []).length} real UK software companies, built from their accounts filed at Companies House. Identity hidden: work the numbers, read the signals, make the call, then see what happened. Easy, medium and hard.</div>
+          <div><a class="btn" href="#studies">Start a study</a></div></div>
         <div class="panel casecard">
           <div class="cc-top"><div><div class="diff eyebrow">Real cases</div><h2 style="margin-top:4px">Case library</h2></div>${MDS.ring(MDS.getScore("global", "library") || 0, MDS.getScore("global", "library") != null ? MDS.getScore("global", "library") : "–")}</div>
           <div class="dim small">${MDS.content.cases.length} real, sourced cases (Broadcom–VMware, Unity, Klarna, P&amp;O Ferries, Atlassian, HP–Autonomy and more), each paused at the key decision, with what happened and where to practise it.</div>

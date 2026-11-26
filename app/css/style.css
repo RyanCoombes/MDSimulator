@@ -354,3 +354,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .teach .opt{flex-direction:column;align-items:stretch}
 .lessonpeek{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
 .lessonpeek summary{cursor:pointer}
+
+/* ---------- company studies ---------- */
+.minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin-top:12px}
+.mini{margin:0;padding:8px 10px;border-radius:9px;background:var(--panel2)}

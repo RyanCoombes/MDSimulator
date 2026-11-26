@@ -94,8 +94,8 @@ MDS.home = view => {
           <div><a class="btn" href="#interview">Enter the interview room</a></div></div>
         <div class="panel casecard">
           <div class="cc-top"><div><div class="diff eyebrow">Any case</div><h2 style="margin-top:4px">Frameworks and operating models</h2></div>${MDS.ring(fw || 0, fw != null ? fw : "–")}</div>
-          <div class="dim small">Situational questions on change models, operating models, decision rights, pricing, PS economics, SaaS metrics, integration and facilitation.</div>
-          <div><a class="btn" href="#frameworks">Start test</a></div></div>
+          <div class="dim small">${MDS.content.lessons.length} lessons with hands-on exercises: change models, operating models, decision rights, pricing, PS and SaaS metrics, improvement, strategy and facilitation. Then a quiz that explains every option.</div>
+          <div><a class="btn" href="#frameworks">Learn and practise</a></div></div>
       </div>
       <div class="panel small dim">
         <strong>About the scores.</strong> Every task is marked against the case's own evidence. The models behind them are teaching models with invented sensitivities. They show cause and effect and the trade-offs, not a forecast of any real company. Scores are kept in this browser only.

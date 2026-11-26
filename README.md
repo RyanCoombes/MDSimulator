@@ -57,9 +57,28 @@ utilisation vs realisation, NRR/GRR, the Rule of 40, Theory of Constraints, DMAI
 
 Scores are kept per browser (localStorage). Nothing is sent anywhere.
 
+## AI features (optional)
+
+**What they are:**
+- **Conversations:** role-play with case characters who have hidden concerns, a live stance meter and a coach's assessment.
+- **Interview room:** a Portfolio Manager round and an HR round, with follow-up questions and competency feedback.
+- **Write your own reply** in A day in the life.
+- **Speaking practice:** use the microphone, and optionally hear the character's voice.
+
+**Where the AI comes from, in order:**
+1. **claude.ai.** When the app is opened as a claude.ai artifact, it uses the viewer's own Claude. No key needed.
+2. **Your own server.** `server.py` calls the Anthropic API with your key. The key stays on the server.
+   - Model: `claude-opus-5-5`, with server-side refusal fallbacks.
+   - Settings: passcode protection and a daily request cap.
+3. **Off.** AI features hide themselves, and everything else still works.
+
+Speech uses claude.ai dictation and voices where available, otherwise the browser's own speech APIs (Chrome/Edge).
+
+Switch AI on or off and enter the passcode under **⚙ Settings**.
+
 ## Run it
 
-No backend and no dependencies. Serve the `app/` folder:
+Without AI, no backend or dependencies are needed. Serve the `app/` folder:
 
 ```bash
 python3 -m http.server 8080 --directory app
@@ -67,12 +86,29 @@ python3 -m http.server 8080 --directory app
 
 Then open http://localhost:8080.
 
+With AI, using the included server:
+
+```bash
+pip install anthropic
+```
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-... MDSIM_PASSCODE=choose-one python3 server.py --port 8080
+```
+
+Optional settings: `MDSIM_MODEL` (default `claude-opus-5-5`) and `MDSIM_DAILY_LIMIT` (default 300 requests a day). Without a key the server still serves the app, with AI off.
+
 On a Raspberry Pi with Docker:
 
 ```bash
 docker build -t mdsim .
-docker run -d --restart unless-stopped -p 8080:80 --name mdsim mdsim
 ```
+
+```bash
+docker run -d --restart unless-stopped -p 8080:8080 -e ANTHROPIC_API_KEY=sk-ant-... -e MDSIM_PASSCODE=choose-one --name mdsim mdsim
+```
+
+Set a passcode whenever anyone else can reach the server: AI usage is billed to your Anthropic account.
 
 To get a single self-contained HTML file (`dist/index.html`):
 

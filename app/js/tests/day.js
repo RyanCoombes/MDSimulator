@@ -90,6 +90,37 @@ MDS.tests.day = (sc, el) => {
         </div>
       </div></div>`;
     if (intr) renderInterrupt(intr);
+    const ow = MDS.$("#ownWrap", el);
+    if (ow) MDS.ai.available().then(ok => { if (ok && MDS.$("#ownWrap", el) === ow) { ow.hidden = false; MDS.micButton(MDS.$("#ownMic", el), MDS.$("#ownTxt", el)); } });
+  };
+  const ownReply = async i => {
+    const txt = MDS.$("#ownTxt", el).value.trim(), note = MDS.$("#ownNote", el), btn = MDS.$("#ownSend", el);
+    if (txt.length < 8) { note.textContent = "Write a bit more."; return; }
+    const sample = await MDS.ai.sample; if (!sample) return;
+    btn.disabled = true; note.textContent = "Assessing your reply…";
+    const prompt = `You are assessing a trainee transformation leader's reply in a realistic workday simulation. British English. Be calibrated and specific.
+CASE: ${sc.name}: ${sc.tagline}
+THE DAY: ${D.title}. ${D.brief} Current time: ${MDS.hm(s.t)}.
+INCOMING ${MDS.CH[i.ch][0].toUpperCase()} from ${i.from}, subject "${i.subject}":
+${i.body}
+REFERENCE RESPONSES (index, quality 0-3, why):
+${i.options.map((o, k) => `${k}. [${o.s}/3] ${o.t} (${o.fb})`).join("\n")}
+TRAINEE'S OWN REPLY:
+"""${txt.slice(0, 2000)}"""
+Judge the reply on substance (right priority, right owner, honesty, protecting deadlines and relationships) and on tone (how it would land with ${i.from}).
+Reply with only JSON: {"s": integer 0-3, "closest": index of the reference response whose effect it most resembles, "feedback": "1-2 sentences, specific", "reaction": "one short line ${i.from} might reply with"}`;
+    try {
+      const r = await sample.json(prompt, { cache: false, modelTier: "quick" });
+      const k = MDS.clamp(parseInt(r.closest, 10) || 0, 0, i.options.length - 1), sc3 = MDS.clamp(parseInt(r.s, 10) || 0, 0, 3);
+      const words = txt.split(/\s+/).length, mins = MDS.clamp(Math.round(words / 15) + 2, 2, 30);
+      const o = i.options[k];
+      s.done[i.id] = true; s.choice[i.id] = { s: sc3, t: "Your reply: " + txt.slice(0, 220) + (txt.length > 220 ? "…" : ""), mins };
+      apply(o.fx);
+      log(`${i.subject}: you wrote your own reply (${sc3}/3). ${String(r.feedback || "")}`, sc3 >= 3 ? "g" : sc3 >= 2 ? "i" : "w");
+      if (r.reaction) log(`${i.from}: "${String(r.reaction)}"`, "i");
+      toast(`${sc3}/3: ${String(r.feedback || "").slice(0, 150)}`);
+      advance(mins); save(); render();
+    } catch (e) { MDS.ai.disable(e); btn.disabled = false; note.textContent = MDS.ai.msg(e); }
   };
   const calendar = () => D.items.filter(i => i.ch === "meeting" && (!i.req || s.flags[i.req])).map(i => {
     const st = s.done[i.id] ? "done" : s.missed[i.id] ? "missed" : at(i) <= s.t ? "now" : "";
@@ -105,7 +136,10 @@ MDS.tests.day = (sc, el) => {
       ${handled || missed ? `<div class="fb ${handled && ch && ch.s >= 3 ? "good" : handled && ch && ch.s >= 2 ? "mid" : "bad"}">${handled ? (ch && ch.auto ? "Resolved by something else you did." : `<strong>You:</strong> ${MDS.esc(ch.t)} <span class="faint">(${ch.mins} min)</span>`) : `<strong>Missed.</strong> ${MDS.esc(i.miss.x)}`}</div>` : `
         <div class="small dim" style="margin:10px 0 6px">How do you respond?</div>
         <div class="stack" style="gap:8px">${order(i.id, opts).map((o, j) => `<button type="button" class="opt" data-o="${i.options.indexOf(o)}" style="text-align:left;font:inherit;color:inherit;justify-content:space-between"><span>${MDS.esc(o.t)}</span><span class="faint num small" style="white-space:nowrap">${o.mins} min</span></button>`).join("")}</div>
-        <div class="row" style="margin-top:10px"><button class="btn sm ghost" data-later="60" type="button">Come back in an hour</button>${i.deadline ? "" : `<button class="btn sm ghost" data-ignore="1" type="button">Ignore</button>`}</div>`}
+        <div class="row" style="margin-top:10px"><button class="btn sm ghost" data-later="60" type="button">Come back in an hour</button>${i.deadline ? "" : `<button class="btn sm ghost" data-ignore="1" type="button">Ignore</button>`}</div>
+        <details class="own" id="ownWrap" hidden><summary>Write your own reply instead</summary>
+          <label class="small faint" for="ownTxt" style="display:block;margin:8px 0 4px">What do you write, or say?</label><textarea id="ownTxt" rows="3"></textarea>
+          <div class="row" style="margin-top:6px"><button class="btn ghost sm" id="ownMic" type="button" hidden>🎙 Speak</button><button class="btn sm" id="ownSend" type="button">Send your reply</button><span class="small faint" id="ownNote"></span></div></details>`}
     </div>`;
   };
   const renderInterrupt = i => {
@@ -190,6 +224,7 @@ MDS.tests.day = (sc, el) => {
       toast(o.fb.length > 140 ? o.fb.slice(0, 137) + "…" : o.fb);
       advance(o.mins); save(); render(); return;
     }
+    if (b.id === "ownSend") { ownReply(i); return; }
     if (b.dataset.later) { s.snooze[i.id] = (s.snooze[i.id] || 0) + (s.t - at(i)) + 60; s.sel = null; log(`Parked "${i.subject}" for an hour.`); save(); render(); return; }
     if (b.dataset.ignore) { s.done[i.id] = true; s.choice[i.id] = { s: i.imp ? 0 : 3, t: "Ignored", mins: 0 }; log(`Ignored "${i.subject}".`, i.imp ? "w" : "i"); save(); render(); return; }
   });

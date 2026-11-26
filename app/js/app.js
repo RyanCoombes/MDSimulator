@@ -15,6 +15,7 @@ MDS.TESTS = [
   { id: "plan", label: "100-day plan", phase: "plan", scored: true },
   { id: "workshop", label: "Workshop", phase: "plan", scored: true },
   { id: "day", label: "A day in the life", phase: "deliver", scored: true },
+  { id: "talk", label: "Conversations", phase: "deliver", scored: true },
   { id: "exec", label: "Run the transformation", phase: "deliver", scored: true },
   { id: "events", label: "Challenges", phase: "deliver", scored: true }
 ];
@@ -31,6 +32,7 @@ MDS.route = () => {
   window.scrollTo(0, 0);
   view.style.animation = "none"; void view.offsetWidth; view.style.animation = "";
   if (h === "frameworks") { MDS.tests.frameworks(view); return; }
+  if (h === "interview") { MDS.tests.interview(view); return; }
   const [id, test] = h.split("-");
   const sc = MDS.scenarios[id];
   if (!sc) { MDS.home(view); return; }
@@ -52,7 +54,8 @@ MDS.route = () => {
 
 MDS.home = view => {
   const fw = MDS.getScore("global", "frameworks");
-  const all = MDS.order.flatMap(id => MDS.TESTS.filter(t => t.scored).map(t => MDS.getScore(id, t.id))).concat([fw]).filter(x => x != null);
+  const iv = MDS.getScore("global", "interview");
+  const all = MDS.order.flatMap(id => MDS.TESTS.filter(t => t.scored).map(t => MDS.getScore(id, t.id))).concat([fw, iv]).filter(x => x != null);
   const readiness = all.length ? Math.round(all.reduce((a, b) => a + b, 0) / all.length) : 0;
   view.innerHTML = `
     <div class="stack">
@@ -80,6 +83,10 @@ MDS.home = view => {
           <div class="row"><a class="btn" href="#${id}-${st.done ? "exec" : "room"}">${st.done ? "Continue" : "Open case"}</a><a class="btn ghost" href="#${id}-day">A day in the life</a></div></div>`;
       }).join("")}
         <div class="panel casecard">
+          <div class="cc-top"><div><div class="diff eyebrow">Interview room</div><h2 style="margin-top:4px">Mock interviews</h2></div>${MDS.ring(iv || 0, iv != null ? iv : "–")}</div>
+          <div class="dim small">A Portfolio Manager round and an HR round for a Business Transformation Leader role. AI interviewer, follow-up questions, competency feedback. Practise out loud.</div>
+          <div><a class="btn" href="#interview">Enter the interview room</a></div></div>
+        <div class="panel casecard">
           <div class="cc-top"><div><div class="diff eyebrow">Any case</div><h2 style="margin-top:4px">Frameworks and operating models</h2></div>${MDS.ring(fw || 0, fw != null ? fw : "–")}</div>
           <div class="dim small">Situational questions on change models, operating models, decision rights, pricing, PS economics, SaaS metrics, integration and facilitation.</div>
           <div><a class="btn" href="#frameworks">Start test</a></div></div>
@@ -91,4 +98,5 @@ MDS.home = view => {
 };
 
 window.addEventListener("hashchange", MDS.route);
+document.addEventListener("click", e => { if (e.target.closest("#settingsBtn")) MDS.openSettings(); });
 document.addEventListener("DOMContentLoaded", MDS.route);

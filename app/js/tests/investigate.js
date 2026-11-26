@@ -246,8 +246,11 @@ MDS.tests.investigate = (sc, el) => {
     ds = qs[i].ds; views[ds] = fresh(); all();
     MDS.$("#dsTabs", el).scrollIntoView({ behavior: "smooth", block: "start" });
   });
-  MDS.$("#clearQ", el).onclick = () => { QA.a = {}; QA.h = {}; MDS.save(); MDS.tests.investigate(sc, el); };
+  MDS.$("#clearQ", el).onclick = () => { QA.a = {}; QA.marked = false; MDS.save(); MDS.route(); };
+  if (QA.marked) { MDS.$("#checkQ", el).disabled = true; MDS.$("#checkQ", el).title = "Already marked. Clear to practise again."; }
   MDS.$("#checkQ", el).onclick = () => {
+    if (QA.marked) return;
+    QA.marked = true; MDS.$("#checkQ", el).disabled = true;
     let pts = 0, right = 0;
     qs.forEach((x, i) => {
       const raw = MDS.$("#ia" + i, el).value;
@@ -257,7 +260,7 @@ MDS.tests.investigate = (sc, el) => {
       w.innerHTML = `<strong>${ok ? (QA.h[i] ? "Correct (with hint)." : "Correct.") : `Answer: ${x.kind === "choice" ? MDS.esc(x.ans) : x.ans.toFixed(x.unit === "£k" ? 0 : 1) + (x.unit === "%" ? "%" : " " + x.unit)}.`}</strong> ${MDS.esc(x.explain)}`;
     });
     const score = pts / qs.length * 100, hints = Object.keys(QA.h).length;
-    MDS.setScore(sc.id, "investigate", score);
+    MDS.setScore(sc.id, "investigate", score, "first");
     const [g, cls] = MDS.grade(score);
     MDS.$("#iqRes", el).innerHTML = `<div class="row" style="margin-top:12px;gap:12px"><div class="bigscore" style="font-size:32px">${Math.round(score)}</div><span class="pill ${cls === "pos" ? "ok" : "no"}">${g}</span></div><div class="small dim">${right}/${qs.length} correct${hints ? `, ${hints} hint${hints > 1 ? "s" : ""} used` : ""}. Save the findings that change your plan: you'll need them for the model and the 100-day plan.</div>`;
   };

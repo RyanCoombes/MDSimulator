@@ -1,0 +1,19 @@
+MD Simulator on http://127.0.0.1:8099  ·  AI: on (claude-opus-5-5)
+127.0.0.1 - - [26/Nov/2026 22:00:58] "POST /api/ai/sample HTTP/1.1" 400 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "POST /api/ai/sample HTTP/1.1" 400 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "POST /api/ai/sample HTTP/1.1" 400 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "POST /api/ai/sample HTTP/1.1" 413 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "POST /api/ai/sample HTTP/1.1" 401 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 429 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 429 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "GET /api/ai/status HTTP/1.1" 429 -
+127.0.0.1 - - [26/Nov/2026 22:00:58] "POST /api/ai/sample HTTP/1.1" 429 -

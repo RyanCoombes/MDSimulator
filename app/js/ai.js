@@ -53,6 +53,7 @@ MDS.ai = (() => {
           }
         }
       } catch (e) { if (e && e.code) throw e; throw { code: opts.signal && opts.signal.aborted ? "cancelled" : "upstream_error", message: String(e), text }; }
+      if (!done) throw { code: "upstream_error", message: "The answer was cut off.", text };
       if (!text.trim()) throw { code: "empty_completion", message: "No text" };
       return { text, truncated: !!(done && done.truncated), modelTierApplied: opts.modelTier || "default" };
     };
@@ -66,6 +67,7 @@ MDS.ai = (() => {
     const viewer = await use("sample");
     if (viewer) return { kind: "claude", sample: viewer, note: "Using Claude through claude.ai." };
     try {
+      if (location.protocol === "file:") throw 0;
       const r = await fetch("api/ai/status", { headers: { "X-MDSim-Passcode": MDS.settings.passcode || "" }, cache: "no-store" });
       if (r.ok) {
         const s = await r.json();
@@ -127,11 +129,14 @@ MDS.openSettings = async () => {
     <details style="margin-top:14px"><summary class="small" style="cursor:pointer;color:var(--acc)">Self-hosting: how to turn AI on</summary>
       <ol class="small dim"><li>On the server: <code>pip install anthropic</code></li><li>Set <code>ANTHROPIC_API_KEY</code> and a <code>MDSIM_PASSCODE</code></li><li>Run <code>python3 server.py --port 8080</code></li><li>Enter the passcode here.</li></ol>
       <p class="small dim">Your API key stays on the server. Usage is billed to your Anthropic account, and the server caps requests per day (MDSIM_DAILY_LIMIT).</p></details>
+    <h2 style="margin:18px 0 6px;font-size:18px">Progress</h2><p class="small dim">Tasks with fixed answers count your first attempt; later runs are practice. Reset to start fresh (this browser only).</p>
+    <button class="btn ghost sm" id="resetAll" type="button">Reset all progress</button>
     <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" id="setClose" type="button">Done</button></div></div>`;
   document.body.appendChild(m); requestAnimationFrame(() => m.classList.add("on"));
   const refresh = async () => { MDS.ai.reset(); const q = await MDS.ai.get(); const st = m.querySelector("#setStatus"); st.textContent = q.note; st.className = "fb " + (q.sample ? "good" : "mid"); m.querySelector("#passRow").hidden = !(q.status && q.status.passcode); };
   m.querySelectorAll("[data-ai]").forEach(b => b.onclick = () => { MDS.settings.ai = b.dataset.ai; MDS.saveSettings(); m.querySelectorAll("[data-ai]").forEach(x => x.setAttribute("aria-pressed", x === b)); refresh(); });
   m.querySelector("#passSave").onclick = () => { MDS.settings.passcode = m.querySelector("#pass").value; MDS.saveSettings(); refresh(); };
+  m.querySelector("#resetAll").onclick = e => { const b = e.target; if (b.dataset.c !== "1") { b.dataset.c = "1"; b.textContent = "Click again to erase all scores and work"; return; } MDS.resetProgress(); b.textContent = "Progress reset"; };
   const close = () => { m.remove(); MDS.route(); };
   m.querySelector("#setClose").onclick = close;
   m.addEventListener("click", e => { if (e.target === m) close(); });

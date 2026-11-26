@@ -132,14 +132,16 @@ MDS.modelChecks = (sc, M, acts) => {
     if (extra.length) out.reality.push(["r", `Revenue includes ${extra.join(", ")}, which isn't tied to an evidence-checked assumption. Explain where it comes from.`]);
   }
   if (!out.reality.length) out.reality.push(["g", "No evidence conflicts found in the tagged assumptions."]);
-  // targets
-  const p = { founder: 100 };
+  // targets: recomputed by the checker from the model's own drivers, never read from output rows
+  const yr = k => [0, 1, 2, 3].map(t => (V[k] ? V[k][t] : NaN));
+  const rev = yr("revenue"), ebd = yr("ebitda"), churnR = tag("churn"), aiR = tag("ai");
+  const margin = rev.map((r, t) => ebd[t] / r), grr = [0, 1, 2, 3].map(t => churnR ? 1 - V[churnR.id][t] : NaN), aiShare = rev.map((r, t) => aiR ? V[aiR.id][t] / r : 0);
+  ["margin", "grr", "ai_share"].forEach(id => { const r = M.rows.find(x => x.id === id); if (r && [1, 2, 3].some(t => MDS.expr.isNumber(r.cells[t]))) out.reality.push(["r", `The ${r.label} row is typed in, not calculated. Outputs must come from the drivers.`]); });
   sc.targets.forEach(t => {
-    if (t.type === "margin" && V.margin) out.targets.push([V.margin[3] >= t.min ? "g" : "r", `EBITDA margin Year 3 ${MDS.pc(V.margin[3])} vs target ${MDS.pc(t.min, 0)}`]);
-    if ((t.type === "grrAll" || t.type === "grr3") && V.grr) { const v = t.type === "grrAll" ? Math.min(V.grr[1], V.grr[2], V.grr[3]) : V.grr[3]; out.targets.push([v >= t.min - 1e-9 ? "g" : "r", `Gross retention ${t.type === "grrAll" ? "(lowest year)" : "Year 3"} ${MDS.pc(v)} vs target ${MDS.pc(t.min, 0)}`]); }
-    if (t.type === "ai" && V.ai_share) out.targets.push([V.ai_share[3] >= t.min ? "g" : "r", `AI share Year 3 ${MDS.pc(V.ai_share[3])} vs target ${MDS.pc(t.min, 0)}`]);
+    if (t.type === "margin") out.targets.push([margin[3] >= t.min ? "g" : "r", `EBITDA margin Year 3 ${isFinite(margin[3]) ? MDS.pc(margin[3]) : "n/a"} vs target ${MDS.pc(t.min, 0)} (EBITDA ÷ revenue)`]);
+    if (t.type === "grrAll" || t.type === "grr3") { const v = t.type === "grrAll" ? Math.min(grr[1], grr[2], grr[3]) : grr[3]; out.targets.push([v >= t.min - 1e-9 ? "g" : "r", `Gross retention ${t.type === "grrAll" ? "(lowest year)" : "Year 3"} ${isFinite(v) ? MDS.pc(v) : "n/a"} vs target ${MDS.pc(t.min, 0)} (1 − churn)`]); }
+    if (t.type === "ai") out.targets.push([aiShare[3] >= t.min ? "g" : "r", `AI share Year 3 ${MDS.pc(aiShare[3] || 0)} vs target ${MDS.pc(t.min, 0)} (AI revenue ÷ revenue)`]);
   });
-  void p;
   const pts = (arr, max, per) => Math.max(0, max - arr.filter(x => x[0] === "r").length * per - arr.filter(x => x[0] === "w").length * (per / 3));
   const share = out.targets.length ? out.targets.filter(x => x[0] === "g").length / out.targets.length : 0;
   const reds = out.reality.filter(x => x[0] === "r").length;
@@ -225,7 +227,9 @@ MDS.tests.model = (sc, el) => {
     const [i, t] = c.split(":").map(Number), r = M.rows[i], key = r.id + ":" + t, v = e.target.value.trim().replace(/^=/, "");
     if (M.active === "Base") r.cells[t] = v === "" ? "0" : v;
     else { const o = M.scen[M.active]; if (v === "" || v === r.cells[t]) delete o[key]; else o[key] = v; }
-    save(); draw();
+    save();
+    if (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest("button") && el.contains(e.relatedTarget)) return;
+    draw();
   });
   el.addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;

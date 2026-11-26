@@ -3,5 +3,7 @@ WORKDIR /srv
 RUN pip install --no-cache-dir "anthropic>=2.14,<3"
 COPY app/ app/
 COPY server.py .
+RUN useradd --create-home --uid 10001 mdsim
+USER mdsim
 EXPOSE 8080
 CMD ["python3", "server.py", "--port", "8080"]

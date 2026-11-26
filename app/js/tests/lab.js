@@ -83,7 +83,7 @@ MDS.tests.lab = (sc, el) => {
   MDS.$$("[data-case]", el).forEach(b => b.onclick = () => {
     caseView = b.dataset.case; MDS.$$("[data-case]", el).forEach(x => x.setAttribute("aria-pressed", x === b)); render();
   });
-  MDS.$("#reset", el).onclick = () => { MDS.state.lab[sc.id] = Object.assign({}, D); MDS.save(); MDS.tests.lab(sc, el); };
+  MDS.$("#reset", el).onclick = () => { MDS.state.lab[sc.id] = Object.assign({}, D); MDS.save(); MDS.route(); };
   MDS.$("#submit", el).onclick = () => {
     const s = MDS.labScore(sc, L);
     MDS.setScore(sc.id, "lab", s.total);

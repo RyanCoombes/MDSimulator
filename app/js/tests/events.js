@@ -31,7 +31,7 @@ MDS.tests.events = (sc, el) => {
     const judgement = total / (order.length * 3) * 80;
     const health = MDS.clamp(((m.founder + m.team + m.cust + m.delivery) / 4 - 40) / 30 * 20, 0, 20);
     const score = Math.round(judgement + health);
-    MDS.setScore(sc.id, "events", score);
+    MDS.setScore(sc.id, "events", score, "first");
     const [g, cls] = MDS.grade(score);
     el.innerHTML = `<div class="stack"><div class="panel">${meters()}</div><div class="panel">
       <div class="row" style="gap:16px"><div class="bigscore">${score}</div><span class="pill ${cls === "pos" ? "ok" : "no"}">${g}</span></div>

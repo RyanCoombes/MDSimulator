@@ -82,7 +82,7 @@ MDS.home = view => {
           <div class="cc-top"><div><div class="diff eyebrow">${MDS.esc(sc.difficulty)}</div><h2 style="margin-top:4px">${MDS.esc(sc.name)}</h2></div>${MDS.ring(st.avg != null ? st.avg : st.done / st.total * 100, st.avg != null ? st.avg : "–")}</div>
           <div class="dim small">${MDS.esc(sc.tagline)}</div><div class="small"><strong>Focus:</strong> ${MDS.esc(sc.focus)}</div>
           <div class="phasebars">${bars}</div>
-          <div class="row"><a class="btn" href="#${id}-${st.done ? "exec" : "room"}">${st.done ? "Continue" : "Open case"}</a><a class="btn ghost" href="#${id}-day">A day in the life</a></div></div>`;
+          <div class="row"><a class="btn" href="#${id}-${st.done ? (MDS.TESTS.find(t => t.scored && MDS.getScore(id, t.id) == null) || { id: "room" }).id : "room"}">${st.done ? "Continue" : "Open case"}</a><a class="btn ghost" href="#${id}-day">A day in the life</a></div></div>`;
       }).join("")}
         <div class="panel casecard">
           <div class="cc-top"><div><div class="diff eyebrow">Real cases</div><h2 style="margin-top:4px">Case library</h2></div>${MDS.ring(MDS.getScore("global", "library") || 0, MDS.getScore("global", "library") != null ? MDS.getScore("global", "library") : "–")}</div>

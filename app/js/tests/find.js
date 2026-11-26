@@ -20,7 +20,7 @@ MDS.tests.find = (sc, el) => {
     const picks = inputs.filter(i => i.checked).map(i => i.value);
     const pts = { good: 100 / 3, mid: 12, bad: 0 };
     const score = picks.reduce((a, id) => a + pts[sc.finder.find(o => o.id === id).v], 0);
-    MDS.setScore(sc.id, "find", score);
+    MDS.setScore(sc.id, "find", score, "first");
     inputs.forEach(i => { i.disabled = true; const o = sc.finder.find(x => x.id === i.value); i.closest(".opt").classList.add(o.v === "good" ? "right" : o.v === "bad" ? "wrong" : "opt"); });
     const [g, cls] = MDS.grade(score);
     const res = MDS.$("#res", el); res.hidden = false;

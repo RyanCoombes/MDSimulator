@@ -12,7 +12,8 @@ MDS.data = sc => {
   const wpick = (arr, key = "w") => { const t = arr.reduce((a, x) => a + x[key], 0); let u = r() * t; for (const x of arr) { u -= x[key]; if (u <= 0) return x; } return arr[arr.length - 1]; };
   const cl = (x, a, b) => Math.max(a, Math.min(b, x));
   const r1 = x => Math.round(x * 10) / 10;
-  const person = () => `${pick(MDS.FIRST)} ${pick(MDS.LAST)}`;
+  const people = new Set();
+  const person = () => { let n, k = 0; do { n = `${pick(MDS.FIRST)} ${pick(MDS.LAST)}`; } while (people.has(n) && ++k < 50); people.add(n); return n; };
 
   /* ---------- customers ---------- */
   const used = new Set();
@@ -35,9 +36,11 @@ MDS.data = sc => {
   // reconcile: legacy share of ARR, top-3 concentration, total recurring
   const sum = (a, f) => a.reduce((x, y) => x + f(y), 0);
   const scaleGroup = (grp, rest, share, total) => { const a = share * total / sum(grp, c => c.arr), b = (1 - share) * total / sum(rest, c => c.arr); grp.forEach(c => { c.arr *= a; c.list *= a; }); rest.forEach(c => { c.arr *= b; c.list *= b; }); };
-  scaleGroup(cust.filter(c => c.legacy === "Yes"), cust.filter(c => c.legacy === "No"), B.legacyShare, B.recurring);
-  const byArr = cust.slice().sort((a, b) => b.arr - a.arr);
-  scaleGroup(byArr.slice(0, 3), byArr.slice(3), D.top3, B.recurring);
+  for (let it = 0; it < 6; it++) {
+    const byArr = cust.slice().sort((a, b) => b.arr - a.arr);
+    scaleGroup(byArr.slice(0, 3), byArr.slice(3), D.top3, B.recurring);
+    scaleGroup(cust.filter(c => c.legacy === "Yes"), cust.filter(c => c.legacy === "No"), B.legacyShare, B.recurring);
+  }
   const T = D.tickets, hT = sum(cust, c => c.howto), oT = sum(cust, c => c.other);
   cust.forEach((c, i) => {
     c.id = "C" + String(i + 1).padStart(3, "0");
@@ -54,7 +57,8 @@ MDS.data = sc => {
   const reasonList = D.churnReasons.flatMap(x => Array(Math.max(1, Math.round(x.w / W * D.churnedN))).fill(x));
   for (let i = 0; i < reasonList.length; i++) {
     const reason = reasonList[i];
-    churned.push({ name: D.custName(r), segment: r() < 0.7 ? "Small" : "Medium", arr_lost: 0.8 + 0.4 * r(), reason: reason.r,
+    let cn; do { cn = D.custName(r); } while (used.has(cn)); used.add(cn);
+    churned.push({ name: cn, segment: r() < 0.7 ? "Small" : "Medium", arr_lost: 0.8 + 0.4 * r(), reason: reason.r,
       onboarding: r() < reason.pA ? D.onboard.a : D.onboard.b, years: 1 + Math.floor(r() * 9), month: pick(MDS.MONTHS), last_contact_days: Math.round(reason.contact * (0.6 + 0.8 * r())) });
   }
   const cs = lost / sum(churned, c => c.arr_lost); churned.forEach(c => { c.arr_lost = r1(c.arr_lost * cs); });

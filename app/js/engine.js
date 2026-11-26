@@ -180,15 +180,22 @@ MDS.people = (sc, L, m) => {
 MDS.targetChecks = (sc, m, p, relax) => sc.targets.map(t0 => {
   const ys = m.yrs.slice(1), y3 = m.yrs[3];
   const t = relax ? Object.assign({}, t0, { min: t0.type === "margin" ? t0.min - 0.08 : t0.type.startsWith("grr") ? t0.min - 0.02 : t0.type === "ai" ? t0.min / 2 : t0.type === "founder" ? t0.min - 5 : t0.min }) : t0;
-  if (t.type === "margin") return { label: `EBITDA margin in Year 3 ≥ ${MDS.pc(t.min, 0)}`, ok: y3.margin >= t.min, val: MDS.pc(y3.margin) };
-  if (t.type === "grrAll") { const v = Math.min(...ys.map(y => y.grr)); return { label: `Gross retention ≥ ${MDS.pc(t.min, 0)} every year`, ok: v >= t.min - 1e-9, val: MDS.pc(v) }; }
-  if (t.type === "grr3") return { label: `Gross retention in Year 3 ≥ ${MDS.pc(t.min, 0)}`, ok: y3.grr >= t.min - 1e-9, val: MDS.pc(y3.grr) };
-  if (t.type === "ai") return { label: `AI revenue ≥ ${MDS.pc(t.min, 0)} of revenue in Year 3`, ok: y3.aiShare >= t.min, val: MDS.pc(y3.aiShare) };
-  if (t.type === "founder") return { label: `${sc.people.founderLabel} trust ≥ ${t.min}`, ok: p.founder >= t.min, val: p.founder };
-  if (t.type === "growth") { const g = Math.pow(y3.rev / m.yrs[0].rev, 1 / 3) - 1; return { label: `Revenue growth ≥ ${MDS.pc(t.min, 0)} a year`, ok: g >= t.min, val: MDS.pc(g) }; }
-  if (t.type === "ebitda1") return { label: `Year 1 EBITDA ≥ ${MDS.k(t.min)} (no deeper dip)`, ok: m.yrs[1].ebitda >= t.min, val: MDS.k(m.yrs[1].ebitda) };
-  return { label: t.type, ok: false, val: "" };
+  const r = (label, v, val) => ({ type: t.type, label, v, min: t.min, ok: v >= t.min - 1e-9, val });
+  if (t.type === "margin") return r(`EBITDA margin in Year 3 ≥ ${MDS.pc(t.min, 0)}`, y3.margin, MDS.pc(y3.margin));
+  if (t.type === "grrAll") { const v = Math.min(...ys.map(y => y.grr)); return r(`Gross retention ≥ ${MDS.pc(t.min, 0)} every year`, v, MDS.pc(v)); }
+  if (t.type === "grr3") return r(`Gross retention in Year 3 ≥ ${MDS.pc(t.min, 0)}`, y3.grr, MDS.pc(y3.grr));
+  if (t.type === "ai") return r(`AI revenue ≥ ${MDS.pc(t.min, 0)} of revenue in Year 3`, y3.aiShare, MDS.pc(y3.aiShare));
+  if (t.type === "founder") return r(`${sc.people.founderLabel} trust ≥ ${t.min}`, p.founder, p.founder);
+  return { type: t.type, label: t.type, v: 0, min: 1, ok: false, val: "" };
 });
+
+/* Credit for a target: full when met; otherwise the share of the gap from doing nothing that the plan closes. */
+MDS.targetCredit = (t, b) => {
+  if (t.ok) return 1;
+  const base = b ? b.v : 0;
+  if (t.min <= base) return 0;
+  return MDS.clamp((t.v - base) / (t.min - base), 0, 1) * 0.8;
+};
 
 MDS.warnings = (sc, L, m, p) => {
   const w = [], y1 = m.yrs[1], y3 = m.yrs[3], D = MDS.defaults(sc), S = Object.assign({ upliftFree: 0.05 }, sc.base.sens || {});
@@ -201,6 +208,7 @@ MDS.warnings = (sc, L, m, p) => {
   if (m.burnout) w.push(["r", `A ${L.util}% utilisation target burns people out. You lose a consultant in Year 2 and pay to replace them.`]);
   if (y3.idle > 60) w.push(["w", `PS has about ${Math.round(y3.idle)} more billable days of capacity than customers will buy in Year 3. Achieved utilisation is ${MDS.pc(y3.utilReal, 0)}. Utilisation is a ratio: sell more days, or need fewer people.`]);
   if (L.foc < D.foc - 8) w.push(["w", "Cutting free days hard in Year 1 upsets customers used to them. Agree a write-off approval process instead of a ban."]);
+  if (L.util < D.util - 4) w.push(["w", `Lowering the utilisation target to ${L.util}% means paying for more idle consultant time. What problem does that solve?`]);
   if (L.foc > D.foc + 3) w.push(["w", "You're giving away more free days than today. That's margin walking out of the door. What's it buying you?"]);
   if (L.rate > 5) w.push(["w", `A ${L.rate}% day-rate rise means customers buy fewer days.`]);
   if (L.defl > 0 && !L.ttt) w.push(["w", "AI deflection without fixing onboarding automates the symptom. Support staff will read it as a threat to their jobs."]);
@@ -224,11 +232,15 @@ MDS.warnings = (sc, L, m, p) => {
 
 /* Plan score out of 100: base targets 40, downside resilience 20, people 20, realism 20. */
 MDS.labScore = (sc, L) => {
+  const D = MDS.defaults(sc);
   const m = MDS.model(sc, L), p = MDS.people(sc, L, m);
   const md = MDS.model(sc, L, { downside: true }), pd = MDS.people(sc, L, md);
+  const mb = MDS.model(sc, D), pb = MDS.people(sc, D, mb), mbd = MDS.model(sc, D, { downside: true }), pbd = MDS.people(sc, D, mbd);
   const tb = MDS.targetChecks(sc, m, p), td = MDS.targetChecks(sc, md, pd, true);
-  const base = 40 * tb.filter(t => t.ok).length / tb.length;
-  const downside = 20 * td.filter(t => t.ok).length / td.length;
+  const bb = MDS.targetChecks(sc, mb, pb), bd = MDS.targetChecks(sc, mbd, pbd, true);
+  const credit = (ts, bs) => ts.reduce((a, t, i) => a + MDS.targetCredit(t, bs[i]), 0) / ts.length;
+  const base = 40 * credit(tb, bb);
+  const downside = 20 * credit(td, bd);
   const avg = (p.founder + p.team + p.cust) / 3;
   const ppl = MDS.clamp((avg - 40) / 35 * 20, 0, 20);
   const w = MDS.warnings(sc, L, m, p);

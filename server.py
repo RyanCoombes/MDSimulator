@@ -38,6 +38,10 @@ _client = None
 _client_error = ""
 _usage = {"day": date.today().isoformat(), "count": 0}
 _lock = threading.Lock()
+_streams = threading.BoundedSemaphore(int(os.environ.get("MDSIM_MAX_STREAMS", "4")))
+_fails = {}  # ip -> [timestamps of failed passcode attempts]
+FAIL_WINDOW, FAIL_LIMIT = 600, 10
+AI_ALLOWED = True  # set in main(): AI is refused on an open bind without a passcode
 
 
 def get_client():
@@ -56,7 +60,12 @@ def get_client():
 
 def to_messages(inp):
     """Accept a prompt string or a list of {role, content} turns; merge same-role neighbours."""
-    turns = [{"role": "user", "content": inp}] if isinstance(inp, str) else list(inp)
+    if isinstance(inp, str):
+        turns = [{"role": "user", "content": inp}]
+    elif isinstance(inp, list) and all(isinstance(t, dict) for t in inp):
+        turns = inp
+    else:
+        raise ValueError("input must be a string or a list of {role, content} turns")
     out = []
     for t in turns:
         role, content = t.get("role"), str(t.get("content", ""))
@@ -88,17 +97,32 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _locked_out(self):
+        ip = self.client_address[0]
+        now = time.time()
+        with _lock:
+            recent = [t for t in _fails.get(ip, []) if now - t < FAIL_WINDOW]
+            _fails[ip] = recent
+            return len(recent) >= FAIL_LIMIT
+
     def _authorised(self):
         if not PASSCODE:
             return True
-        return hmac.compare_digest(self.headers.get("X-MDSim-Passcode", ""), PASSCODE)
+        given = self.headers.get("X-MDSim-Passcode", "").encode("utf-8", "replace")
+        ok = hmac.compare_digest(given, PASSCODE.encode("utf-8"))
+        if not ok and given:
+            with _lock:
+                _fails.setdefault(self.client_address[0], []).append(time.time())
+        return ok
 
     def do_GET(self):
         if self.path == "/api/ai/status":
-            client = get_client()
+            if self._locked_out():
+                return self._json(429, {"error": "rate_limited", "message": "Too many wrong passcodes. Try again later."})
+            client = get_client() if AI_ALLOWED else None
             return self._json(200, {
                 "available": client is not None,
-                "reason": _client_error,
+                "reason": _client_error if AI_ALLOWED else "AI is disabled: set MDSIM_PASSCODE when the server is reachable from other machines.",
                 "model": MODEL if client else None,
                 "passcode": bool(PASSCODE),
                 "authorised": self._authorised(),
@@ -108,11 +132,28 @@ class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):
         if self.path != "/api/ai/sample":
             return self._json(404, {"error": "not_found"})
+        if self._locked_out():
+            return self._json(429, {"error": "rate_limited", "message": "Too many wrong passcodes. Try again later."})
         if not self._authorised():
             return self._json(401, {"error": "not_granted", "message": "Wrong or missing passcode."})
-        client = get_client()
+        client = get_client() if AI_ALLOWED else None
         if client is None:
-            return self._json(503, {"error": "sampling_disabled", "message": _client_error})
+            return self._json(503, {"error": "sampling_disabled", "message": _client_error or "AI is disabled on this server."})
+        try:
+            length = int(self.headers.get("Content-Length", ""))
+        except ValueError:
+            return self._json(411, {"error": "invalid_request", "message": "Content-Length required."})
+        if length < 0 or length > MAX_INPUT_CHARS * 4:
+            return self._json(413, {"error": "prompt_too_large"})
+        try:
+            req = json.loads(self.rfile.read(length) or b"{}")
+            if not isinstance(req, dict):
+                raise ValueError("body must be a JSON object")
+            messages = to_messages(req.get("input"))
+            if sum(len(m["content"]) for m in messages) > MAX_INPUT_CHARS:
+                return self._json(413, {"error": "prompt_too_large"})
+        except (ValueError, UnicodeDecodeError) as exc:
+            return self._json(400, {"error": "invalid_request", "message": str(exc)})
         with _lock:
             today = date.today().isoformat()
             if _usage["day"] != today:
@@ -120,16 +161,14 @@ class Handler(SimpleHTTPRequestHandler):
             if _usage["count"] >= DAILY_LIMIT:
                 return self._json(429, {"error": "rate_limited", "message": "Daily AI limit reached on this server."})
             _usage["count"] += 1
+        if not _streams.acquire(blocking=False):
+            return self._json(429, {"error": "rate_limited", "message": "The server is busy. Try again in a moment."})
         try:
-            length = int(self.headers.get("Content-Length", "0"))
-            if length > MAX_INPUT_CHARS * 4:
-                return self._json(413, {"error": "prompt_too_large"})
-            req = json.loads(self.rfile.read(length) or b"{}")
-            messages = to_messages(req.get("input"))
-            if sum(len(m["content"]) for m in messages) > MAX_INPUT_CHARS:
-                return self._json(413, {"error": "prompt_too_large"})
-        except (ValueError, json.JSONDecodeError) as exc:
-            return self._json(400, {"error": "invalid_request", "message": str(exc)})
+            self._stream(client, req, messages)
+        finally:
+            _streams.release()
+
+    def _stream(self, client, req, messages):
 
         effort = EFFORT.get(req.get("modelTier") or "default", "medium")
         self.send_response(200)
@@ -175,10 +214,16 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8080)
+    ap.add_argument("--allow-open-ai", action="store_true", help="allow AI on a non-local bind without a passcode (not recommended)")
     args = ap.parse_args()
+    global AI_ALLOWED
+    local = args.host in ("127.0.0.1", "localhost", "::1")
+    AI_ALLOWED = bool(PASSCODE) or local or args.allow_open_ai
     get_client()
-    print(f"MD Simulator on http://{args.host}:{args.port}  ·  AI: {'on (' + MODEL + ')' if _client else 'off: ' + _client_error}")
-    if _client and not PASSCODE:
+    print(f"MD Simulator on http://{args.host}:{args.port}  ·  AI: {'on (' + MODEL + ')' if _client and AI_ALLOWED else 'off'}{'' if _client else ': ' + _client_error}")
+    if _client and not AI_ALLOWED:
+        print("AI is OFF: the server is reachable from other machines and no MDSIM_PASSCODE is set. Set one (recommended) or pass --allow-open-ai.")
+    elif _client and not PASSCODE:
         print("Warning: no MDSIM_PASSCODE set. Anyone who can reach this server can spend your API credit.")
     ThreadingHTTPServer((args.host, args.port), Handler).serve_forever()
 

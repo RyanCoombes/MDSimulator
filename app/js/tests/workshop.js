@@ -86,7 +86,7 @@ MDS.tests.workshop = (sc, el) => {
     if (agenda.includes("ice") && W.slot <= 180) extras.push(["mid", "A 15-minute icebreaker is a lot in a short decision session with people who already know each other."]);
     if (intimidating) extras.push(["mid", "Inviting your Portfolio Manager can make the founder perform rather than decide. Brief them before and after instead."]);
     score = Math.min(100, score);
-    MDS.setScore(sc.id, "workshop", score);
+    MDS.setScore(sc.id, "workshop", score, "first");
     const [g, cls] = MDS.grade(score);
     const res = MDS.$("#res", el); res.hidden = false;
     res.innerHTML = `<div class="row" style="gap:16px"><div class="bigscore">${score}</div><span class="pill ${cls === "pos" ? "ok" : "no"}">${g}</span></div>

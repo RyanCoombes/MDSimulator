@@ -16,7 +16,7 @@ sensitivities. It shows cause and effect, and it isn't a forecast of any real bu
 
 ## Tasks and tests
 
-Each case has ten tabs:
+Each case has thirteen tabs, grouped into Diagnose, Plan and Deliver. The main ones:
 
 1. **Brief**: the PM's brief and targets, profile, KPIs, P&L with drivers, interview notes.
 2. **Investigate**: raw datasets that reconcile to the P&L, with planted root causes.
@@ -55,7 +55,7 @@ The tabs are grouped into three phases: Diagnose, Plan and Deliver.
 Topics include ADKAR, Kotter, Bridges, the Operating Model Canvas, 7S, RAPID, RACI, the price waterfall,
 utilisation vs realisation, NRR/GRR, the Rule of 40, Theory of Constraints, DMAIC, OKRs, Cynefin and pre-mortems.
 
-Scores are kept per browser (localStorage). Nothing is sent anywhere.
+Scores are kept per browser (localStorage). Tasks whose answers are revealed after marking count your first attempt; later runs are practice (Settings → Reset all progress to start again). Nothing leaves the browser unless you use the AI features, which send your conversation text to Claude (via claude.ai or your own server).
 
 ## AI features (optional)
 

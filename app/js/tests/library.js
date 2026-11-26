@@ -34,7 +34,7 @@ MDS.tests.library = el => {
     const b = e.target.closest("[data-c]"); if (!b || b.disabled) return;
     st[b.dataset.c] = +b.dataset.i;
     const done = C.filter(c => st[c.id] != null);
-    MDS.setScore("global", "library", done.filter(c => st[c.id] === c.decision.a).length / C.length * 100);
+    const sc0 = MDS.state.scores.global = MDS.state.scores.global || {}; sc0.library = Math.round(done.filter(c => st[c.id] === c.decision.a).length / C.length * 100);
     MDS.save();
     const y = window.scrollY; draw(); window.scrollTo(0, y);
   });

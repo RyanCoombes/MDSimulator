@@ -5,6 +5,7 @@ MDS.tests.plan = (sc, el) => {
   const PH = [["", "Unplaced"], ["w1", "Weeks 1–2"], ["w2", "Weeks 3–6"], ["w3", "Weeks 7–10"], ["w4", "Weeks 11–14"], ["later", "After day 100"], ["no", "Not doing"]];
   const ORD = { "": 99, w1: 1, w2: 2, w3: 3, w4: 4, later: 5, no: 99 };
   const OWN = ["You", "GM", "Functional lead", "Portfolio Manager"];
+  const STRICT = ["letters", "supplier", "meet", "keyppl", "union", "dpo"];
   const st = (MDS.state.plans = MDS.state.plans || {})[sc.id] = (MDS.state.plans || {})[sc.id] || {};
   const selS = "font:inherit;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)";
   el.innerHTML = `<div class="stack">
@@ -35,9 +36,9 @@ MDS.tests.plan = (sc, el) => {
       max += 3;
       if (!p) { fb.push(["r", "Not placed."]); ok = false; }
       else if (best && best.includes(p)) got += 2;
-      else if (best && p !== "no" && best.some(b => Math.abs(ORD[b] - ORD[p]) === 1)) { got += 1; fb.push(["w", `Close. Better in ${best.map(b => PH.find(x => x[0] === b)[1]).join(" or ")}.`]); }
+      else if (best && p !== "no" && !STRICT.includes(a.id) && best.some(b => Math.abs(ORD[b] - ORD[p]) === 1)) { got += 1; fb.push(["w", `Close. Better in ${best.map(b => PH.find(x => x[0] === b)[1]).join(" or ")}.`]); }
       else { fb.push(["r", `Better in ${best.map(b => PH.find(x => x[0] === b)[1]).join(" or ")}.`]); ok = false; }
-      (a.after || []).forEach(d => { const pd = ph(d); if (p && p !== "no" && (pd === "no" || !pd || ORD[pd] > ORD[p] || (ORD[pd] === ORD[p] && (p === "w1" || a.strict) && d !== "meet"))) { got -= 1; fb.push(["r", `Depends on "${acts.find(x => x.id === d).t}", which isn't done first.`]); ok = false; } });
+      (a.after || []).forEach(d => { const pd = ph(d); if (p && p !== "no" && (pd === "no" || !pd || ORD[pd] > ORD[p] || (ORD[pd] === ORD[p] && !(a.sameOk || []).includes(d) && d !== "meet"))) { got -= 1; fb.push(["r", `Depends on "${acts.find(x => x.id === d).t}", which isn't done first.`]); ok = false; } });
       (a.before || []).forEach(d => { const pd = ph(d); if (pd && pd !== "no" && (!p || p === "no" || ORD[p] >= ORD[pd])) { got -= 1; fb.push(["r", `Must happen before "${acts.find(x => x.id === d).t}".`]); ok = false; } });
       if (p && p !== "no") { if (a.owner.includes(ow(a.id))) got += 1; else { fb.push(["w", ow(a.id) ? `Owner: better ${a.owner.join(" or ")}.` : "No owner."]); } }
       else if (p === "no" && (best || []).includes("no")) got += 1;
@@ -47,7 +48,7 @@ MDS.tests.plan = (sc, el) => {
     ["w1", "w2", "w3", "w4"].forEach(p => { const n = acts.filter(a => ph(a.id) === p && ow(a.id) === "You").length; if (n > 4) { got -= (n - 4) * 2; notes.push(["r", `${PH.find(x => x[0] === p)[1]}: you personally own ${n} activities. You're one person: delegate to the GM and functional leads.`]); } });
     ["meet", "baseline", "keyppl", "pack", "comms"].forEach(id => { if (ph(id) === "no") { got -= 4; notes.push(["r", `Skipping "${acts.find(x => x.id === id).t}" is a fundamental gap.`]); } });
     const score = MDS.clamp(Math.round(got / max * 100), 0, 100);
-    MDS.setScore(sc.id, "plan", score);
+    MDS.setScore(sc.id, "plan", score, "first");
     const [g, cls] = MDS.grade(score);
     MDS.$("#res", el).innerHTML = `<div class="row" style="margin-top:12px;gap:16px"><div class="bigscore">${score}</div><span class="pill ${cls === "pos" ? "ok" : "no"}">${g}</span><span class="small dim">Feedback is shown under each activity.</span></div>` +
       (notes.length ? `<ul class="warns" style="margin-top:10px">${notes.map(([c, t]) => `<li class="${c}">${MDS.esc(t)}</li>`).join("")}</ul>` : "");

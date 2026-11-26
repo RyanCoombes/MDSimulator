@@ -12,7 +12,7 @@
     { id: "scope", t: "Rule: no fixed-price deal without PS scoping sign-off", best: ["w1", "w2"], owner: ["GM"], why: "Cheap, fast and it stops the overrun leak at source: a classic quick win." },
     { id: "deal", t: "Discount approval matrix (deal desk)", best: ["w2", "w3"], after: ["baseline"], owner: ["GM"], why: "Governance with an owner. Introduce after you know where discounts leak." },
     { id: "princ", t: "Agree pricing principles and uplift with the founder", best: ["w2"], after: ["baseline"], owner: ["GM", "You"], why: "The founder must own the price message. Agree principles before any letter goes out." },
-    { id: "letters", t: "Send renewal price-change letters", after: ["princ"], owner: ["GM", "Functional lead"], why: "Timing is set by renewal dates and notice periods in the contracts." },
+    { id: "letters", t: "Send renewal price-change letters", after: ["princ"], sameOk: ["princ"], owner: ["GM", "Functional lead"], why: "Timing is set by renewal dates and notice periods in the contracts." },
     { id: "rnd", t: "R&D portfolio review with the founder (including the pet project)", best: ["w2", "w3"], after: ["baseline"], owner: ["GM", "You"], why: "Use the data (requests, contracted revenue, months running). Let the founder reach the conclusion." },
     { id: "supplier", t: "Serve notice or renegotiate the largest royalty or supplier contract", owner: ["You", "GM"], why: "Notice periods are hard deadlines. Miss one and you're locked in for another term." },
     { id: "pm1", t: "First update to the Portfolio Manager: findings and draft plan", best: ["w2", "w3"], owner: ["You"], why: "Early, honest, evidence-based. No surprises later." },
@@ -23,8 +23,8 @@
     { id: "office", t: "Move to a smaller office", best: ["no", "later"], owner: ["GM"], why: "Low value and a morale hit during change. Not a 100-day priority." }
   ];
   const H = MDS.scenarios.harbour, N = MDS.scenarios.nordline, Q = MDS.scenarios.quill;
-  H.plan = { start: "1 December 2026", activities: common.map(a => ({ ...a })), letters: ["w2"], lettersWhy: "42% of ARR renews in April. Housing associations need about 90 days' notice, so letters must land in weeks 3–6 (by early January) or you lose a full year of uplift.",
-    supplier: ["w1"], supplierWhy: "The ReportCo contract (£190k, 12% uplift, auto-renews for 3 years) needs 120 days' notice before April 2027. That's this week. Serve protective notice now and negotiate after.",
+  H.plan = { start: "1 December 2026", activities: common.map(a => ({ ...a })), letters: ["w2"], lettersWhy: "Almost half of ARR renews in April. Housing associations need about 90 days' notice (by 1 January), so letters must go in weeks 3–6, straight after the pricing principles are agreed, or you lose a full year of uplift.",
+    supplier: ["w1"], supplierWhy: "The ReportCo contract (£190k, 12% uplift, auto-renews for 3 years) renews on 15 April 2027 and needs 120 days' notice: by 16 December. Serve protective notice in your first fortnight and negotiate after.",
     extra: [] };
   N.plan = { start: "1 November 2026", activities: common.map(a => ({ ...a })), letters: ["w4", "later"], lettersWhy: "Price rises are low priority here: churn is the problem, and the January renewals are already too close. Fix retention first. Send letters later, for next year's cycle.",
     supplier: ["w2", "w3"], supplierWhy: "The data centre contract auto-renews for 2 years with 180 days' notice before December 2027. You have until about June, but decide the migration plan first.",

@@ -209,7 +209,7 @@ MDS.tests.exec = (sc, el) => {
                 <button class="btn sm ghost" data-a="workshop" data-w="${w.id}" type="button" title="Co-design with the people it needs">Co-design · 3d</button>
                 ${w.coach ? "" : `<button class="btn sm ghost" data-a="coach" data-w="${w.id}" type="button" title="Build the owner's capability">Coach owner · 2d</button>`}
                 <button class="btn sm ghost" data-a="diy" data-w="${w.id}" type="button" title="Fast, but the business doesn't own it">Do it yourself · 6d</button>
-                <button class="btn sm ghost" data-a="pause" data-w="${w.id}" type="button">Pause</button>`}</div>`}
+                <button class="btn sm ghost" data-a="pause" data-w="${w.id}" type="button">Pause · 1d</button>`}</div>`}
             </article>`;
           }).join("")}
         </div>
@@ -233,7 +233,8 @@ MDS.tests.exec = (sc, el) => {
 
   const modal = (html) => {
     const m = document.createElement("div"); m.className = "modal"; m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`;
-    el.appendChild(m); requestAnimationFrame(() => m.classList.add("on")); return m;
+    Array.from(el.children).forEach(c => { c.inert = true; });
+    el.appendChild(m); requestAnimationFrame(() => { m.classList.add("on"); const f = m.querySelector("button"); if (f) f.focus(); }); return m;
   };
   const renderEvent = () => {
     const ev = g.event, d = eventDef(ev.id);
@@ -284,7 +285,7 @@ MDS.tests.exec = (sc, el) => {
       const sus = MDS.clamp(20 - g.diy * 4 - (g.fatigue > 60 ? 6 : 0) - (g.energy < 30 ? 8 : 0), 0, 20);
       return { value, pm, ppl, sus, total: Math.round(value + pm + ppl + sus) };
     })();
-    MDS.setScore(sc.id, "exec", S.total);
+    if (!g.scored) { g.scored = true; MDS.setScore(sc.id, "exec", S.total, "first"); MDS.save(); }
     const [gr, cls] = MDS.grade(S.total);
     const W = 520, Hh = 150, hist = g.history, maxR = Math.max(E.target, ...hist.map(h => h.run), 1);
     const sx = i => 30 + i * (W - 40) / Math.max(1, MDS.EXEC.MONTHS - 1), sy = v => 10 + (Hh - 30) * (1 - v / maxR), sy2 = v => 10 + (Hh - 30) * (1 - v / 100);
@@ -324,11 +325,11 @@ MDS.tests.exec = (sc, el) => {
     const b = e.target.closest("button"); if (!b || !el.contains(b) || b.closest(".modal")) return;
     const a = b.dataset.a, wid = b.dataset.w, pid = b.dataset.p, w = wid && g.ws[wid], d = wid && def(wid);
     if (b.id === "restart") { if (b.dataset.c !== "1") { b.dataset.c = "1"; b.textContent = "Click again to restart"; return; } g = store[sc.id] = MDS.newExec(sc); save(); render(); return; }
-    if (b.id === "endMonth") { simulate(); g.phase = "report"; save(); render(); return; }
+    if (b.id === "endMonth") { if (g.phase !== "act") return; simulate(); g.phase = "report"; save(); render(); return; }
     if (!a) return;
     if (a === "start" && spend(1, `Started "${d.name}".`)) { w.started = true; w.status = "On track"; g.fatigue += 3; if (g.support[w.owner] < 0) H.log(`${H.name(w.owner)} owns "${d.name}" but isn't on board yet.`, "w"); }
     else if (a === "resume") { w.pauseUntil = 0; H.log(`Resumed "${d.name}".`); }
-    else if (a === "pause") { w.pauseUntil = g.month + 1; g.fatigue = Math.max(0, g.fatigue - 3); H.log(`Paused "${d.name}" for a month.`); }
+    else if (a === "pause" && spend(1)) { w.pauseUntil = g.month + 1; H.log(`Paused "${d.name}" for a month. Fatigue eases at month end if it stays paused.`); }
     else if (a === "focus" && spend(4)) { w.bonus += 16; H.sup(w.owner, 2); H.log(`You pushed "${d.name}" with ${H.name(w.owner)}.`); }
     else if (a === "workshop" && spend(3)) { d.needs.forEach(s => H.sup(s, 9)); H.sup(w.owner, 5); w.bonus += 5; H.log(`Co-design session on "${d.name}" with ${d.needs.map(H.name).join(", ")}.`, "g"); }
     else if (a === "coach" && spend(2)) { w.coach = true; H.sup(w.owner, 5); H.log(`You coached ${H.name(w.owner)} on running "${d.name}".`); }

@@ -24,7 +24,7 @@
       { supplier: "Datadog", category: "Hosting", annual: 38, contract_end: "2027-06", auto_renew: "Yes", notice_days: 60, uplift: "7%", usage: "High", owner: "DevOps" },
       { supplier: "Cloudflare", category: "Hosting", annual: 12, contract_end: "2027-01", auto_renew: "Yes", notice_days: 30, uplift: "None", usage: "High", owner: "DevOps" },
       { supplier: "Colocation (legacy servers)", category: "Hosting", annual: 40, contract_end: "2027-02", auto_renew: "Yes", notice_days: 90, uplift: "5%", usage: "Low", owner: "DevOps" },
-      { supplier: "ReportCo embedded reporting", category: "Royalties", annual: 190, contract_end: "2027-04", auto_renew: "Yes (3 yrs)", notice_days: 120, uplift: "12%", usage: "High", owner: "CTO (vacant)" },
+      { supplier: "ReportCo embedded reporting", category: "Royalties", annual: 190, contract_end: "2027-04-15", auto_renew: "Yes (3 yrs)", notice_days: 120, uplift: "12%", usage: "High", owner: "CTO (vacant)" },
       { supplier: "Office lease, Leeds", category: "G&A", annual: 180, contract_end: "2029-12", auto_renew: "No", notice_days: 180, uplift: "RPI", usage: "Medium", owner: "CEO" },
       { supplier: "Salesforce", category: "G&A", annual: 46, contract_end: "2027-05", auto_renew: "Yes", notice_days: 30, uplift: "9%", usage: "Medium", owner: "Sales" },
       { supplier: "HubSpot", category: "G&A", annual: 22, contract_end: "2027-02", auto_renew: "Yes", notice_days: 30, uplift: "5%", usage: "Low", owner: "Marketing" },

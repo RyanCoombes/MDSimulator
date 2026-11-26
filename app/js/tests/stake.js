@@ -4,7 +4,7 @@ MDS.tests.stake = (sc, el) => {
   const st = (MDS.state.stake = MDS.state.stake || {})[sc.id] = (MDS.state.stake || {})[sc.id] || {};
   const APPROACH = { "High|High": "Manage closely", "High|Low": "Keep satisfied", "Low|High": "Keep informed", "Low|Low": "Monitor" };
   const selS = "font:inherit;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)";
-  const sel = (k, id, opts) => `<select data-k="${k}" data-id="${id}" style="${selS}" aria-label="${k}"><option value="">–</option>${opts.map(o => `<option ${st[id] && st[id][k] === o ? "selected" : ""}>${o}</option>`).join("")}</select>`;
+  const sel = (k, id, opts) => `<select data-k="${k}" data-id="${id}" style="${selS}" aria-label="${k} for ${MDS.esc((S.find(x => x.id === id) || {}).name || id)}"><option value="">–</option>${opts.map(o => `<option ${st[id] && st[id][k] === o ? "selected" : ""}>${o}</option>`).join("")}</select>`;
   el.innerHTML = `<div class="stack">
     <div class="panel"><h2>Stakeholder map</h2><p class="dim small" style="margin:0">Use the data room (interviews, headcount flight risk, customer concentration) to judge each stakeholder's power over the plan, their interest in it, and where they stand today. Then choose how you'll engage them.</p></div>
     <div class="panel"><div class="tblwrap"><table><thead><tr><th>Stakeholder</th><th>Power</th><th>Interest</th><th>Stance today</th><th>Approach</th></tr></thead><tbody>
@@ -28,7 +28,7 @@ MDS.tests.stake = (sc, el) => {
       MDS.$("#sf-" + s.id, el).innerHTML = (fb.length ? `<span class="neg">${MDS.esc(fb.join("; "))}.</span> ` : `<span class="pos">Spot on.</span> `) + `<span class="faint">${MDS.esc(s.why)}</span>`;
     });
     const score = Math.round(got / max * 100);
-    MDS.setScore(sc.id, "stake", score);
+    MDS.setScore(sc.id, "stake", score, "first");
     const [g, cls] = MDS.grade(score);
     MDS.$("#res", el).innerHTML = `<div class="row" style="margin-top:12px;gap:16px"><div class="bigscore">${score}</div><span class="pill ${cls === "pos" ? "ok" : "no"}">${g}</span><span class="small dim">Power isn't the same as job title. Key people and big customers can hold more power over the plan than their role suggests.</span></div>`;
   };

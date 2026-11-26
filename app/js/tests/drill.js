@@ -62,6 +62,8 @@ MDS.tests.drill = (sc, el) => {
     timer = setInterval(() => { const c = MDS.$("#clock", el); if (!c) return clearInterval(timer); const s = Math.floor((Date.now() - t0) / 1000); c.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }, 1000);
     MDS.$("#newset", el).onclick = () => { seed = Math.floor(Math.random() * 1e9); start(); };
     MDS.$("#mark", el).onclick = () => {
+      if (MDS.$("#mark", el).disabled) return;
+      MDS.$("#mark", el).disabled = true; MDS.$$("#qs input", el).forEach(x => { x.readOnly = true; });
       clearInterval(timer);
       let right = 0;
       qs.forEach((q, i) => {

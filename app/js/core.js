@@ -20,12 +20,24 @@ MDS.state = (() => { try { return JSON.parse(localStorage.getItem(STORE_KEY) || 
 MDS.state.scores = MDS.state.scores || {};
 MDS.state.lab = MDS.state.lab || {};
 MDS.save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(MDS.state)); } catch (e) {} };
-MDS.setScore = (key, test, score) => {
+/* mode "first": tasks whose answers are revealed after marking count the FIRST attempt; later runs are practice.
+   Otherwise the best score is kept. The latest attempt is always stored as <test>_last. */
+MDS.setScore = (key, test, score, mode) => {
   const s = MDS.state.scores[key] = MDS.state.scores[key] || {};
-  s[test] = Math.max(s[test] || 0, Math.round(score));
-  s[test + "_last"] = Math.round(score);
+  const v = Math.round(score), had = s[test] != null;
+  if (mode === "first") { if (!had) s[test] = v; }
+  else s[test] = Math.max(s[test] || 0, v);
+  s[test + "_last"] = v;
   MDS.save();
+  if (mode === "first" && had) MDS.toast(`Practice run: ${v}. Your first-attempt score of ${s[test]} stands.`);
+  return { official: s[test], practice: mode === "first" && had };
 };
+MDS.toast = t => {
+  const x = document.createElement("div"); x.className = "toast"; x.setAttribute("role", "status"); x.textContent = t;
+  document.body.appendChild(x); setTimeout(() => x.classList.add("on"), 10);
+  setTimeout(() => { x.classList.remove("on"); setTimeout(() => { if (x.parentNode) x.parentNode.removeChild(x); }, 300); }, 3200);
+};
+MDS.resetProgress = () => { ["scores", "lab", "exec", "days", "plans", "stake", "models", "findings", "invAns", "library", "notes"].forEach(k => { MDS.state[k] = undefined; }); MDS.state.scores = {}; MDS.state.lab = {}; MDS.save(); };
 MDS.getScore = (key, test) => (MDS.state.scores[key] || {})[test];
 
 MDS.grade = s => s >= 85 ? ["Hire", "pos"] : s >= 70 ? ["Strong", "pos"] : s >= 55 ? ["Borderline", ""] : ["Not yet", "neg"];

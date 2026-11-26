@@ -40,8 +40,10 @@ MDS.tests.workshop = (sc, el) => {
   MDS.$("#clear", el).onclick = () => { agenda = []; draw(); MDS.$("#res", el).hidden = true; };
   MDS.$("#assess", el).onclick = () => {
     const blocks = agenda.map(id => lib.find(x => x.id === id));
-    const timed = blocks.filter(b => b.mins > 0);
-    const total = timed.reduce((a, b) => a + b.mins, 0);
+    const allTimed = blocks.filter(b => b.mins > 0);
+    let clock = 0; const timed = allTimed.filter(b => { const ok = clock < W.slot; clock += b.mins; return ok; });
+    const cut = allTimed.length - timed.length;
+    const total = allTimed.reduce((a, b) => a + b.mins, 0);
     const idx = type => timed.findIndex(b => b.type === type);
     const people = W.people.filter(p => invited.has(p.id));
     const headcount = 1 + people.reduce((a, p) => a + (p.count || 1), 0);
@@ -77,6 +79,7 @@ MDS.tests.workshop = (sc, el) => {
     rule(10, mustMissing.length === 0 && headcount <= 10 && headcount >= 4, `The right people are in the room, and ${headcount} is a workable group.`, mustMissing.length ? `Missing people who must own the outcome: ${mustMissing.map(p => p.name).join(", ")}.` : headcount > 10 ? `${headcount} people is too many for a decision. Keep it to around 5–8 and consult the wider team separately.` : "Too few people to represent the parts of the business affected.");
     let score = R.reduce((a, r) => a + (r.ok ? r.pts : 0), 0);
     const extras = [];
+    if (cut) extras.unshift(["bad", `${cut} block${cut > 1 ? "s" : ""} would never happen: the time runs out first. Anything scheduled after the slot ends, typically the decision and the actions, doesn't count.`]);
     if (agenda.includes("premortem")) { score += 5; extras.push(["good", "The pre-mortem surfaces objections safely before you commit. Bonus +5."]); }
     if (agenda.includes("silent") && !agenda.includes("brain")) extras.push(["good", "Silent idea generation before discussion stops the most senior voice from anchoring the group."]);
     if (agenda.includes("deck")) extras.push(["mid", "A 45-minute deck in a workshop usually means the analysis should have been in the pre-read."]);

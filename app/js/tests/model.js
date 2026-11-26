@@ -119,6 +119,18 @@ MDS.modelChecks = (sc, M, acts) => {
   const tpl = MDS.modelTemplate();
   const untouched = tpl.every(t => { const r = M.rows.find(x => x.id === t.id); return r && r.cells.join("|") === t.cells.join("|"); }) && M.rows.length === tpl.length;
   if (untouched) out.reality = [["r", "This is the starting template, unchanged. It forecasts doing nothing. Put your plan into the assumptions."]];
+  // Structural honesty: core assumptions must exist, and outputs must be plausible whatever rows drive them.
+  const core = { uplift: "price uplift", churn: "churn", util: "PS utilisation", ai: "AI revenue", oneoff: "one-off costs" };
+  Object.entries(core).forEach(([t, name]) => { if (!tag(t)) out.reality.push(["r", `The ${name} assumption row has been removed. The PM can't see how you got there, so put it back (the template has it).`]); });
+  if (V.revenue && V.ebitda) {
+    const cagr = Math.pow(V.revenue[3] / V.revenue[0], 1 / 3) - 1, m3 = V.ebitda[3] / V.revenue[3];
+    if (cagr > 0.15) out.reality.push(["r", `Revenue grows ${MDS.pc(cagr, 0)} a year. For a mature vertical software business with no acquisitions in the plan, that needs extraordinary evidence.`]);
+    if (m3 > 0.45) out.reality.push(["r", `A Year 3 EBITDA margin of ${MDS.pc(m3, 0)} is above what even best-in-class vertical software usually sustains. Check for missing costs.`]);
+    const tagged = new Set(M.rows.filter(r => r.tag).map(r => r.id));
+    const revIds = MDS.expr.compile(M.rows.find(r => r.id === "revenue").cells[3]).ast;
+    const extra = revIds ? [...MDS.expr.ids(revIds)].filter(id => !["recurring", "ai_rev", "ps_rev", "other_rev"].includes(id) && !tagged.has(id) && M.rows.some(r => r.id === id)) : [];
+    if (extra.length) out.reality.push(["r", `Revenue includes ${extra.join(", ")}, which isn't tied to an evidence-checked assumption. Explain where it comes from.`]);
+  }
   if (!out.reality.length) out.reality.push(["g", "No evidence conflicts found in the tagged assumptions."]);
   // targets
   const p = { founder: 100 };
@@ -130,7 +142,9 @@ MDS.modelChecks = (sc, M, acts) => {
   void p;
   const pts = (arr, max, per) => Math.max(0, max - arr.filter(x => x[0] === "r").length * per - arr.filter(x => x[0] === "w").length * (per / 3));
   const share = out.targets.length ? out.targets.filter(x => x[0] === "g").length / out.targets.length : 0;
-  out.score = Math.round(pts(out.tie, 15, 7.5) + pts(out.structure, 15, 7.5) + (untouched ? 0 : pts(out.reality, 25, 6) * (0.4 + 0.6 * share)) + share * 45);
+  const reds = out.reality.filter(x => x[0] === "r").length;
+  if (reds && share > 0) out.targets.push(["w", "Targets reached on assumptions the evidence doesn't support count for less: fix the red flags first."]);
+  out.score = Math.round(pts(out.tie, 15, 7.5) + pts(out.structure, 15, 7.5) + (untouched ? 0 : pts(out.reality, 25, 6) * (0.4 + 0.6 * share)) + share * 45 * (reds ? Math.max(0.2, 1 - 0.3 * reds) : 1));
   out.base = base;
   return out;
 };

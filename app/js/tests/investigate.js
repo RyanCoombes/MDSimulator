@@ -7,47 +7,47 @@ MDS.investigationQs = sc => {
   const top = arr => arr.sort((a, b) => b[1] - a[1])[0];
   const nonLegacy = C.filter(c => c.legacy === "No");
   const reps = groupBy(nonLegacy, "rep", v => sum(v, c => c.discount) / v.length);
-  qs.push({ q: "Excluding legacy-priced customers, which salesperson's customers have the highest average discount off list?", kind: "choice", options: reps.map(x => x[0]), ans: top(reps.slice())[0],
+  qs.push({ ds: "customers", hint: "Filter legacy pricing = No, group by Sold by, average Discount vs list.", q: "Excluding legacy-priced customers, which salesperson's customers have the highest average discount off list?", kind: "choice", options: reps.map(x => x[0]), ans: top(reps.slice())[0],
     explain: `Group customers (legacy = No) by "Sold by" and average the discount. ${reps.map(([k, v]) => `${k} ${MDS.pc(v)}`).join(", ")}. One person drives the leakage: fix it with approval rules, not a blanket cap.` });
   const legShare = sum(C.filter(c => c.legacy === "Yes"), c => c.arr) / sum(C, c => c.arr);
-  qs.push({ q: "What share of recurring revenue (ARR) comes from customers on legacy pricing?", kind: "num", unit: "%", ans: legShare * 100, abs: 1,
+  qs.push({ ds: "customers", hint: "Group by Legacy pricing and sum ARR, then divide Yes by the total.", q: "What share of recurring revenue (ARR) comes from customers on legacy pricing?", kind: "num", unit: "%", ans: legShare * 100, abs: 1,
     explain: `Filter legacy = Yes and sum ARR, divide by total ARR: ${MDS.pc(legShare)}.` });
   const fx = p => p.pricing === "Fixed";
   const ov = rows => sum(rows, p => p.actual) / sum(rows, p => p.sold) - 1;
   const ovS = ov(P.filter(p => fx(p) && p.scoped_by === "Sales")), ovP = ov(P.filter(p => fx(p) && p.scoped_by === "PS"));
-  qs.push({ q: "For fixed-price projects scoped by Sales (without PS), what's the overall overrun: total days delivered ÷ total days sold − 1?", kind: "num", unit: "%", ans: ovS * 100, abs: 2,
+  qs.push({ ds: "projects", hint: "Filter Pricing = Fixed and Scoped by = Sales. Sum Days delivered and Days sold.", q: "For fixed-price projects scoped by Sales (without PS), what's the overall overrun: total days delivered ÷ total days sold − 1?", kind: "num", unit: "%", ans: ovS * 100, abs: 2,
     explain: `Sales-scoped: ${MDS.pc(ovS)}. PS-scoped: ${MDS.pc(ovP)}. The root cause of free days is who scopes the work, not how hard people work.` });
   const a = C.filter(c => c.onboarding === D.onboard.a), b = C.filter(c => c.onboarding === D.onboard.b);
   const ratio = (sum(a, c => c.howto) / a.length) / (sum(b, c => c.howto) / b.length);
-  qs.push({ q: `How many times more how-to tickets per customer do "${D.onboard.a}" customers raise compared with "${D.onboard.b}" customers?`, kind: "num", unit: "×", ans: ratio, abs: 0.15,
+  qs.push({ ds: "customers", hint: "Group by Onboarding and average How-to tickets.", q: `How many times more how-to tickets per customer do "${D.onboard.a}" customers raise compared with "${D.onboard.b}" customers?`, kind: "num", unit: "×", ans: ratio, abs: 0.15,
     explain: `Average how-to tickets per customer by onboarding: ${(sum(a, c => c.howto) / a.length).toFixed(1)} vs ${(sum(b, c => c.howto) / b.length).toFixed(1)} = ${ratio.toFixed(2)}×. Onboarding is the lever for support cost.` });
   const low = K.slice().sort((x, y) => x.utilisation - y.utilisation)[0];
-  qs.push({ q: "Which consultant has the lowest utilisation?", kind: "choice", options: K.map(k => k.name), ans: low.name,
+  qs.push({ ds: "consultants", hint: "Sort by Utilisation, then look at their Presales days.", q: "Which consultant has the lowest utilisation?", kind: "choice", options: K.map(k => k.name), ans: low.name,
     explain: `${low.name} (${low.grade}) is at ${MDS.pc(low.utilisation)}, but logs ${low.presales} presales days. Senior people supporting sales, unrecorded in the utilisation target, isn't idleness. Ask before you judge.` });
   const t3 = C.slice().sort((x, y) => y.arr - x.arr).slice(0, 3);
   const t3s = sum(t3, c => c.arr) / sum(C, c => c.arr);
-  qs.push({ q: "What share of ARR do the three largest customers account for?", kind: "num", unit: "%", ans: t3s * 100, abs: 0.6,
+  qs.push({ ds: "customers", hint: "Sort ARR from high to low. Add up the top three and divide by total ARR.", q: "What share of ARR do the three largest customers account for?", kind: "num", unit: "%", ans: t3s * 100, abs: 0.6,
     explain: `${t3.map(c => c.name).join(", ")}: ${MDS.pc(t3s)}. Any of them leaving over a price change is a material event.` });
   const upl = S.map(s => [s.supplier, s.annual * (parseFloat(s.uplift) / 100 || 0)]).filter(x => x[1] > 0);
   const u = top(upl.slice());
-  qs.push({ q: "Which supplier contract adds the most cost at its next renewal (annual cost × renewal uplift %)?", kind: "choice", options: S.map(s => s.supplier), ans: u[0],
+  qs.push({ ds: "suppliers", hint: "Add a calculated column (annual × uplift %) for contracts with a % uplift.", q: "Which supplier contract adds the most cost at its next renewal (annual cost × renewal uplift %)?", kind: "choice", options: S.map(s => s.supplier), ans: u[0],
     explain: `${u[0]}: about ${MDS.k(u[1])} a year more. Check its notice period: miss it and you're locked in.` });
   const months = groupBy(C, "renewal", v => sum(v, c => c.arr));
   const pm = top(months.slice());
-  qs.push({ q: "Which month has the most ARR coming up for renewal?", kind: "choice", options: MDS.MONTHS.slice(), ans: pm[0],
+  qs.push({ ds: "customers", hint: "Group by Renewal month and sum ARR.", q: "Which month has the most ARR coming up for renewal?", kind: "choice", options: MDS.MONTHS.slice(), ans: pm[0],
     explain: `${pm[0]} carries ${MDS.k(pm[1])} (${MDS.pc(pm[1] / sum(C, c => c.arr), 0)} of ARR). Price-change letters must land well before then, so this sets your pricing timetable.` });
   const rs = groupBy(X, "reason", v => sum(v, c => c.arr_lost));
   const tr = top(rs.slice());
-  qs.push({ q: "Measured by ARR lost, what's the most common exit reason among last year's churned customers?", kind: "choice", options: rs.map(x => x[0]), ans: tr[0],
+  qs.push({ ds: "churned", hint: "Group by Exit reason and sum ARR lost.", q: "Measured by ARR lost, what's the most common exit reason among last year's churned customers?", kind: "choice", options: rs.map(x => x[0]), ans: tr[0],
     explain: `${tr[0]}: ${MDS.k(tr[1])} of ${MDS.k(sum(X, c => c.arr_lost))} lost. ${rs.length > 2 ? "Price is rarely the main reason, which matters for your uplift plan." : ""}` });
   const waste = R.filter(e => e.type !== "Legacy" && e.contracted === 0 && e.requests < 5);
-  qs.push({ q: "How many R&D FTE work on non-legacy workstreams with no contracted revenue and fewer than 5 customer requests?", kind: "num", unit: "FTE", ans: sum(waste, e => e.fte), abs: 0.01,
+  qs.push({ ds: "rnd", hint: "Filter Type ≠ Legacy, Contracted revenue = 0, Customer requests < 5. Sum FTE.", q: "How many R&D FTE work on non-legacy workstreams with no contracted revenue and fewer than 5 customer requests?", kind: "num", unit: "FTE", ans: sum(waste, e => e.fte), abs: 0.01,
     explain: `${waste.map(e => `${e.epic} (${e.fte})`).join(", ")}. That's your redeployable capacity, if you can make the case.` });
   const focs = sum(P, p => p.foc) / sum(P, p => p.actual);
-  qs.push({ q: "Free days as a share of all PS days delivered last year?", kind: "num", unit: "%", ans: focs * 100, abs: 0.8,
+  qs.push({ ds: "projects", hint: "Sum Free days and Days delivered across all projects.", q: "Free days as a share of all PS days delivered last year?", kind: "num", unit: "%", ans: focs * 100, abs: 0.8,
     explain: `Total free days ÷ total delivered days = ${MDS.pc(focs)}.` });
   const lowUse = sum(S.filter(s => s.usage === "Low"), s => s.annual);
-  qs.push({ q: "How much annual supplier spend (£k) is on contracts flagged as low usage?", kind: "num", unit: "£k", ans: lowUse, abs: 1,
+  qs.push({ ds: "suppliers", hint: "Filter Usage = Low and sum Annual £k.", q: "How much annual supplier spend (£k) is on contracts flagged as low usage?", kind: "num", unit: "£k", ans: lowUse, abs: 1,
     explain: `Filter usage = Low and sum: ${MDS.k(lowUse)}. Not all of it is removable, but each one needs an owner and a decision before its notice date.` });
   return qs;
 };
@@ -62,16 +62,27 @@ MDS.tests.investigate = (sc, el) => {
   const OPS = ["=", "≠", ">", "≥", "<", "≤", "contains"];
   const AGG = ["count", "sum", "avg", "min", "max"];
 
-  el.innerHTML = `<div class="stack">
-    <div class="panel"><h2>Investigate the data room</h2><p class="dim small" style="margin:0">Filter, calculate, group and chart any dataset. Save anything useful to your findings notebook. Then answer the diagnostic questions below. You'll need the data to do it.</p></div>
-    <div class="row" id="dsTabs" role="tablist"></div>
-    <div class="panel" id="dsDesc"></div>
-    <div class="panel stack" id="qb"></div>
-    <div class="panel"><div class="row" style="justify-content:space-between"><h3 id="resTitle">Results</h3><div class="row"><button class="btn sm ghost" id="copyCsv" type="button">Copy as CSV</button><button class="btn sm" id="saveFind" type="button">Save as finding</button></div></div>
-      <div id="chartBox"></div><div class="tblwrap" style="max-height:520px;overflow:auto"><table id="res"></table></div><div class="small faint" id="resNote"></div></div>
-    <div class="panel"><h3>Findings notebook</h3><div id="nb" class="stack"></div></div>
-    <div class="panel"><h2>Diagnostic questions</h2><p class="small dim">Twelve questions a Portfolio Manager would ask in week two. Each needs a specific query.</p><div id="iq"></div>
-      <div class="row" style="margin-top:12px"><button class="btn" id="checkQ" type="button">Check answers</button></div><div id="iqRes"></div></div>
+  const targets = MDS.targetChecks(sc, MDS.model(sc, MDS.defaults(sc)), MDS.people(sc, MDS.defaults(sc), MDS.model(sc, MDS.defaults(sc))));
+  el.innerHTML = `<div class="invg">
+    <div class="stack" style="min-width:0">
+      <div class="panel"><h2>Investigate the data room</h2><p class="dim small" style="margin:0">Filter, calculate, group and chart any dataset. The questions stay pinned beside you, and your answers are kept if you switch tabs. Save what matters to your findings notebook, which also appears in <strong>Brief &amp; notes</strong>.</p></div>
+      <div class="row" id="dsTabs" role="tablist"></div>
+      <div class="panel" id="dsDesc"></div>
+      <div class="panel stack" id="qb"></div>
+      <div class="panel"><div class="row" style="justify-content:space-between"><h3 id="resTitle">Results</h3><div class="row"><button class="btn sm ghost" id="copyCsv" type="button">Copy as CSV</button><button class="btn sm" id="saveFind" type="button">Save as finding</button></div></div>
+        <div id="chartBox"></div><div class="tblwrap" style="max-height:520px;overflow:auto"><table id="res"></table></div><div class="small faint" id="resNote"></div></div>
+      <div class="panel"><h3>Findings notebook</h3><div id="nb" class="stack"></div></div>
+    </div>
+    <aside class="qside">
+      <div class="panel qpanel">
+        <div class="eyebrow">The goal</div>
+        <ul class="goal">${targets.map(t => `<li>${MDS.esc(t.label)}</li>`).join("")}</ul>
+        <div class="row" style="justify-content:space-between;margin-top:10px"><h3 style="margin:0">Diagnostic questions</h3><span class="small faint num" id="qprog"></span></div>
+        <p class="small dim" style="margin:4px 0 8px">What a Portfolio Manager would ask in week two. "Where to look" jumps to the right data, for partial credit.</p>
+        <div id="iq" class="iq"></div>
+        <div class="row" style="margin-top:10px"><button class="btn" id="checkQ" type="button">Check answers</button><button class="btn ghost sm" id="clearQ" type="button">Clear</button></div><div id="iqRes"></div>
+      </div>
+    </aside>
   </div>`;
 
   const cols = () => T[ds].cols.map(c => ({ key: c[0], label: c[1], type: c[2] })).concat(views[ds].calcs.map(c => ({ key: c.name, label: c.name, type: "num", calc: c.f })));
@@ -193,7 +204,7 @@ MDS.tests.investigate = (sc, el) => {
       box.innerHTML = `<label class="small" for="fTitle">Finding (one line)</label><input id="fTitle" style="width:100%;font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)" placeholder="e.g. One rep gives 36% average discount">
         <label class="small" for="fNote" style="display:block;margin-top:6px">So what for the plan?</label><input id="fNote" style="width:100%;font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)"><div class="row" style="margin-top:8px"><button class="btn sm" type="button" id="fOk">Save</button></div>`;
       MDS.$("#saveFind", el).closest(".panel").appendChild(box); MDS.$("#fTitle", el).focus();
-      MDS.$("#fOk", el).onclick = () => { nb.push({ title: MDS.$("#fTitle", el).value || "Untitled finding", note: MDS.$("#fNote", el).value, query: describe() }); MDS.save(); box.remove(); drawNB(); };
+      MDS.$("#fOk", el).onclick = () => { nb.push({ title: MDS.$("#fTitle", el).value || "Untitled finding", note: MDS.$("#fNote", el).value, query: describe() }); MDS.save(); box.remove(); drawNB(); if (MDS.refreshBrief) MDS.refreshBrief(); };
     }
     else if (b.id === "copyCsv") {
       const r = q, esc = x => /[",\n]/.test(String(x)) ? `"${String(x).replace(/"/g, '""')}"` : x;
@@ -213,24 +224,42 @@ MDS.tests.investigate = (sc, el) => {
     drawQB(); drawRes();
   });
 
-  // diagnostic questions
+  // diagnostic questions (answers and hints persist per case)
   const qs = MDS.investigationQs(sc);
-  MDS.$("#iq", el).innerHTML = qs.map((x, i) => `<div class="q"><div><div class="small faint num">Q${i + 1}</div>${MDS.esc(x.q)}<div class="working" id="iw${i}" hidden></div></div>
-    <div>${x.kind === "choice" ? `<label class="unit" for="ia${i}">Answer</label><select id="ia${i}" style="width:100%;font:inherit;padding:7px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)"><option value="">Choose…</option>${x.options.map(o => `<option>${MDS.esc(o)}</option>`).join("")}</select>`
-      : `<label class="unit" for="ia${i}">Answer (${x.unit})</label><input id="ia${i}" inputmode="decimal" autocomplete="off">`}</div></div>`).join("");
+  const QA = (MDS.state.invAns = MDS.state.invAns || {})[sc.id] = (MDS.state.invAns[sc.id] || { a: {}, h: {} });
+  const qsel = "width:100%;font:inherit;padding:6px 7px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)";
+  MDS.$("#iq", el).innerHTML = qs.map((x, i) => `<div class="qi" id="qi${i}"><div class="small"><span class="num faint">Q${i + 1}</span> ${MDS.esc(x.q)}</div>
+    <div class="row" style="gap:6px;margin-top:6px;flex-wrap:nowrap">${x.kind === "choice"
+      ? `<select id="ia${i}" aria-label="Answer to question ${i + 1}" style="${qsel}"><option value="">Choose…</option>${x.options.map(o => `<option ${QA.a[i] === o ? "selected" : ""}>${MDS.esc(o)}</option>`).join("")}</select>`
+      : `<input id="ia${i}" inputmode="decimal" autocomplete="off" aria-label="Answer to question ${i + 1} in ${x.unit}" placeholder="${x.unit}" value="${MDS.esc(QA.a[i] || "")}" style="${qsel};font-family:var(--mono)">`}
+      <button class="btn ghost sm" type="button" data-hint="${i}" style="white-space:nowrap">${QA.h[i] ? "Hint used" : "Where to look"}</button></div>
+    <div class="small faint" id="ih${i}" ${QA.h[i] ? "" : "hidden"}>${MDS.esc(x.hint)}</div>
+    <div class="working" id="iw${i}" hidden></div></div>`).join("");
+  const prog = () => { const n = qs.filter((x, i) => String(QA.a[i] || "").trim()).length; MDS.$("#qprog", el).textContent = `${n}/${qs.length} answered`; };
+  prog();
+  MDS.$("#iq", el).addEventListener("input", e => { const m = e.target.id.match(/^ia(\d+)$/); if (!m) return; QA.a[+m[1]] = e.target.value; MDS.save(); prog(); });
+  MDS.$("#iq", el).addEventListener("change", e => { const m = e.target.id.match(/^ia(\d+)$/); if (!m) return; QA.a[+m[1]] = e.target.value; MDS.save(); prog(); });
+  MDS.$("#iq", el).addEventListener("click", e => {
+    const b = e.target.closest("[data-hint]"); if (!b) return;
+    const i = +b.dataset.hint; QA.h[i] = true; MDS.save();
+    b.textContent = "Hint used"; MDS.$("#ih" + i, el).hidden = false;
+    ds = qs[i].ds; views[ds] = fresh(); all();
+    MDS.$("#dsTabs", el).scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  MDS.$("#clearQ", el).onclick = () => { QA.a = {}; QA.h = {}; MDS.save(); MDS.tests.investigate(sc, el); };
   MDS.$("#checkQ", el).onclick = () => {
-    let right = 0;
+    let pts = 0, right = 0;
     qs.forEach((x, i) => {
       const raw = MDS.$("#ia" + i, el).value;
       const ok = x.kind === "choice" ? raw === x.ans : Math.abs(parseFloat(String(raw).replace(/[£,%×x\s]/g, "")) - x.ans) <= x.abs;
-      if (ok) right++;
+      if (ok) { right++; pts += QA.h[i] ? 0.6 : 1; }
       const w = MDS.$("#iw" + i, el); w.hidden = false; w.className = "working fb " + (ok ? "good" : "bad");
-      w.innerHTML = `<strong>${ok ? "Correct." : `Answer: ${x.kind === "choice" ? MDS.esc(x.ans) : x.ans.toFixed(x.unit === "£k" ? 0 : 1) + (x.unit === "%" ? "%" : " " + x.unit)}.`}</strong> ${MDS.esc(x.explain)}`;
+      w.innerHTML = `<strong>${ok ? (QA.h[i] ? "Correct (with hint)." : "Correct.") : `Answer: ${x.kind === "choice" ? MDS.esc(x.ans) : x.ans.toFixed(x.unit === "£k" ? 0 : 1) + (x.unit === "%" ? "%" : " " + x.unit)}.`}</strong> ${MDS.esc(x.explain)}`;
     });
-    const score = right / qs.length * 100;
+    const score = pts / qs.length * 100, hints = Object.keys(QA.h).length;
     MDS.setScore(sc.id, "investigate", score);
     const [g, cls] = MDS.grade(score);
-    MDS.$("#iqRes", el).innerHTML = `<div class="row" style="margin-top:14px;gap:16px"><div class="bigscore">${right}/${qs.length}</div><span class="pill ${cls === "pos" ? "ok" : "no"}">${g}</span><span class="small dim">Save the findings that change your plan. You'll need them in the model and the 100-day plan.</span></div>`;
+    MDS.$("#iqRes", el).innerHTML = `<div class="row" style="margin-top:12px;gap:12px"><div class="bigscore" style="font-size:32px">${Math.round(score)}</div><span class="pill ${cls === "pos" ? "ok" : "no"}">${g}</span></div><div class="small dim">${right}/${qs.length} correct${hints ? `, ${hints} hint${hints > 1 ? "s" : ""} used` : ""}. Save the findings that change your plan: you'll need them for the model and the 100-day plan.</div>`;
   };
   all(); drawNB();
 };

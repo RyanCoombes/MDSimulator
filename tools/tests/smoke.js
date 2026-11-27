@@ -13,7 +13,7 @@ const check = (name, ok, extra = "") => { console.log(`${ok ? "PASS" : "FAIL"}  
   const info = await p.evaluate(() => ({ cases: MDS.order, tests: MDS.TESTS.map(t => t.id), studies: MDS.content.studies.map(s => ({ id: s.id, d: s.difficulty, first: s.company.split(/[ ,]/)[0] })) }));
 
   /* 1. every route renders */
-  const routes = ["", "frameworks", "library", "studies", "interview", "readiness"].concat(info.cases.flatMap(c => info.tests.map(t => `${c}-${t}`)));
+  const routes = ["", "frameworks", "library", "studies", "interview", "readiness", "engage"].concat(info.cases.flatMap(c => info.tests.map(t => `${c}-${t}`)));
   const blank = [];
   for (const r of routes) { await go(r); if ((await p.locator("#view").innerText()).trim().length < 40) blank.push(r); }
   check(`all ${routes.length} routes render`, !blank.length, blank.join(","));
@@ -163,9 +163,32 @@ const check = (name, ok, extra = "") => { console.log(`${ok ? "PASS" : "FAIL"}  
   await go("readiness");
   check("readiness shows five competencies", await p.locator("#view .ring").count() === 5);
 
+  /* 6b. open engagement: ask, download, report back */
+  await go("engage");
+  check("four engagements, easy to very hard", await p.locator("[data-e]").count() === 4);
+  await p.click('[data-e="sitewise"]'); await p.waitForTimeout(80);
+  check("nothing is handed over at the start", (await p.locator("#view").innerText()).includes("Nothing yet"));
+  for (const rq of ["crm", "pricelist", "ps", "i_fin", "cancellations"]) { await p.click(`[data-rq="${rq}"]`); await p.waitForTimeout(40); }
+  check("requests use up days", (await p.evaluate(() => MDS.state.engage.sitewise.days)) === 4);
+  const [dl] = await Promise.all([p.waitForEvent("download", { timeout: 5000 }).catch(() => null), p.click('[data-dl="crm"]')]);
+  check("a messy CSV downloads", !!dl && /sitewise-crm-customers\.csv/.test(dl.suggestedFilename()));
+  const sub = await p.evaluate(() => { const C = MDS.content.engagements.find(x => x.id === "sitewise"), S = MDS.state.engage.sitewise, G = MDS.engGen(C, S.seed), T = G.T;
+    return { nums: { live: T.live, arr: T.arr.toFixed(1), churn: T.churn.toFixed(1), legacyShare: T.legacyShare.toFixed(1), legacyGap: T.legacyGap.toFixed(1), foc: T.foc.toFixed(1) }, issues: T.issues,
+      file: MDS.csv.out([["Ref", "Customer", "Annual price GBP", "Status"]].concat(G.cust.map(c => [c.ref, c.name, c.gbp, c.status]))) }; });
+  for (const [k, v] of Object.entries(sub.nums)) await p.fill(`#en-${k}`, String(v));
+  await p.fill("#egPaste", sub.file); await p.locator("#egPaste").dispatchEvent("change");
+  for (const k of sub.issues) await p.check(`#ei-${k}`);
+  await p.fill("#egMemo", `We have ${sub.nums.live} live customers, recurring revenue of ${sub.nums.arr}k and gross churn of ${sub.nums.churn} percent. Legacy customers pay ${sub.nums.legacyGap}k below list. The CRM data had duplicate rows and stale statuses, so these figures rest on my cleaned file. First I would recommend a phased legacy price migration agreed with the founder, then approval for deep discounts, then a retention plan for subcontractors, and I would report progress to you monthly with the numbers behind it so that nothing arrives as a surprise.`);
+  await p.click("#egSubmit"); await p.click("#egSubmit"); await p.waitForTimeout(150);
+  const es = await p.evaluate(() => MDS.getScore("engage", "sitewise"));
+  check("correct findings score highly and the truth is revealed", es >= 95 && /what was really there/i.test(await p.locator("#egRes").innerText()), `score=${es}`);
+
   /* 7. phone width */
   await p.setViewportSize({ width: 390, height: 844 });
-  for (const r of [`${c0}-portfolio`, "readiness", "studies", "interview"]) { await go(r); const w = await p.evaluate(() => document.documentElement.scrollWidth); check(`no sideways scroll at phone width: ${r}`, w <= 392, `width=${w}`); }
+  await p.evaluate(() => { delete MDS.state.engage.kestrel; MDS.save(); });
+  await go("engage"); await p.click('[data-e="kestrel"]'); await p.click('[data-rq="crm"]'); await p.waitForTimeout(60);
+  check("no sideways scroll at phone width: an engagement", (await p.evaluate(() => document.documentElement.scrollWidth)) <= 392);
+  for (const r of [`${c0}-portfolio`, "readiness", "studies", "interview", "engage"]) { await go(r); const w = await p.evaluate(() => document.documentElement.scrollWidth); check(`no sideways scroll at phone width: ${r}`, w <= 392, `width=${w}`); }
 
   check("no page errors", !errs.length, errs.slice(0, 3).join(" | "));
   await b.close(); process.exit(fails ? 1 : 0);

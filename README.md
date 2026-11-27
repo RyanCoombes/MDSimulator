@@ -65,6 +65,8 @@ utilisation vs realisation, NRR/GRR, the Rule of 40, Theory of Constraints, DMAI
 
 **Leadership meeting** (in Conversations) puts three people in the room who disagree with each other. **Build the model** has a spreadsheet round trip: copy the actuals and rules into Excel or Sheets, build the do-nothing forecast there, paste the result back to check it. The **Lever lab** compares your plan with what the real companies in the studies achieved. The **Interview room** has a timed 40-minute case round on a real set of accounts.
 
+**Open engagements** (`#engage`) are four new companies, easy to very hard. You get a brief and a number of days, and nothing else. You choose what to ask for and who to talk to. Requests come back as CSV files with real problems (duplicates, euro prices, cancelled customers still marked live, mixed date formats, totals rows, names spelt differently between systems, CRM prices that are out of date), or turn out not to exist. You clean and analyse them in your own spreadsheet, then bring back six figures, a cleaned customer file (upload or paste), the three issues that matter and a findings memo. Everything is checked against the generated truth, with no AI needed. Records are regenerated on each new attempt. `node tools/tests/engage.test.js` proves the truth is recoverable from the files at every level.
+
 **AI is optional throughout.** Everything above works with no AI connected: documents and updates are marked by a rule-based checklist, the meeting has a scripted version and the case round has a written version. With AI connected you also get a critique of tone and judgement, a live meeting and a live interviewer. Only the one-to-one conversations and the three standard interview rounds need AI.
 
 **Stages carry forward.** Investigate, Stakeholders, the 100-day plan and the portfolio change how delivery starts: a clean baseline, warmer or colder sceptics, a more or less confident Portfolio Manager. A task you haven't attempted is neutral.
@@ -148,6 +150,10 @@ node tools/tests/smoke.js
 
 ```bash
 node tools/check_content.js
+```
+
+```bash
+node tools/tests/engage.test.js
 ```
 
 The smoke test needs Playwright with Chromium. It opens every screen, works every real company study, checks portfolio scoring, plays twelve months of delivery, and checks phone width. The content check flags multiple-choice questions where the best answer can be guessed from its length.

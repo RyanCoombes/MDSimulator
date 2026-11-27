@@ -1,6 +1,6 @@
 /* Readiness by competency: maps every score to the five things a Business Transformation Leader interview tests. */
 MDS.COMPETENCIES = [
-  { id: "fin", name: "Financial modelling and P&L diagnosis", tests: ["clean", "investigate", "drill", "model"], global: ["studies"], why: "Build the forecast yourself, with no finance team, and find the value in a P&L." },
+  { id: "fin", name: "Financial modelling and P&L diagnosis", tests: ["clean", "investigate", "drill", "model"], global: ["studies", "engage"], why: "Build the forecast yourself, with no finance team, and find the value in a P&L." },
   { id: "value", name: "Value creation levers: pricing, PS, R&D and AI", tests: ["find", "lab"], global: ["frameworks", "library"], why: "Know which levers move margin and retention, and what each one costs." },
   { id: "deliver", name: "Integration and transformation delivery", tests: ["portfolio", "plan", "exec", "events"], global: [], why: "Set up the programme, sequence it, keep it moving and report it honestly." },
   { id: "people", name: "Leading people through change", tests: ["stake", "workshop", "talk", "day"], global: [], why: "Win founders and teams over without formal authority." },
@@ -11,7 +11,7 @@ MDS.readiness = () => {
   return MDS.COMPETENCIES.map(c => {
     const items = [];
     MDS.order.forEach(id => c.tests.forEach(t => { const T = MDS.TESTS.find(x => x.id === t); items.push({ label: `${MDS.scenarios[id].name}: ${T.label}`, href: `#${id}-${t}`, score: MDS.getScore(id, t) }); }));
-    const GL = { studies: ["Real company studies", "#studies"], frameworks: ["Frameworks quiz", "#frameworks"], library: ["Case library", "#library"], interview: ["Mock interviews", "#interview"] };
+    const GL = { studies: ["Real company studies", "#studies"], frameworks: ["Frameworks quiz", "#frameworks"], library: ["Case library", "#library"], interview: ["Mock interviews", "#interview"], engage: ["Open engagements", "#engage"] };
     c.global.forEach(g => items.push({ label: GL[g][0], href: GL[g][1], score: MDS.getScore("global", g) }));
     const rated = (comp[c.id] || []), iv = rated.length ? rated.reduce((a, b) => a + b, 0) / rated.length * 20 : null;
     const done = items.filter(i => i.score != null), vals = done.map(i => i.score).concat(iv != null ? [iv] : []);

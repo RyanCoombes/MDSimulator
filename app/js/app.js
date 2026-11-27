@@ -38,6 +38,7 @@ MDS.route = () => {
   if (h === "interview") { MDS.brief(null); MDS.tests.interview(view); return; }
   if (h === "library") { MDS.brief(null); MDS.tests.library(view); return; }
   if (h === "studies") { MDS.brief(null); MDS.tests.studies(view); return; }
+  if (h === "engage") { MDS.brief(null); MDS.tests.engage(view); return; }
   if (h === "readiness") { MDS.brief(null); MDS.tests.readiness(view); return; }
   const [id, test] = h.split("-");
   const sc = MDS.scenarios[id];
@@ -89,6 +90,10 @@ MDS.home = view => {
           <div class="phasebars">${bars}</div>
           <div class="row"><a class="btn" href="#${id}-${st.done ? (MDS.TESTS.find(t => t.scored && MDS.getScore(id, t.id) == null) || { id: "room" }).id : "room"}">${st.done ? "Continue" : "Open case"}</a><a class="btn ghost" href="#${id}-day">A day in the life</a></div></div>`;
       }).join("")}
+        <div class="panel casecard">
+          <div class="cc-top"><div><div class="diff eyebrow">Nothing handed to you</div><h2 style="margin-top:4px">Open engagements</h2></div>${MDS.ring(MDS.getScore("global", "engage") || 0, MDS.getScore("global", "engage") != null ? MDS.getScore("global", "engage") : "–")}</div>
+          <div class="dim small">Four new companies, easy to very hard. A brief, a few days and no data room. Decide what to ask for, download the messy files, clean them in your own spreadsheet, and bring back figures, a cleaned file and a memo to be checked against the truth.</div>
+          <div><a class="btn" href="#engage">Take an engagement</a></div></div>
         <div class="panel casecard">
           <div class="cc-top"><div><div class="diff eyebrow">Real accounts</div><h2 style="margin-top:4px">Real company studies</h2></div>${MDS.ring(MDS.getScore("global", "studies") || 0, MDS.getScore("global", "studies") != null ? MDS.getScore("global", "studies") : "–")}</div>
           <div class="dim small">${(MDS.content.studies || []).length} real UK software companies, built from their accounts filed at Companies House. Identity hidden: work the numbers, read the signals, make the call, then see what happened. Easy, medium and hard.</div>

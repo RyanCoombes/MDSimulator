@@ -358,3 +358,20 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* ---------- company studies ---------- */
 .minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin-top:12px}
 .mini{margin:0;padding:8px 10px;border-radius:9px;background:var(--panel2)}
+
+/* initiative portfolio */
+.ws.pf{transition:border-color .15s} .ws.pf.on{border-color:var(--acc)}
+.pfgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px;margin-top:10px}
+.pfgrid label{display:flex;flex-direction:column;gap:4px;min-width:0} .pfgrid select,.pfgrid input{width:100%}
+.pffb:empty{display:none} .pffb{margin-top:8px;display:flex;flex-direction:column;gap:3px}
+.gantt{margin-top:10px;overflow-x:auto}
+.grow{display:grid;grid-template-columns:minmax(120px,220px) repeat(12,minmax(18px,1fr));gap:3px;align-items:center;margin-bottom:3px;min-width:420px}
+.grow>span{height:18px;border-radius:3px;text-align:center;font-size:11px;color:var(--faint)}
+.grow .gl{height:auto;text-align:left;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grow .gb{background:var(--acc)} .ghead>span,.gload>span{background:none}
+.gload .neg{color:var(--bad);font-weight:700} .gload .warnc{color:var(--warn);font-weight:700}
+.rdgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:4px 16px;margin-top:8px}
+.rdgrid a{display:flex;gap:8px;align-items:center;color:inherit;text-decoration:none;padding:3px 0} .rdgrid a b{margin-left:auto}
+.rdgrid a:hover{color:var(--acc)}
+.profile textarea{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.ws.pf{align-items:stretch}

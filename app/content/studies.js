@@ -136,7 +136,7 @@ MDS.content.studies = [
  },
  {
   "id": "onefile",
-  "company": "ONEFILE LTD",
+  "company": "Onefile Ltd",
   "number": "04404879",
   "sector": "Apprenticeship / learning e-portfolio software (UK education & training)",
   "owner": "Constellation Software UK Holdco Ltd (PSC since 26 Oct 2021); ultimate parent Constellation Software Inc.",
@@ -271,7 +271,7 @@ MDS.content.studies = [
  },
  {
   "id": "cultura-technologies",
-  "company": "CULTURA TECHNOLOGIES LTD",
+  "company": "Cultura Technologies Ltd",
   "number": "01250877",
   "sector": "Agribusiness / grain & feed trading ERP software",
   "owner": "Volaris Group UK Holdco Ltd (Constellation Software Inc. group)",
@@ -699,7 +699,7 @@ MDS.content.studies = [
  },
  {
   "id": "kinetic-solutions",
-  "company": "KINETIC SOLUTIONS LIMITED",
+  "company": "Kinetic Solutions Limited",
   "number": "03169474",
   "sector": "Student accommodation & conferencing software for higher education (also a Volaris acquisition platform)",
   "owner": "Volaris Group UK Holdco Limited (PSC since 26 Mar 2018); ultimate parent Constellation Software Inc.",
@@ -1106,7 +1106,7 @@ MDS.content.studies = [
  },
  {
   "id": "ssp-limited",
-  "company": "SSP LIMITED",
+  "company": "SSP Limited",
   "number": "04234499",
   "sector": "General insurance broker & insurer software and transaction services",
   "owner": "SSP Holdings Limited (immediate PSC); indirect parent SSP Midco 2 Limited is owned by Volaris Group UK Holdco Limited; ultimate parent Constellation Software Inc.",
@@ -1244,7 +1244,7 @@ MDS.content.studies = [
  },
  {
   "id": "amt-sybex",
-  "company": "AMT-SYBEX LIMITED",
+  "company": "AMT-SYBEX Limited",
   "number": "03036807",
   "sector": "Utilities / energy and aviation-leasing software and services (EAM mobility, meter/settlement systems, Leasepoint)",
   "owner": "Jonas Computing (UK) Limited (PSC since 1 Jan 2022; previously Capita International Limited); ultimate parent Constellation Software Inc.",

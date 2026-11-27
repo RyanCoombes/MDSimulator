@@ -16,7 +16,7 @@ sensitivities. It shows cause and effect, and it isn't a forecast of any real bu
 
 ## Tasks and tests
 
-Each case has thirteen tabs, grouped into Diagnose, Plan and Deliver. The main ones:
+Each case has fourteen tabs, grouped into Diagnose, Plan and Deliver. The main ones:
 
 1. **Brief**: the PM's brief and targets, profile, KPIs, P&L with drivers, interview notes.
 2. **Investigate**: raw datasets that reconcile to the P&L, with planted root causes.
@@ -54,6 +54,16 @@ The tabs are grouped into three phases: Diagnose, Plan and Deliver.
 **Frameworks and operating models** is a separate test, drawn from a bank of situational questions.
 Topics include ADKAR, Kotter, Bridges, the Operating Model Canvas, 7S, RAPID, RACI, the price waterfall,
 utilisation vs realisation, NRR/GRR, the Rule of 40, Theory of Constraints, DMAIC, OKRs, Cynefin and pre-mortems.
+
+**Initiative portfolio** (Plan phase) is where you set up the programme: choose which initiatives to charter, and give each an owner, a measure, a start month and a first stop-or-go review. Three of the candidates in each case don't belong. Whatever you submit is the plan that **Run the transformation** then plays.
+
+**Stages carry forward.** Investigate, Stakeholders, the 100-day plan and the portfolio change how delivery starts: a clean baseline, warmer or colder sceptics, a more or less confident Portfolio Manager. A task you haven't attempted is neutral.
+
+**Real company studies** are ten UK software companies built from accounts filed at Companies House, unnamed until the end. Workings are 40 points, your call 40 and your written reasoning 20 (marked by the AI coach, or by a basic check when AI is off). Contains public sector information licensed under the Open Government Licence v3.0. Rebuild with `python3 tools/build_studies.py cases.json`; names to hide before the reveal go in `tools/studies_redact.json`.
+
+**Lessons** include three on reading real accounts (adjusted vs cash profit, revenue per head, incremental margin). Those, and the Rule of 40, have an exercise on the real filed figures.
+
+**Interview room** has three rounds. Paste your CV and the job spec and the interviewers ask about your own experience; feedback rates five fixed competencies and lists the parts of the spec you didn't evidence. **Readiness** (`#readiness`) maps every score to those competencies.
 
 Scores are kept per browser (localStorage). Tasks whose answers are revealed after marking count your first attempt; later runs are practice (Settings → Reset all progress to start again). Nothing leaves the browser unless you use the AI features, which send your conversation text to Claude (via claude.ai or your own server).
 
@@ -115,6 +125,22 @@ To get a single self-contained HTML file (`dist/index.html`):
 ```bash
 python3 tools/build.py
 ```
+
+## Tests
+
+```bash
+python3 tools/build.py
+```
+
+```bash
+node tools/tests/smoke.js
+```
+
+```bash
+node tools/check_content.js
+```
+
+The smoke test needs Playwright with Chromium. It opens every screen, works every real company study, checks portfolio scoring, plays twelve months of delivery, and checks phone width. The content check flags multiple-choice questions where the best answer can be guessed from its length.
 
 ## Adding a case
 

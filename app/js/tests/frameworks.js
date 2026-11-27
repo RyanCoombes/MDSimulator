@@ -84,11 +84,38 @@ MDS.tests.frameworks = el => {
         <h3>Say it in an interview</h3><div class="say small">"${MDS.esc(l.say)}"</div>
       </article>
       <section class="panel" id="ex"></section>
+      ${(MDS.content.realEx || {})[id] ? `<section class="panel" id="exreal"></section>` : ""}
       ${qsFor(id).length ? `<div class="panel row" style="justify-content:space-between"><span class="small">${qsFor(id).length} test question${qsFor(id).length > 1 ? "s" : ""} use this lesson.</span><button class="btn sm" type="button" data-testl="${id}">Test yourself on ${MDS.esc(l.name)}</button></div>` : ""}
       ${l.related && l.related.length ? `<div class="small">Related: ${l.related.map(r => { const x = L.find(y => y.id === r); return x ? `<button type="button" class="linkbtn" data-l="${r}">${MDS.esc(x.name)}</button>` : ""; }).join(" · ")}</div>` : ""}
     </div>`;
     exercise(MDS.$("#ex", el), l);
+    if (MDS.$("#exreal", el)) realExercise(MDS.$("#exreal", el), l);
     window.scrollTo(0, 0);
+  };
+
+  /* ---------- the same idea on real filed accounts (Real company studies, unnamed, years before the decision only) ---------- */
+  const realExercise = (box, l) => {
+    const fn = MDS.content.realEx[l.id];
+    const pool = MDS.shuffle((MDS.content.studies || []).map(s => { const i = s.years.findIndex(y => y.fy === s.decision.as_of), g = fn(i >= 0 ? s.years.slice(0, i + 1) : s.years); return g && { s, g }; }).filter(Boolean), MDS.rng(Math.floor(Math.random() * 1e9)));
+    if (!pool.length) { box.hidden = true; return; }
+    const rd = (MDS.state.lessonsReal = MDS.state.lessonsReal || {});
+    let k = 0;
+    const fmt = v => v == null ? "–" : (v < 0 ? "−" : "") + Math.abs(Math.round(v)).toLocaleString("en-GB");
+    const draw = () => {
+      const { s, g } = pool[k];
+      box.innerHTML = `<div class="eyebrow">Now on real accounts${rd[l.id] ? " · done" : ""}</div><h3 style="margin:4px 0">${MDS.esc(s.anon)}</h3>
+        <p class="small dim" style="margin-top:0">A real UK company, from accounts filed at Companies House (£k). It's one of the Real company studies, so it stays unnamed here. ${MDS.esc(g.note)}</p>
+        <div class="tblwrap"><table><thead><tr><th>£k</th>${g.years.map(y => `<th>${MDS.esc(y.fy)}</th>`).join("")}</tr></thead><tbody>${g.rows.map(([lab, vals]) => `<tr><td>${MDS.esc(lab)}</td>${vals.map(v => `<td>${fmt(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+        <div class="stack" style="gap:8px;margin-top:10px">${g.asks.map(([lab, , unit], i) => `<div class="exrow"><label class="small" for="ra${i}">${MDS.esc(lab)}${unit ? ` (${unit})` : ""}</label><input id="ra${i}" inputmode="decimal" autocomplete="off" style="font:15px var(--mono);padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);width:140px"><span class="small" id="rr${i}"></span></div>`).join("")}</div>
+        <div class="row" style="margin-top:10px"><button class="btn sm" type="button" id="rchk">Check</button>${pool.length > 1 ? `<button class="btn ghost sm" type="button" id="rnew">Another company (${k + 1}/${pool.length})</button>` : ""}</div><div id="rres" class="small" style="margin-top:8px"></div>`;
+      MDS.$("#rchk", box).onclick = () => { let ok = 0;
+        g.asks.forEach(([, ans, unit, tol, work], i) => { const v = parseFloat(MDS.$("#ra" + i, box).value.replace(/−/g, "-").replace(/[£,%k\s]|pp/gi, "")); const good = isFinite(v) && Math.abs(v - ans) <= tol; if (good) ok++;
+          MDS.$("#rr" + i, box).innerHTML = `${good ? `<span class="pos">✓</span>` : `<span class="neg">${unit === "£k" ? fmt(ans) : ans.toFixed(1)}${unit === "%" ? "%" : ""}</span>`} <span class="faint">${MDS.esc(work)}</span>`; });
+        if (ok === g.asks.length) { rd[l.id] = true; MDS.save(); }
+        MDS.$("#rres", box).innerHTML = ok === g.asks.length ? `<span class="pos">All correct, on real figures.</span> <a href="#studies">Take the full study to decide what you'd do about it.</a>` : `${ok}/${g.asks.length} right. The working is shown. Try another company.`; };
+      const nb = MDS.$("#rnew", box); if (nb) nb.onclick = () => { k = (k + 1) % pool.length; draw(); };
+    };
+    draw();
   };
 
   /* ---------- hands-on exercises ---------- */

@@ -11,6 +11,7 @@ MDS.TESTS = [
   { id: "drill", label: "Modelling drill", phase: "diagnose", scored: true },
   { id: "model", label: "Build the model", phase: "plan", scored: true },
   { id: "lab", label: "Lever lab", phase: "plan", scored: true },
+  { id: "portfolio", label: "Initiative portfolio", phase: "plan", scored: true },
   { id: "stake", label: "Stakeholders", phase: "plan", scored: true },
   { id: "plan", label: "100-day plan", phase: "plan", scored: true },
   { id: "workshop", label: "Workshop", phase: "plan", scored: true },
@@ -35,6 +36,7 @@ MDS.route = () => {
   if (h === "interview") { MDS.brief(null); MDS.tests.interview(view); return; }
   if (h === "library") { MDS.brief(null); MDS.tests.library(view); return; }
   if (h === "studies") { MDS.brief(null); MDS.tests.studies(view); return; }
+  if (h === "readiness") { MDS.brief(null); MDS.tests.readiness(view); return; }
   const [id, test] = h.split("-");
   const sc = MDS.scenarios[id];
   MDS.brief(sc || null);
@@ -74,7 +76,7 @@ MDS.home = view => {
             <div class="jstep"><b>4 · Prove</b><span>Turn each run into an interview story.</span></div>
           </div>
         </div>
-        <div style="text-align:center">${MDS.ring(readiness, all.length ? readiness : "–", "lg")}<div class="small dim" style="margin-top:6px">Readiness<br><span class="faint">${all.length} scores so far</span></div></div>
+        <div style="text-align:center">${MDS.ring(readiness, all.length ? readiness : "–", "lg")}<div class="small dim" style="margin-top:6px">Readiness<br><span class="faint">${all.length} scores so far</span></div><a class="btn ghost sm" href="#readiness" style="margin-top:8px">By competency</a></div>
       </div>
       <div class="cases">${MDS.order.map(id => {
         const sc = MDS.scenarios[id], st = MDS.caseStats(id);
@@ -95,7 +97,7 @@ MDS.home = view => {
           <div><a class="btn" href="#library">Open the library</a></div></div>
         <div class="panel casecard">
           <div class="cc-top"><div><div class="diff eyebrow">Interview room</div><h2 style="margin-top:4px">Mock interviews</h2></div>${MDS.ring(iv || 0, iv != null ? iv : "–")}</div>
-          <div class="dim small">A Portfolio Manager round and an HR round for a Business Transformation Leader role. AI interviewer, follow-up questions, competency feedback. Practise out loud.</div>
+          <div class="dim small">Three rounds for a Business Transformation Leader role: Portfolio Manager, HR, and a walk through your own CV against the job spec. AI interviewer, follow-up questions, competency feedback. Practise out loud.</div>
           <div><a class="btn" href="#interview">Enter the interview room</a></div></div>
         <div class="panel casecard">
           <div class="cc-top"><div><div class="diff eyebrow">Any case</div><h2 style="margin-top:4px">Frameworks and operating models</h2></div>${MDS.ring(fw || 0, fw != null ? fw : "–")}</div>
@@ -128,6 +130,7 @@ MDS.brief = sc => {
         <p class="small faint" style="margin-top:6px">${MDS.esc(sc.note)}</p></section>
       <section><details><summary><h4 style="display:inline">What people said</h4></summary>${sc.interviews.map(([q, w]) => `<p class="small">"${MDS.esc(q)}" <span class="faint">${MDS.esc(w)}</span></p>`).join("")}</details></section>
       <section><h4>Your findings <span class="faint num">${finds.length}</span></h4>${finds.length ? finds.map(f => `<div class="bfind"><strong class="small">${MDS.esc(f.title)}</strong>${f.note ? `<div class="small dim">${MDS.esc(f.note)}</div>` : ""}</div>`).join("") : `<p class="small faint">Save findings from Investigate and they'll appear here.</p>`}</section>
+      ${(() => { const C = MDS.carry(sc).notes, pf = ((MDS.state.portfolio || {})[sc.id] || {}).final; return C.length || pf ? `<section><h4>Carried into delivery</h4>${pf ? `<p class="small">Your portfolio: ${Object.keys(pf.items).length} chartered initiatives.</p>` : ""}${C.map(([c, t]) => `<p class="small ${c === "g" ? "pos" : "neg"}">${MDS.esc(t)}</p>`).join("")}</section>` : ""; })()}
       <section><h4>Notepad</h4><label for="bnotes" class="small faint">Your working notes for this case (kept in this browser)</label><textarea id="bnotes" rows="8">${MDS.esc(MDS.state.notes[sc.id] || "")}</textarea></section>
     </div>`;
   a.querySelector("#bnotes").addEventListener("input", e => { MDS.state.notes[sc.id] = e.target.value; MDS.save(); });

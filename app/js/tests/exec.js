@@ -38,11 +38,11 @@ MDS.execGenericEvents = [
       { t: "Agree. Start every remaining workstream this month.", days: 0, fx: g => { g.wsList().filter(w => !w.started && !w.stopped).forEach(w => { g.ws[w.id].started = true; g.ws[w.id].status = "On track"; }); g.fatigue += 18; g.pmAdj(4); }, fb: "The PM's happy this month. Your capacity and the team's fatigue won't be." },
       { t: "Say no. The plan is the plan.", days: 0, fx: g => { g.pmAdj(-8); }, fb: "A flat no to your sponsor, with no alternative, costs trust." }
     ] },
-  { id: "g_data", once: true, cond: g => g.month === 3 && g.wsList().some(w => w.started && w.value > 0), title: "Your baseline was wrong",
-    text: g => { const w = g.wsList().filter(w => w.started && w.value > 0).sort((a, b) => b.value - a.value)[0]; g.ctx = w; return `Cleaning the data, you find the value of "${w.name}" was overstated: about 20% of it was double-counted. The PM's pack still shows the old number.`; },
+  { id: "g_data", once: true, cond: g => g.month === 3 && !g.cleanBaseline && g.wsList().some(w => w.started && w.value > 0), title: "Your baseline was wrong",
+    text: g => { const w = g.wsList().filter(w => w.started && w.value > 0).sort((a, b) => b.value - a.value)[0]; g.ctx = w; return `Cleaning the data, you find the value of "${w.name}" was overstated: about ${Math.round(g.baseCut * 100)}% of it was double-counted. The PM's pack still shows the old number.`; },
     options: [
-      { t: "Tell the PM now. Revise the number and show how you'll close the gap.", days: 1, fx: g => { g.valueAdj(g.ctx.id, -0.2); g.pmAdj(4); }, fb: "Early, honest correction builds trust you'll need later." },
-      { t: "Keep quiet and hope other workstreams make up the difference.", days: 0, fx: g => { g.valueAdj(g.ctx.id, -0.2); g.hidden.push("baseline"); }, fb: "It will come out in a later review. These things always do." }
+      { t: "Tell the PM now. Revise the number and show how you'll close the gap.", days: 1, fx: g => { g.valueAdj(g.ctx.id, -g.baseCut); g.pmAdj(4); }, fb: "Early, honest correction builds trust you'll need later." },
+      { t: "Keep quiet and hope other workstreams make up the difference.", days: 0, fx: g => { g.valueAdj(g.ctx.id, -g.baseCut); g.hidden.push("baseline"); }, fb: "It will come out in a later review. These things always do." }
     ] },
   { id: "g_fatigue", repeat: 4, cond: g => g.fatigue > 65, title: "Change fatigue",
     text: "The engagement pulse drops 15 points. The most common comment: \"too much change at once, and nobody asks us\".",
@@ -60,18 +60,48 @@ MDS.execGenericEvents = [
     ] }
 ];
 
+/* The portfolio you submitted (if any) decides which workstreams are chartered, who owns them and when they were due to start. */
+MDS.execDef = sc => {
+  const pf = ((MDS.state.portfolio || {})[sc.id] || {}).final, P = sc.portfolio;
+  if (!pf || !P) return sc.exec;
+  const ws = sc.exec.ws.map(w => { const c = pf.items[w.id]; return Object.assign({}, w, c ? { chartered: true, planStart: c.start, kpiOk: c.kpiOk, kpi: c.kpi, pOwner: c.owner } : { unplanned: true }); });
+  P.extra.forEach(x => { const c = pf.items[x.id]; if (c) ws.push(Object.assign({}, x, { chartered: true, extra: true, planStart: c.start, kpiOk: true, kpi: c.kpi, pOwner: c.owner })); });
+  return Object.assign({}, sc.exec, { ws, pf: pf.stamp });
+};
+/* What earlier tasks carry into delivery. Not attempted = neutral. Done well helps, done badly hurts. */
+MDS.carry = sc => {
+  const s = t => MDS.getScore(sc.id, t), out = [], fx = { warm: 0, pm: 0, head: 0, clean: false, cut: 0.2 };
+  const band = (t, label, good, bad) => { const v = s(t); if (v == null) return; if (v >= 70) out.push(["g", `${label} (${v}): ${good}`]); else if (v < 50) out.push(["r", `${label} (${v}): ${bad}`]); return v; };
+  const inv = band("investigate", "Investigate", "your baseline is clean, so there's no nasty surprise in the numbers later.", "you didn't get to the bottom of the data, so a wrong baseline will cost more when it surfaces.");
+  if (inv >= 70) fx.clean = true; else if (inv < 50) fx.cut = 0.35;
+  const stk = band("stake", "Stakeholder map", "you know who to win over, so sceptics and blockers start a little warmer.", "you misread the people, so sceptics and blockers start colder.");
+  if (stk >= 70) fx.warm = 8; else if (stk < 50) fx.warm = -6;
+  const pl = band("plan", "100-day plan", "the dated items are already moving and the Portfolio Manager has seen a credible plan.", "the Portfolio Manager has seen a weak plan and starts less confident.");
+  if (pl >= 70) { fx.pm += 6; fx.head = 20; } else if (pl < 50) fx.pm -= 5;
+  const pf = band("portfolio", "Initiative portfolio", "your charters are clear, which the Portfolio Manager notices.", "your charters are thin, and the Portfolio Manager has doubts.");
+  if (pf >= 70) fx.pm += 4; else if (pf < 50) fx.pm -= 4;
+  return { notes: out, fx };
+};
+
 MDS.newExec = sc => {
-  const E = sc.exec;
+  const E = MDS.execDef(sc), C = MDS.carry(sc);
   const g = { v: 2, month: 1, days: MDS.EXEC.CAP, energy: 80, fatigue: 20, pm: 55, support: {}, ws: {}, runRate: 0, realised: 0, log: [], fired: {}, phase: "act", event: null, escalations: 0, hidden: [], history: [], celebrate: 0, diy: 0, surprises: 0, misses: [], peakFatigue: 20 };
   sc.stake.forEach(s => { g.support[s.id] = E.support[s.id] != null ? E.support[s.id] : ({ Champion: 45, Neutral: 5, Sceptic: -25, Blocker: -50 })[s.stance]; });
-  E.ws.forEach(w => { g.ws[w.id] = { id: w.id, started: false, progress: 0, status: "Not started", pauseUntil: 0, coach: false, diyFlag: false, bonus: 0, green: false, owner: w.owner, valueMult: 1, done: 0, missed: false }; });
+  E.ws.forEach(w => { const own = w.pOwner && w.pOwner !== "you" && g.support[w.pOwner] != null ? w.pOwner : w.owner;
+    g.ws[w.id] = { id: w.id, started: false, progress: w.deadline && w.deadline <= 2 ? C.fx.head : 0, status: "Not started", pauseUntil: 0, coach: false, diyFlag: w.pOwner === "you", bonus: 0, green: false, owner: own, valueMult: w.kpiOk === false ? 0.85 : 1, done: 0, missed: false }; });
+  g.pf = E.pf || 0; g.cleanBaseline = C.fx.clean; g.baseCut = C.fx.cut; g.pm = MDS.clamp(g.pm + C.fx.pm, 0, 100);
+  if (C.fx.warm) sc.stake.forEach(s => { if (s.id !== "pm" && g.support[s.id] < 0) g.support[s.id] = MDS.clamp(g.support[s.id] + C.fx.warm, -100, 100); });
+  g.diy = E.ws.filter(w => w.pOwner === "you").length;
   g.log.push({ m: 1, c: "i", t: `Day one. You have ${MDS.EXEC.CAP} days a month for the transformation after reporting and BAU. Target: ${MDS.k(E.target)} a year of extra EBITDA run-rate within 12 months.` });
+  if (E.pf) g.log.push({ m: 1, c: "i", t: `You're running your own portfolio: ${E.ws.filter(w => w.chartered).length} chartered initiatives.` });
+  C.notes.forEach(([c, t]) => g.log.push({ m: 1, c, t: "Carried in. " + t }));
   return g;
 };
 
 MDS.tests.exec = (sc, el) => {
-  const E = sc.exec, store = MDS.state.exec = MDS.state.exec || {};
-  let g = store[sc.id] && store[sc.id].v === 2 ? store[sc.id] : (store[sc.id] = MDS.newExec(sc));
+  const E = MDS.execDef(sc), store = MDS.state.exec = MDS.state.exec || {};
+  let g = store[sc.id] && store[sc.id].v === 2 && (store[sc.id].pf || 0) === (E.pf || 0) ? store[sc.id] : null;
+  if (!g) { if (store[sc.id] && store[sc.id].v === 2 && store[sc.id].month > 1) MDS.toast("Your portfolio changed, so the twelve months start again."); g = store[sc.id] = MDS.newExec(sc); MDS.save(); }
   const def = id => E.ws.find(w => w.id === id);
   const stake = id => sc.stake.find(s => s.id === id) || { name: id, power: "Low" };
   const FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -101,6 +131,8 @@ MDS.tests.exec = (sc, el) => {
   Object.defineProperty(H, "fatigue", { get: () => g.fatigue, set: v => { g.fatigue = MDS.clamp(v, 0, 100); } });
   Object.defineProperty(H, "ws", { get: () => g.ws });
   Object.defineProperty(H, "hidden", { get: () => g.hidden });
+  Object.defineProperty(H, "cleanBaseline", { get: () => !!g.cleanBaseline });
+  Object.defineProperty(H, "baseCut", { get: () => g.baseCut || 0.2 });
 
   const save = () => { MDS.save(); };
   const stanceOf = v => v >= 30 ? ["Champion", "pos"] : v >= 0 ? ["Neutral", ""] : v >= -30 ? ["Sceptic", "warn"] : ["Blocker", "neg"];
@@ -137,7 +169,8 @@ MDS.tests.exec = (sc, el) => {
         const late = d.deadline && g.month > d.deadline;
         const val = d.value * w.valueMult * (late ? d.late : 1);
         w.status = "Done"; w.done = g.month; g.runRate += val; g.celebrate++; H.pmAdj(4);
-        H.log(`Delivered: "${d.name}"${val ? `, adding ${MDS.k(val)} a year${late ? " (late: most of this cycle's value is lost)" : ""}` : ""}.`, "g");
+        H.log(val < 0 ? `Finished: "${d.name}". It costs the business ${MDS.k(-val)} a year. ${d.bad || ""}` : `Delivered: "${d.name}"${val ? `, adding ${MDS.k(val)} a year${late ? " (late: most of this cycle's value is lost)" : ""}` : ""}.`, val < 0 ? "r" : "g");
+        if (d.extra && !val) H.log(`"${d.name}" used capacity and moved no target. ${d.bad || ""}`, "w");
         if (w.diyFlag) H.log(`You did much of "${d.name}" yourself. Will the business keep it going when you move on?`, "w");
       } else if (d.deadline && g.month === d.deadline) { w.missed = true; g.misses.push(d.name); H.log(`Deadline missed: "${d.name}".`, "r"); if (w.green) { surprise(d); } }
       if (w.green && (w.status === "Blocked" || w.status === "At risk")) surprise(d);
@@ -184,6 +217,7 @@ MDS.tests.exec = (sc, el) => {
           <div><div class="eyebrow">Run the transformation</div><h2 style="margin:4px 0 0">Month ${g.month} of ${MDS.EXEC.MONTHS} · ${monthName(g.month)}</h2></div>
           <div class="row"><button class="btn ghost sm" id="restart" type="button">Restart</button><button class="btn" id="endMonth" type="button">End month →</button></div>
         </div>
+        ${E.pf ? "" : sc.portfolio ? `<p class="small dim" style="margin:8px 0 0">This is the standard plan. Build your own in <a href="#${sc.id}-portfolio">Initiative portfolio</a> and you'll run that here.</p>` : ""}
         <div class="months">${Array.from({ length: MDS.EXEC.MONTHS }, (_, i) => `<span class="${i + 1 < g.month ? "past" : i + 1 === g.month ? "now" : ""}"></span>`).join("")}</div>
         <div class="xms">
           ${meter("Your days this month", `${g.days}/${cap()}`, cap(), g.days < 3 ? "bad" : "", g.energy < 30 ? "Exhausted: capacity cut" : "Spend them on what moves the plan")}
@@ -200,11 +234,11 @@ MDS.tests.exec = (sc, el) => {
             const d = def(w.id), st = w.pauseUntil > g.month ? "Paused" : w.status, done = w.progress >= 100;
             return `<article class="ws ${done ? "done" : ""}">
               <div class="row" style="justify-content:space-between;gap:8px"><strong>${MDS.esc(d.name)}</strong><span class="pill ${statusCls(st)}">${st}</span></div>
-              <div class="small dim">${MDS.esc(d.hint)}</div>
-              <div class="wsmeta small"><span>Owner: <b>${MDS.esc(H.name(w.owner))}</b></span><span>Value: <b class="num">${d.value ? MDS.k(d.value * w.valueMult) + "/yr" : "enabler"}</b></span>${d.deadline ? `<span class="${g.month > d.deadline && !done ? "neg" : ""}">Deadline: <b>${monthName(d.deadline).split(" ")[0]}</b></span>` : ""}${w.coach ? `<span class="pos">Coached</span>` : ""}${w.diyFlag ? `<span style="color:var(--warn)">You're doing it</span>` : ""}</div>
+              <div class="small dim">${MDS.esc(d.hint)}${d.kpi ? ` <span class="faint">Measure: ${MDS.esc(d.kpi)}${d.kpiOk === false ? " (weak: some of the benefit leaks)" : ""}</span>` : ""}</div>
+              <div class="wsmeta small"><span>Owner: <b>${MDS.esc(H.name(w.owner))}</b></span><span>Value: <b class="num">${d.value ? MDS.k(d.value * w.valueMult) + "/yr" : "enabler"}</b></span>${d.deadline ? `<span class="${g.month > d.deadline && !done ? "neg" : ""}">Deadline: <b>${monthName(d.deadline).split(" ")[0]}</b></span>` : ""}${d.chartered ? `<span>Chartered for <b>month ${d.planStart}</b></span>` : d.unplanned ? `<span style="color:var(--warn)">Not in your portfolio</span>` : ""}${w.coach ? `<span class="pos">Coached</span>` : ""}${w.diyFlag ? `<span style="color:var(--warn)">You're doing it</span>` : ""}</div>
               <div class="prog"><i style="width:${w.progress}%"></i></div>
               <div class="needs">${d.needs.map(s => { const v = g.support[s], [lab, c] = stanceOf(v); return `<span class="need ${c}" title="${lab} (${Math.round(v)})">${MDS.esc(H.name(s))}</span>`; }).join("")}${w.why && !done ? `<span class="small faint">${MDS.esc(w.why)}</span>` : ""}</div>
-              ${done ? "" : `<div class="acts">${!w.started ? `<button class="btn sm" data-a="start" data-w="${w.id}" type="button">Start · 1d</button>` : w.pauseUntil > g.month ? `<button class="btn sm ghost" data-a="resume" data-w="${w.id}" type="button">Resume</button>` : `
+              ${done ? "" : `<div class="acts">${!w.started ? `<button class="btn sm" data-a="start" data-w="${w.id}" type="button">${d.chartered ? "Start · chartered" : d.unplanned ? "Add and start · 3d" : "Start · 1d"}</button>` : w.pauseUntil > g.month ? `<button class="btn sm ghost" data-a="resume" data-w="${w.id}" type="button">Resume</button>` : `
                 <button class="btn sm" data-a="focus" data-w="${w.id}" type="button" title="Hands-on push with the owner">Push · 4d</button>
                 <button class="btn sm ghost" data-a="workshop" data-w="${w.id}" type="button" title="Co-design with the people it needs">Co-design · 3d</button>
                 ${w.coach ? "" : `<button class="btn sm ghost" data-a="coach" data-w="${w.id}" type="button" title="Build the owner's capability">Coach owner · 2d</button>`}
@@ -327,7 +361,9 @@ MDS.tests.exec = (sc, el) => {
     if (b.id === "restart") { if (b.dataset.c !== "1") { b.dataset.c = "1"; b.textContent = "Click again to restart"; return; } g = store[sc.id] = MDS.newExec(sc); save(); render(); return; }
     if (b.id === "endMonth") { if (g.phase !== "act") return; simulate(); g.phase = "report"; save(); render(); return; }
     if (!a) return;
-    if (a === "start" && spend(1, `Started "${d.name}".`)) { w.started = true; w.status = "On track"; g.fatigue += 3; if (g.support[w.owner] < 0) H.log(`${H.name(w.owner)} owns "${d.name}" but isn't on board yet.`, "w"); }
+    if (a === "start" && spend(d.chartered ? 0 : d.unplanned ? 3 : 1, `Started "${d.name}".`)) { w.started = true; w.status = "On track"; g.fatigue += 3;
+      if (d.unplanned) { H.pmAdj(-2); H.log(`"${d.name}" wasn't in the portfolio you agreed. Re-planning it with the Portfolio Manager took three days.`, "w"); }
+      if (d.chartered && g.month > d.planStart + 1) { H.pmAdj(-2); H.log(`"${d.name}" started in month ${g.month}. You chartered it for month ${d.planStart}.`, "w"); } if (g.support[w.owner] < 0) H.log(`${H.name(w.owner)} owns "${d.name}" but isn't on board yet.`, "w"); }
     else if (a === "resume") { w.pauseUntil = 0; H.log(`Resumed "${d.name}".`); }
     else if (a === "pause" && spend(1)) { w.pauseUntil = g.month + 1; H.log(`Paused "${d.name}" for a month. Fatigue eases at month end if it stays paused.`); }
     else if (a === "focus" && spend(4)) { w.bonus += 16; H.sup(w.owner, 2); H.log(`You pushed "${d.name}" with ${H.name(w.owner)}.`); }

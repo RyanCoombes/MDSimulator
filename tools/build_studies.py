@@ -70,6 +70,8 @@ def main():
                 bad += 1
                 print(f"REJECT {c.get('id')}: {'; '.join(e)}")
                 continue
+            if c["company"].isupper():  # Companies House lists private companies in capitals
+                c["company"] = " ".join(w if w in ("SSP", "AMT-SYBEX", "PLC") else w.capitalize() for w in c["company"].split()).replace("Amt-sybex", "AMT-Sybex")
             leaks = redact(c)
             if leaks:
                 print(f"WARNING {c['id']}: company name still visible before reveal: {leaks}")

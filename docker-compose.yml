@@ -1,19 +1,28 @@
-# MD Simulator. In Portainer: Stacks → Add stack → Repository, compose path "docker-compose.yml".
+# MD Simulator. Paste this into Portainer (Stacks → Add stack → Web editor) or deploy it from the repository.
+# The image is built from the public GitHub repo, so nothing needs to be on the host.
 # AI is optional: leave ANTHROPIC_API_KEY empty and everything that doesn't need AI still works.
 services:
   mdsim:
-    build: .
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        WORKDIR /srv
+        RUN pip install --no-cache-dir "anthropic>=2.14,<3"
+        ADD https://github.com/RyanCoombes/MDSimulator/archive/refs/heads/claude/peaceful-volta-7rdpi3.tar.gz /tmp/src.tar.gz
+        RUN tar -xzf /tmp/src.tar.gz --strip-components=1 -C /srv && rm /tmp/src.tar.gz
+        RUN useradd --create-home --uid 10001 mdsim
+        USER mdsim
+        EXPOSE 8080
+        CMD ["python3", "server.py", "--port", "8080"]
     image: mdsimulator:local
     container_name: mdsimulator
     restart: unless-stopped
     ports:
-      - "${MDSIM_PORT:-8080}:8080"
+      - "${MDSIM_PORT:-6767}:8080"
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       MDSIM_PASSCODE: ${MDSIM_PASSCODE:-}
       MDSIM_DAILY_LIMIT: ${MDSIM_DAILY_LIMIT:-300}
-    read_only: true
-    tmpfs:
-      - /tmp
     security_opt:
       - no-new-privileges:true

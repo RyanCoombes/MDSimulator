@@ -69,13 +69,22 @@ const check = (name, ok, extra = "") => { console.log(`${ok ? "PASS" : "FAIL"}  
   const txt = await p.locator("#test").innerText();
   check("exec runs your portfolio", txt.includes("Chartered for") && txt.includes("Not in your portfolio"));
   await p.click(`[data-a="start"][data-w="${pick[0].id}"]`);
-  for (let m = 0; m < 16; m++) {
+  let sawAccounts = false, varAsked = 0, steers = 0;
+  for (let m = 0; m < 40; m++) {
     const phase = await p.evaluate(id => MDS.state.exec[id].phase, c0);
     if (phase === "end") break;
     if (phase === "act") { await p.click("#endMonth"); await p.waitForTimeout(60); }
     if (await p.locator("#send").count()) {
       for (const r of await p.$$('.modal [data-v="A"]')) await r.click();
+      if (await p.locator(".modal table").count()) sawAccounts = true;
+      if (await p.locator('.modal [data-var]').count()) { varAsked++; await p.click(`.modal [data-var="${await p.evaluate(id => MDS.state.exec[id].mgmt.truth, c0)}"]`); }
       await p.click("#send"); await p.waitForTimeout(60);
+    }
+    if (await p.locator("#stx").count()) {
+      steers++;
+      const g = await p.evaluate(id => ({ run: Math.round(MDS.state.exec[id].runRate) }), c0);
+      await p.fill("#stx", `We are at ${g.run} of run-rate against plan. Two workstreams are behind and at risk because owners are not yet bought in. I need a decision from you on sequencing next quarter, nothing else.`);
+      await p.click("#stsend"); await p.waitForTimeout(80); await p.click("#stok"); await p.waitForTimeout(60);
     }
     if (await p.locator(".modal [data-o]").count()) {
       for (const o of await p.$$(".modal [data-o]")) { await o.click(); await p.waitForTimeout(30); if (await p.locator("#evok").count()) break; }
@@ -85,6 +94,49 @@ const check = (name, ok, extra = "") => { console.log(`${ok ? "PASS" : "FAIL"}  
   const endTxt = await p.locator("#test").innerText();
   check("exec reaches the twelve-month result", /twelve months later/i.test(endTxt),await p.evaluate(id => { const g = MDS.state.exec[id]; return `month=${g.month} phase=${g.phase} days=${g.days} event=${g.event && g.event.id}`; }, c0));
   check("carry-forward notes appear", endTxt.includes("Carried in"));
+  check("monthly accounts, variance questions and four steering updates", sawAccounts && varAsked >= 3 && steers === 4, `accounts=${sawAccounts} variance=${varAsked} steering=${steers}`);
+  check("explaining the variance correctly is logged", (await p.evaluate(id => MDS.state.exec[id].varOk || 0, c0)) === varAsked);
+  const delayed = await p.evaluate(() => {
+    const sc = MDS.scenarios.harbour, g = MDS.newExec(sc); MDS.state.exec.harbour = g;
+    g.ws.uplift.started = true; g.ws.uplift.status = "On track"; g.ws.uplift.progress = 99; g.support.top3 = -60; MDS.save(); return true;
+  });
+  await go("harbour-exec");
+  for (let m = 0; m < 40; m++) {
+    const st = await p.evaluate(() => MDS.state.exec.harbour); if (st.month >= 8 || st.phase === "end") break;
+    if (st.phase === "act") { await p.click("#endMonth"); await p.waitForTimeout(50); }
+    if (await p.locator("#send").count()) { for (const r of await p.$$('.modal [data-v="A"]')) await r.click(); if (await p.locator('.modal [data-var]').count()) await p.click('.modal [data-var="delivery"]'); await p.click("#send"); await p.waitForTimeout(50); }
+    if (await p.locator("#stx").count()) { await p.fill("#stx", "We are behind plan and at risk on two workstreams. I need a decision on sequencing from you this week please, thanks."); await p.click("#stsend"); await p.waitForTimeout(60); await p.click("#stok"); await p.waitForTimeout(50); }
+    if (await p.locator(".modal [data-o]").count()) { for (const o of await p.$$(".modal [data-o]")) { await o.click(); await p.waitForTimeout(30); if (await p.locator("#evok").count()) break; } await p.click("#evok"); await p.waitForTimeout(50); }
+  }
+  check("a price rise without customers on side unwinds months later", delayed && (await p.evaluate(() => MDS.state.exec.harbour.log.some(l => /gone with customers who left/.test(l.t)))));
+
+  /* 4b. check the data, write it, scripted meeting, spreadsheet round trip, lever lab reality check */
+  for (const c of info.cases) {
+    await go(`${c}-clean`);
+    const D = await p.evaluate(id => { const d = MDS.cleanData(MDS.scenarios[id]); return { qs: d.qs.map(q => ({ id: q.id, a: q.a, choice: !!q.choice })), best: d.judge.o.findIndex(o => o[1] === 25) }; }, c);
+    for (const q of D.qs) { if (q.choice) await p.selectOption(`#cq-${q.id}`, String(q.a)); else await p.fill(`#cq-${q.id}`, String(Math.round(q.a * 10) / 10)); }
+    await p.click(`[data-j="${D.best}"]`); await p.click("#cmark"); await p.waitForTimeout(60);
+    check(`check the data: ${c}`, (await p.evaluate(id => MDS.getScore(id, "clean"), c)) === 100);
+    await go(`${c}-talk`); await p.click("[data-scene]"); await p.waitForTimeout(60);
+    const best = await p.evaluate(id => MDS.scenarios[id].meeting.scene.map(b => b.o.findIndex(o => o[1] === 3)), c);
+    for (const bi of best) { await p.click(`[data-m="${bi}"]`); await p.waitForTimeout(40); }
+    check(`scripted meeting: ${c}`, (await p.evaluate(id => MDS.getScore(id, "meeting"), c)) === 100);
+  }
+  await go(`${c0}-write`); await p.click('[data-b="day1"]');
+  const good = "Hello everyone. My name is Sam and I've joined to work alongside Dave and the team. For the first few weeks I will mostly listen: I'd like to meet each of you and understand how things work and what gets in your way. The way you serve customers is not changing, and Dave still runs the company. I don't know yet what we'll change, and I can't promise there will be none, but I will be honest with you as soon as I do know. You can email me or just drop by my desk at any time. I'll share what I've heard at the all-hands in a month.";
+  await p.fill("#wText", good); await p.click("#wMark"); await p.waitForTimeout(150);
+  const wGood = await p.evaluate(id => MDS.state.writes[id].day1.best, c0);
+  await p.fill("#wText", "We are excited to announce a value creation programme that will leverage synergies going forward. There will be no job losses, I guarantee it. Best practice will be rolled out across all teams and nothing will change for anyone here at all in the business."); await p.click("#wMark"); await p.waitForTimeout(150);
+  const wBad = await p.evaluate(id => MDS.state.writes[id].day1.last, c0);
+  check("write it: a sound note beats a jargon-filled one", wGood >= 85 && wBad <= 40, `sound=${wGood} jargon=${wBad}`);
+  await go(`${c0}-model`); await p.click("#xl summary");
+  const want = await p.evaluate(id => { const sc = MDS.scenarios[id], v = MDS.evalModel(MDS.modelTemplate(), MDS.data(sc).actuals).vals; return `Revenue\t${v.revenue.slice(1, 4).map(x => x.toFixed(0)).join("\t")}\nEBITDA\t${v.ebitda.slice(1, 4).map(x => x.toFixed(0)).join("\t")}`; }, c0);
+  await p.fill("#xlIn", want); await p.click("#xlChk");
+  check("spreadsheet round trip accepts the right forecast", (await p.evaluate(id => MDS.getScore(id, "xl"), c0)) === 100);
+  await p.fill("#xlIn", "Revenue\t1\t2\t3\nEBITDA\t1\t2\t3"); await p.click("#xlChk");
+  check("spreadsheet round trip rejects a wrong one", (await p.locator("#xlRes").innerText()).includes("0/6"));
+  await go(`${c0}-lab`);
+  check("lever lab shows the real-company reality check", (await p.locator("#bench").innerText()).includes("real companies"));
 
   /* 5. lessons on real accounts */
   for (const l of ["adjusted", "revhead", "opleverage", "rule40"]) {
@@ -101,6 +153,13 @@ const check = (name, ok, extra = "") => { console.log(`${ok ? "PASS" : "FAIL"}  
   await p.fill("#pcv", "Head of Operations, 2019 to 2024. Ran a 40-person team."); await p.click("#psave");
   check("CV is saved and reaches the interviewer's brief", await p.evaluate(() => MDS.talkRules(MDS.content.interviews[0]).includes("Head of Operations")));
   check("three interview rounds", await p.locator("[data-t]").count() === 3);
+  await p.click("#caseW"); await p.waitForTimeout(80);
+  const cs = await p.evaluate(() => { const anon = document.querySelector("#ir .small.dim").textContent, s = MDS.content.studies.find(x => x.anon === anon), y = s.years.find(q => q.fy === s.decision.as_of), y0 = s.years[0]; return { rev: y.revenue, op: y.operating_profit, staff: y.staff_costs, rev0: y0.revenue, why: s.decision.why[s.decision.best], opt: s.decision.options[s.decision.best] }; });
+  await p.fill("#wc1", `Revenue is ${cs.rev} against ${cs.rev0} earlier, operating profit ${cs.op} and staff costs ${cs.staff}. ${cs.why}`);
+  await p.fill("#wc2", `1. ${cs.opt}\n2. Protect the recurring base.\n3. Build a monthly cash forecast.`);
+  await p.fill("#wc3", "The main risk is customer concentration, and the accounts don't show churn or contract length, which I would want to see.");
+  await p.click("#wcMark"); await p.waitForTimeout(80);
+  check("written case round marks a sound answer highly", (await p.evaluate(() => MDS.getScore("global", "interview_case"))) >= 80);
   await go("readiness");
   check("readiness shows five competencies", await p.locator("#view .ring").count() === 5);
 

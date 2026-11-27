@@ -5,7 +5,7 @@ const fs = require("fs"), vm = require("vm"), path = require("path");
 const A = path.join(__dirname, "..", "app") + "/";
 const ctx = { localStorage: { getItem: () => null, setItem: () => {} }, console, Math, JSON };
 ctx.window = ctx; vm.createContext(ctx);
-const files = ["js/core.js", "js/engine.js", "scenarios/harbour.js", "scenarios/nordline.js", "scenarios/quill.js", "scenarios/data-configs.js", "scenarios/task-configs.js", "scenarios/inspired.js", "scenarios/days.js", "content/frameworks.js", "content/cases.js", "content/studies.js"];
+const files = ["js/core.js", "js/engine.js", "scenarios/harbour.js", "scenarios/nordline.js", "scenarios/quill.js", "scenarios/data-configs.js", "scenarios/task-configs.js", "scenarios/inspired.js", "scenarios/days.js", "scenarios/talks.js", "scenarios/meetings.js", "content/frameworks.js", "content/cases.js", "content/studies.js"];
 for (const f of files) vm.runInContext(fs.readFileSync(A + f, "utf8"), ctx);
 const M = ctx.MDS;
 const groups = {};
@@ -22,6 +22,7 @@ for (const id of M.order) {
     sets.forEach((os, k) => { if (os.length < 2) return; const mx = Math.max(...os.map(o => o.s)); const b = os.findIndex(o => o.s === mx); add("day", `${id}: ${it.subject || it.title}${it.steps ? " #" + (k + 1) : ""}`, os.map(o => o.t), b); });
   }));
 }
+for (const id of M.order) (M.scenarios[id].meeting ? M.scenarios[id].meeting.scene : []).forEach((bt, i) => add("meeting", `${id}: moment ${i + 1}`, bt.o.map(o => o[0]), bt.o.findIndex(o => o[1] === 3)));
 M.content.frameworks.forEach(q => add("frameworks", q.q.slice(0, 60), q.o, q.a));
 M.content.cases.forEach(c => add("library", c.id, c.decision.o, c.decision.a));
 (M.content.studies || []).forEach(c => add("studies", c.id, c.decision.options, c.decision.best));

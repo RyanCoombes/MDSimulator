@@ -16,7 +16,7 @@ sensitivities. It shows cause and effect, and it isn't a forecast of any real bu
 
 ## Tasks and tests
 
-Each case has fourteen tabs, grouped into Diagnose, Plan and Deliver. The main ones:
+Each case has sixteen tabs, grouped into Diagnose, Plan and Deliver. The main ones:
 
 1. **Brief**: the PM's brief and targets, profile, KPIs, P&L with drivers, interview notes.
 2. **Investigate**: raw datasets that reconcile to the P&L, with planted root causes.
@@ -56,6 +56,16 @@ Topics include ADKAR, Kotter, Bridges, the Operating Model Canvas, 7S, RAPID, RA
 utilisation vs realisation, NRR/GRR, the Rule of 40, Theory of Constraints, DMAIC, OKRs, Cynefin and pre-mortems.
 
 **Initiative portfolio** (Plan phase) is where you set up the programme: choose which initiatives to charter, and give each an owner, a measure, a start month and a first stop-or-go review. Three of the candidates in each case don't belong. Whatever you submit is the plan that **Run the transformation** then plays.
+
+**Check the data** (Diagnose) gives you four extracts that don't reconcile: duplicate customers, an annual invoice booked in one month, an HR list that disagrees with payroll, and a founder's churn figure that the ledger contradicts.
+
+**Run the transformation** now includes monthly management accounts (plan, actual and a variance you have to explain as delivery, timing or a one-off), a written steering update each quarter, and consequences that land months later (a price rise made without customers on side, work you did yourself, people left cold).
+
+**Write it** (Deliver) has three real documents per case: the price-rise letter, your first-day note to staff and the one-page plan for the founder.
+
+**Leadership meeting** (in Conversations) puts three people in the room who disagree with each other. **Build the model** has a spreadsheet round trip: copy the actuals and rules into Excel or Sheets, build the do-nothing forecast there, paste the result back to check it. The **Lever lab** compares your plan with what the real companies in the studies achieved. The **Interview room** has a timed 40-minute case round on a real set of accounts.
+
+**AI is optional throughout.** Everything above works with no AI connected: documents and updates are marked by a rule-based checklist, the meeting has a scripted version and the case round has a written version. With AI connected you also get a critique of tone and judgement, a live meeting and a live interviewer. Only the one-to-one conversations and the three standard interview rounds need AI.
 
 **Stages carry forward.** Investigate, Stakeholders, the 100-day plan and the portfolio change how delivery starts: a clean baseline, warmer or colder sceptics, a more or less confident Portfolio Manager. A task you haven't attempted is neutral.
 

@@ -1,10 +1,10 @@
 /* Readiness by competency: maps every score to the five things a Business Transformation Leader interview tests. */
 MDS.COMPETENCIES = [
-  { id: "fin", name: "Financial modelling and P&L diagnosis", tests: ["investigate", "drill", "model"], global: ["studies"], why: "Build the forecast yourself, with no finance team, and find the value in a P&L." },
+  { id: "fin", name: "Financial modelling and P&L diagnosis", tests: ["clean", "investigate", "drill", "model"], global: ["studies"], why: "Build the forecast yourself, with no finance team, and find the value in a P&L." },
   { id: "value", name: "Value creation levers: pricing, PS, R&D and AI", tests: ["find", "lab"], global: ["frameworks", "library"], why: "Know which levers move margin and retention, and what each one costs." },
   { id: "deliver", name: "Integration and transformation delivery", tests: ["portfolio", "plan", "exec", "events"], global: [], why: "Set up the programme, sequence it, keep it moving and report it honestly." },
   { id: "people", name: "Leading people through change", tests: ["stake", "workshop", "talk", "day"], global: [], why: "Win founders and teams over without formal authority." },
-  { id: "comm", name: "Executive communication and judgement", tests: ["talk", "day"], global: ["interview"], why: "Say it clearly, with numbers, under questioning." }
+  { id: "comm", name: "Executive communication and judgement", tests: ["talk", "write", "day"], global: ["interview"], why: "Say it clearly, with numbers, under questioning." }
 ];
 MDS.readiness = () => {
   const comp = MDS.state.comp || {};

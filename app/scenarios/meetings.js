@@ -1,0 +1,88 @@
+/* Leadership meetings: several people in the room who disagree with each other.
+   With AI connected it's a live conversation (cast). Without AI, the scripted version (scene) plays the same meeting as a branching scene.
+   scene beats: say = [[speaker, line]], o = [[your move, points 0-3, what happens]]. */
+(() => {
+  const H = MDS.scenarios.harbour, N = MDS.scenarios.nordline, Q = MDS.scenarios.quill;
+  const add = (sc, M) => { sc.meeting = M; sc.talks.push(Object.assign({ start: -15, voice: "rounded" }, M)); };
+  add(H, { id: "meeting", who: "Leadership meeting", role: "Dave Pryce, Leanne Ford and Priya Shah",
+    cast: "Dave Pryce (founder and CEO: proud, blunt, protective of customers and of Leanne), Leanne Ford (Sales Director: sharp, defensive about discounts, worried about her quarter and about losing Mark, her top rep), Priya Shah (Head of PS: quiet, frustrated, has the overrun data, won't volunteer it unless invited)",
+    setting: "Monday leadership meeting, week 5. You have 20 minutes on the agenda. New deals average 22% discount, one rep averages 37%, and fixed-price projects scoped by sales overrun by about 30%. Nobody in the room has seen those three numbers side by side.",
+    goal: "Leave with a decision the room owns: a three-month trial of discount approval above 20% and PS sign-off on fixed-price scopes. Dave makes the call, Leanne isn't humiliated, and Priya's evidence gets heard.",
+    opening: "Dave: Right, you've got twenty minutes. Leanne tells me you want to put handcuffs on sales. Leanne: I didn't say handcuffs. I said it'll cost us deals.",
+    persona: "A real leadership team with history. Dave and Leanne are allies of ten years. Priya is junior to both and has been ignored before. They talk across each other.",
+    concerns: "Dave fears the owners are taking his company apart piece by piece. Leanne fears Mark will resign and her number will be missed. Priya fears that if she speaks up and nothing changes, sales will freeze her out.",
+    wins: "Putting the three numbers on the table without blame. Inviting Priya in by name. Letting Leanne shape the approval limit. Framing it as a trial with a review date. Dave announcing the decision as his.",
+    hardens: "Naming Mark as the problem in front of the room. Taking Priya's side against Leanne. Citing the Portfolio Manager's authority. Pushing for a permanent policy today.",
+    scene: [
+      { say: [["Dave", "Right, you've got twenty minutes. Leanne tells me you want to put handcuffs on sales."], ["Leanne", "I didn't say handcuffs. I said it'll cost us deals."]],
+        o: [["Start with the numbers: discount, the outlier rep, and the 30% overrun, on one page. Ask what they make of it.", 3, "Dave picks up the page. Leanne frowns at it but doesn't argue with the figures. Nobody has been accused of anything."],
+          ["Reassure Leanne that nobody is criticising sales or any individual, then explain how a deal desk works elsewhere.", 1, "Leanne relaxes slightly. Dave says, \"So what is the problem, then?\" You've skipped the evidence."],
+          ["Explain that the Portfolio Manager expects discount governance in every portfolio company, so this is coming either way.", 0, "Dave's jaw sets. \"Then let the Portfolio Manager come and sell to housing associations.\""]] },
+      { say: [["Leanne", "Those overruns aren't a sales problem. Delivery always pads."], ["Priya", "…"], ["Dave", "Priya? Anything to add?"], ["Priya", "Not really."]],
+        o: [["\"Priya, would you walk us through two of those projects?\"", 3, "Priya opens her laptop. Two projects, scoped at 20 days, delivered in 31. Leanne goes quiet. Dave leans in."],
+          ["Present Priya's overrun data yourself, project by project, so that she isn't put on the spot in front of Leanne.", 1, "The data lands, but it's now your data. Leanne argues with you instead of looking at it, and Priya stays silent."],
+          ["Tell Leanne the data shows sales under-scopes.", 0, "Leanne turns on Priya. \"Is that what you've been saying?\" Priya looks at the table."]] },
+      { say: [["Leanne", "Fine, some are under-scoped. But if every deal needs sign-off I'll lose Mark, and he's a third of new logos."], ["Dave", "She's not wrong. Mark's a handful, but he closes."]],
+        o: [["Ask Leanne what limit and exception route she could live with.", 3, "Leanne thinks. \"Twenty percent without asking. Above that, same-day answer from me.\" It's her rule now."],
+          ["Propose 15% as the limit, and offer to handle the approvals yourself so that reps always get an answer the same day.", 1, "Leanne says 15 is unworkable. Dave notes that approvals would now sit with you, the outsider."],
+          ["Say, as calmly as you can, that one rep shouldn't be allowed to hold the whole pricing policy hostage.", 0, "Dave: \"That one rep pays a lot of wages round here.\" The room closes ranks."]] },
+      { say: [["Dave", "So what are you actually asking me for?"]],
+        o: [["A three-month trial: Leanne's 20% limit, Priya signs off fixed-price scopes, and the three of them review the numbers in April. His decision.", 3, "Dave looks at Leanne, who shrugs. \"Three months. And I'll tell the team myself.\" He does, that afternoon."],
+          ["A permanent policy from next month, written into the sales handbook, with a formal review after the first year.", 1, "Dave says he'll think about it. Leanne says nothing. It goes on next month's agenda."],
+          ["Ask for his approval to design a full commercial governance framework and bring it back next month.", 0, "\"A what?\" Dave checks his watch. You've used your twenty minutes and nothing is agreed."]] }
+    ] });
+  add(N, { id: "meeting", who: "Leadership meeting", role: "Anna Lind, Erik Holm and Sofia Berg",
+    cast: "Anna Lind (co-founder and CEO: careful, loyal to municipal customers, hates surprises), Erik Holm (co-founder and CTO: impatient, wants the desktop product switched off, dismissive of support), Sofia Berg (Support Manager: knows which customers are struggling, direct when asked)",
+    setting: "Leadership meeting, week 6. The desktop product still runs alongside cloud, doubling hosting cost. Erik wants a hard switch-off date. Anna won't commit while large municipalities are still on desktop. Sofia's team handles the calls either way.",
+    goal: "Agree a dated sunset plan both co-founders will sign: a switch-off date, a named list of customers who need help to move, and who tells them.",
+    opening: "Erik: I'll make this simple. We pick a date, we switch desktop off, we save the money. Anna: And lose Göteborg. No.",
+    persona: "Two co-founders who have had this argument for a year. Sofia has the facts that would settle it and has never been asked.",
+    concerns: "Anna fears a public failure with a municipal customer. Erik fears the cloud product will never be finished while desktop drains his team. Sofia fears her team will absorb the anger of a rushed cutover.",
+    wins: "Separating the date from the customer plan. Asking Sofia which customers are actually stuck and why. A staged date with a go criterion. Both founders owning the customer message.",
+    hardens: "Siding with one founder. Talking only about hosting savings. Ignoring procurement rules for municipalities. Leaving without a date.",
+    scene: [
+      { say: [["Erik", "I'll make this simple. We pick a date, we switch desktop off, we save the money."], ["Anna", "And lose Göteborg. No."]],
+        o: [["Ask how many customers are still on desktop, and why.", 3, "Neither founder knows. They both look at Sofia. The argument has become a question with an answer."],
+          ["Point out that running both products side by side costs about as much as three engineers every year.", 1, "Erik nods hard. Anna folds her arms. You've joined one side of an old argument."],
+          ["Suggest postponing until cloud is finished.", 0, "Erik laughs. \"It's never finished while we maintain two.\" Nothing has moved."]] },
+      { say: [["Sofia", "Forty-one on desktop. Most could move tomorrow. Six can't: integrations we haven't rebuilt."], ["Erik", "Six. We're holding the company back for six."]],
+        o: [["Ask Sofia to name the six and what each needs, then ask Erik what it would take to rebuild those integrations.", 3, "Sofia lists them. Erik, given an engineering problem, starts estimating. \"Ten weeks, if nothing else lands on us.\""],
+          ["Agree with Erik that six customers out of several hundred shouldn't be deciding the roadmap for everyone else.", 0, "Anna: \"One of the six is seven percent of our revenue.\" She stops listening to you."],
+          ["Propose switching everyone else off and keeping desktop alive just for those six until they're ready.", 1, "Anna likes it. Erik points out that six customers on desktop costs the same servers as forty-one."]] },
+      { say: [["Anna", "Even if Erik builds them, municipalities need notice. Their procurement people will ask for it in writing."]],
+        o: [["Propose a date with a condition: switch-off six months after the integrations pass Sofia's test with two of the six.", 3, "Anna writes it down. Erik says, \"A date I can hit and a test I don't control. Fine.\" It's a plan both can sign."],
+          ["Set the switch-off for the end of the quarter, to keep the pressure on engineering and on the customers.", 0, "Anna says she won't sign that, and that she'll tell the board why."],
+          ["Suggest writing to every desktop customer now to say that a switch-off date is coming soon.", 1, "Sofia winces. \"They'll ring us asking which date, and we won't know.\""]] },
+      { say: [["Erik", "And who tells Göteborg?"]],
+        o: [["Anna and Erik together, in person, with Sofia's plan.", 3, "Anna looks at Erik. \"Together.\" It's the first thing they've agreed on all year."],
+          ["You'll draft a careful letter for Anna to sign and send, and brief Sofia's team before it goes.", 1, "Anna agrees, but Erik is now a bystander to his own switch-off."],
+          ["Sofia's team, since they own the relationship day to day and know the people there best.", 0, "Sofia: \"So support delivers the bad news the founders decided on.\" Anna looks uncomfortable."]] }
+    ] });
+  add(Q, { id: "meeting", who: "Leadership meeting", role: "Graham Holt, Carmen Vidal and the Head of PS",
+    cast: "Graham Holt (Quill's founder: courteous, wounded, feels the Spanish parent is absorbing his company), Carmen Vidal (Lexia MD: fast, numbers-led, convinced Madrid can do it cheaper, impatient with sentiment), the Head of PS at Quill (practical, tired of loss-making projects, will back whoever fixes scoping)",
+    setting: "Joint leadership call, week 7. Carmen has proposed moving UK support to the Madrid desk within a month. Graham heard about it from a member of his team. UK consultation rules apply, and UK law firms expect UK-hours support.",
+    goal: "Get both leaders to agree a staged design for support with UK-hours service levels and a proper consultation, without Graham walking out or Carmen going around him.",
+    opening: "Carmen: The numbers are clear. Madrid handles a ticket for half the cost. I don't see what there is to discuss. Graham: You might have discussed it with me before my team heard it in the kitchen.",
+    persona: "Two leaders from different companies, now one group. Carmen is right on cost and wrong on process. Graham is right on customers and slow to say what he wants.",
+    concerns: "Graham fears he is being managed out and that his people will pay for it. Carmen fears integration will stall for a year out of politeness. The Head of PS fears PS will be next and nobody will ask.",
+    wins: "Acknowledging how Graham found out. Agreeing the cost prize with Carmen openly. A staged plan with service levels and a consultation timetable. Asking the Head of PS what customers would notice.",
+    hardens: "Treating Graham's objection as emotion. Agreeing a date without consultation. Letting Carmen and Graham negotiate through you. Vague talk of 'alignment'.",
+    scene: [
+      { say: [["Carmen", "The numbers are clear. Madrid handles a ticket for half the cost. I don't see what there is to discuss."], ["Graham", "You might have discussed it with me before my team heard it in the kitchen."]],
+        o: [["Say the way it came out was wrong, and ask what his team has heard.", 3, "Graham exhales. \"Nothing official. That's the problem.\" Carmen, a little stiffly, says she should have called him."],
+          ["Move straight to the cost comparison so that the meeting stays on facts and off feelings.", 1, "Carmen is pleased. Graham answers every later point in one word."],
+          ["Tell Carmen that the proposal is on hold until the working relationships have been repaired.", 0, "Carmen: \"On whose authority?\" You've made yourself the obstacle."]] },
+      { say: [["Carmen", "Fine. But the saving is real. One hundred thousand a year."], ["Graham", "And when a partner at a law firm rings at eight in the morning and gets voicemail?"]],
+        o: [["Agree the saving is worth having, then ask the Head of PS what UK customers would actually notice in a cutover.", 3, "The Head of PS: \"Response before nine, and someone who knows our document templates.\" Two service levels, on the table."],
+          ["Suggest that the Madrid desk starts an hour earlier each day so that UK mornings are covered.", 1, "Carmen says that's easy. Graham says nobody has asked whether Madrid knows the product."],
+          ["Tell Graham that customers adapt to changes like this, and that the group needs the saving this year.", 0, "Graham: \"Then you can tell them.\" He starts gathering his papers."]] },
+      { say: [["Carmen", "So we add service levels. We can still move next month."]],
+        o: [["Explain that UK roles need consultation first, and propose three stages.", 3, "Carmen checks with her HR lead by message and nods. \"Staged. With dates.\" Graham says he can put that to his team."],
+          ["Agree next month if HR can move quickly.", 0, "The Head of PS says quietly, \"That's not how consultation works here.\" Graham says he won't be party to it."],
+          ["Propose delaying the whole move by a year, until the UK team and its customers are ready for it.", 1, "Graham is relieved. Carmen says she'll take it to the Portfolio Manager herself."]] },
+      { say: [["Graham", "And who is running this? Because it isn't going to be done to my people from Madrid."]],
+        o: [["Carmen owns the saving, Graham owns the UK consultation and the customer message, and both sign each stage gate.", 3, "Graham and Carmen look at each other on the screen. \"Agreed,\" says Carmen. \"Agreed,\" says Graham. It's a joint plan."],
+          ["You'll run it yourself, as the neutral party that both of them trust, and report to each of them weekly.", 1, "Both agree at once, which is the problem: neither of them owns it now."],
+          ["Carmen runs it end to end, since Madrid is where the work is going and she has the capacity.", 0, "Graham: \"Then you won't need me.\" He leaves the call."]] }
+    ] });
+})();

@@ -1,3 +1,12 @@
+/* What ten real UK software companies actually achieved, from their filed accounts (see Real company studies). */
+MDS.realBench = () => {
+  const rows = (MDS.content.studies || []).filter(s => s.id !== "ssp-limited").map(s => { const a = s.years[0], b = s.years[s.years.length - 1], n = s.years.length - 1;
+    if (a.operating_profit == null || b.operating_profit == null || !a.revenue || !b.revenue) return null;
+    return { pp: (b.operating_profit / b.revenue - a.operating_profit / a.revenue) * 100, cagr: (Math.pow(b.revenue / a.revenue, 1 / n) - 1) * 100 }; }).filter(Boolean);
+  if (rows.length < 5) return null;
+  const srt = k => rows.map(r => r[k]).sort((x, y) => x - y), med = a => a[Math.floor(a.length / 2)], pp = srt("pp"), cg = srt("cagr");
+  return { n: rows.length, ppMin: pp[0], ppMax: pp[pp.length - 1], ppMed: med(pp), cgMax: cg[cg.length - 1], cgMed: med(cg), cgMin: cg[0] };
+};
 /* Test 3: lever lab. Set levers and initiatives under a change budget, see the 3-year forecast, submit for a score. */
 MDS.tests.lab = (sc, el) => {
   const D = MDS.defaults(sc);
@@ -29,6 +38,7 @@ MDS.tests.lab = (sc, el) => {
         <div class="tblwrap"><table id="pl"></table></div>
       </div>
       <div class="panel"><h3>Portfolio Manager's targets</h3><div class="targets" id="targets"></div></div>
+      <div class="panel"><h3>Reality check</h3><div class="small" id="bench"></div></div>
       <div class="panel"><h3>People</h3><div class="meters" id="meters"></div></div>
       <div class="panel"><h3>What your choices set off</h3><ul class="warns" id="warns"></ul></div>
       <div class="panel"><div class="row" style="justify-content:space-between"><div><h3>Submit the plan</h3><div class="small dim">Scored on base-case targets (40), downside resilience (20), people (20) and realism (20).</div></div><button class="btn" id="submit" type="button">Submit for scoring</button></div><div id="result"></div></div>
@@ -70,6 +80,11 @@ MDS.tests.lab = (sc, el) => {
     MDS.$("#targets", el).innerHTML = T.map(t => `<div class="target"><span>${t.label}</span><span class="num">${t.val} <span class="pill ${t.ok ? "ok" : "no"}">${t.ok ? "MET" : "MISSED"}</span></span></div>`).join("") +
       `<div class="small dim" style="margin-top:4px">Year 3 EBITDA ${MDS.k(m.yrs[3].ebitda)} vs ${MDS.k(base.yrs[3].ebitda)} if you do nothing (<strong class="${m.yrs[3].ebitda >= base.yrs[3].ebitda ? "pos" : "neg"}">${m.yrs[3].ebitda >= base.yrs[3].ebitda ? "+" : ""}${MDS.k(m.yrs[3].ebitda - base.yrs[3].ebitda)}</strong>).</div>`;
     MDS.$("#meters", el).innerHTML = MDS.meterHTML(`${sc.people.founderLabel} trust`, p.founder) + MDS.meterHTML("Team morale", p.team) + MDS.meterHTML("Customer sentiment", p.cust);
+    const RB = MDS.realBench();
+    if (RB) { const dpp = (m.yrs[3].margin - m.yrs[0].margin) * 100, cg = (Math.pow(m.yrs[3].rev / m.yrs[0].rev, 1 / 3) - 1) * 100, hi = dpp > RB.ppMax, hg = cg > RB.cgMax;
+      MDS.$("#bench", el).innerHTML = `Your plan moves the margin by <b class="num ${hi ? "neg" : ""}">${dpp >= 0 ? "+" : ""}${dpp.toFixed(1)} points</b> in three years and grows revenue <b class="num ${hg ? "neg" : ""}">${cg.toFixed(1)}%</b> a year.
+        <div class="dim" style="margin-top:6px">In the ${RB.n} real companies in the studies, operating margin moved between ${RB.ppMin.toFixed(0)} and +${RB.ppMax.toFixed(0)} points over two or three years (middle of the range ${RB.ppMed >= 0 ? "+" : ""}${RB.ppMed.toFixed(0)}), and revenue grew between ${RB.cgMin.toFixed(0)}% and ${RB.cgMax.toFixed(0)}% a year (middle ${RB.cgMed.toFixed(0)}%).</div>
+        ${hi || hg ? `<div class="neg" style="margin-top:6px">${hi ? "That margin gain is more than any of them achieved. " : ""}${hg ? "That growth rate is faster than any of them managed. " : ""}Be ready to say why this business is different.</div>` : `<div class="faint" style="margin-top:6px">Within what real companies have done. It's a small sample (one company is left out because its profit includes large unexplained income), and their figure is operating margin where yours is EBITDA margin, so treat it as a sense check.</div>`}`; }
     const w = MDS.warnings(sc, L, m, p);
     MDS.$("#warns", el).innerHTML = w.length ? w.map(([c, t]) => `<li class="${c}">${MDS.esc(t)}</li>`).join("") : `<li>No major side effects. Is the plan ambitious enough?</li>`;
   };

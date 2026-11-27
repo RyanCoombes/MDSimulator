@@ -158,10 +158,40 @@ MDS.tests.model = (sc, el) => {
   const save = () => { MDS.save(); };
   const fmt = (v, unit) => !isFinite(v) ? "#ERR" : unit === "%" ? (v * 100).toFixed(1) + "%" : unit === "£k" ? (Math.abs(v) < 10 && v !== 0 ? v.toFixed(2) : Math.round(v).toLocaleString("en-GB")) : unit === "x" ? v.toFixed(3) : (Math.round(v * 10) / 10).toLocaleString("en-GB");
   const groups = ["Assumptions", "Revenue", "Costs", "Outputs", "Other"];
+  /* Spreadsheet round trip: tab-separated text pastes straight into cells. */
+  el.addEventListener("click", e => {
+    const b = e.target.closest("#xlA, #xlM, #xlChk"); if (!b) return;
+    const T = MDS.modelTemplate();
+    if (b.id === "xlChk") {
+      const lines = MDS.$("#xlIn", el).value.split(/\n/).map(l => l.trim()).filter(Boolean), nums = l => (l.replace(/[£,]/g, "").match(/-?\d+(\.\d+)?/g) || []).map(Number).slice(-3);
+      const find = re => lines.find(l => re.test(l)), rl = find(/rev/i) || lines[0], el2 = find(/ebitda|profit/i) || lines[1];
+      const mine = [rl ? nums(rl) : [], el2 ? nums(el2) : []];
+      if (mine[0].length < 3 || mine[1].length < 3) { MDS.$("#xlRes", el).innerHTML = `<span class="neg">I need two rows with three numbers each: Revenue and EBITDA for Years 1 to 3.</span>`; return; }
+      const v = MDS.evalModel(T, acts).vals, want = [v.revenue.slice(1, 4), v.ebitda.slice(1, 4)], tol = [0.015, 0.04];
+      let ok = 0; const cell = (r, i) => { const good = Math.abs(mine[r][i] - want[r][i]) <= Math.abs(want[r][i]) * tol[r] + 1; if (good) ok++; return `<td class="${good ? "pos" : "neg"}">${Math.round(mine[r][i]).toLocaleString("en-GB")}${good ? " ✓" : ` (model: ${Math.round(want[r][i]).toLocaleString("en-GB")})`}</td>`; };
+      const html = `<div class="tblwrap"><table><thead><tr><th></th><th>Year 1</th><th>Year 2</th><th>Year 3</th></tr></thead><tbody>${["Revenue", "EBITDA"].map((n, r) => `<tr><td>${n}</td>${[0, 1, 2].map(i => cell(r, i)).join("")}</tr>`).join("")}</tbody></table></div>`;
+      const score = Math.round(ok / 6 * 100); MDS.setScore(sc.id, "xl", score);
+      MDS.$("#xlRes", el).innerHTML = html + `<p>${ok}/6 cells within tolerance (revenue 1.5%, EBITDA 4%). ${ok === 6 ? `<span class="pos">Your spreadsheet reproduces the do-nothing forecast.</span>` : "The usual causes: churn applied to the wrong base, cost inflation not compounding, or PS revenue missing the free-of-charge days."}</p>`;
+      return;
+    }
+    const pc = id => ["churn", "util", "foc", "infl"].some(k => id.includes(k)) || id === "act_discount" || id.includes("share") || id.includes("gap");
+    const text = b.id === "xlA" ? "Actual\tValue\n" + Object.entries(acts).map(([k, val]) => `${k}\t${pc(k) ? +(val * 100).toFixed(2) + "%" : +(+val).toFixed(2)}`).join("\n")
+      : "Row\tName\tUnit\tLast year\tEach forecast year\n" + T.map(r => `${r.id}\t${r.label}\t${r.unit}\t${r.cells[0]}\t${r.cells[1]}`).join("\n");
+    const out = MDS.$("#xlOut", el); out.hidden = false; out.value = text; out.focus(); out.select();
+    const done = ok => MDS.toast(ok ? "Copied. Paste into cell A1 of your sheet." : "Select all the text in the box and copy it, then paste into cell A1.");
+    try { navigator.clipboard.writeText(text).then(() => done(true), () => done(false)); } catch (err) { done(false); }
+  });
 
   el.innerHTML = `<div class="stack">
     <div class="panel"><h2>Build the value-creation model</h2>
       <p class="dim small" style="margin:0">Every cell is a number or a formula. Reference rows by name (<code>recurring</code>), the year before with <code>prev(recurring)</code>, and actuals with <code>act_…</code>. Functions: <code>min max sum avg if round abs pow</code>. Percentages can be typed as <code>5%</code>. <span style="color:var(--acc)">Blue</span> = hard-coded input, black = formula. Click a cell to see and edit its formula.</p></div>
+    <details class="panel" id="xl"><summary><strong>Prefer a real spreadsheet?</strong> <span class="small dim">Copy the data into Excel or Google Sheets, build the do-nothing forecast there, and paste your answer back to check it${MDS.getScore(sc.id, "xl") != null ? ` · best ${MDS.getScore(sc.id, "xl")}` : ""}</span></summary>
+      <p class="small dim">In the job you'll build this in a spreadsheet, alone. The exercise: reproduce the three-year <strong>do-nothing</strong> forecast (no levers pulled) using last year's actuals and the model's rules. Copy each block, paste it into cell A1 of a sheet, and build from there.</p>
+      <div class="row"><button class="btn sm" type="button" id="xlA">Copy last year's actuals</button><button class="btn sm ghost" type="button" id="xlM">Copy the model's rules</button></div>
+      <textarea id="xlOut" rows="5" readonly hidden style="width:100%;margin-top:8px;font:12px var(--mono);padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink)"></textarea>
+      <label class="small" for="xlIn" style="display:block;margin-top:12px"><strong>Paste your result back:</strong> two rows from your sheet, Revenue then EBITDA, for Years 1 to 3 (in £k). Labels in the first column are fine.</label>
+      <textarea id="xlIn" rows="3" placeholder="Revenue&#9;5400&#9;5450&#9;5500&#10;EBITDA&#9;700&#9;690&#9;680" style="width:100%;font:13px var(--mono);padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)"></textarea>
+      <div class="row" style="margin-top:8px"><button class="btn sm" type="button" id="xlChk">Check my forecast</button></div><div id="xlRes" class="small" style="margin-top:8px"></div></details>
     <div class="panel"><div class="row" style="justify-content:space-between">
       <div class="row"><strong class="small">Scenario</strong><span id="scTabs" class="row" style="gap:6px"></span><button class="btn sm ghost" id="addSc" type="button">+ Scenario</button></div>
       <div class="row"><button class="btn sm ghost" id="addRow" type="button">+ Row</button><button class="btn sm ghost" id="tmpl" type="button">Reset to template</button><button class="btn sm ghost" id="blank" type="button">Blank model</button><button class="btn sm ghost" id="csv" type="button">Copy as CSV</button></div></div>

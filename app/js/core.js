@@ -37,7 +37,7 @@ MDS.toast = t => {
   document.body.appendChild(x); setTimeout(() => x.classList.add("on"), 10);
   setTimeout(() => { x.classList.remove("on"); setTimeout(() => { if (x.parentNode) x.parentNode.removeChild(x); }, 300); }, 3200);
 };
-MDS.resetProgress = () => { ["scores", "lab", "exec", "days", "plans", "stake", "models", "findings", "invAns", "library", "notes", "portfolio", "studies", "lessons", "lessonsReal", "comp", "profile"].forEach(k => { MDS.state[k] = undefined; }); MDS.state.scores = {}; MDS.state.lab = {}; MDS.save(); };
+MDS.resetProgress = () => { ["scores", "lab", "exec", "days", "plans", "stake", "models", "findings", "invAns", "library", "notes", "portfolio", "studies", "lessons", "lessonsReal", "comp", "profile", "clean", "writes"].forEach(k => { MDS.state[k] = undefined; }); MDS.state.scores = {}; MDS.state.lab = {}; MDS.save(); };
 MDS.getScore = (key, test) => (MDS.state.scores[key] || {})[test];
 
 MDS.grade = s => s >= 85 ? ["Hire", "pos"] : s >= 70 ? ["Strong", "pos"] : s >= 55 ? ["Borderline", ""] : ["Not yet", "neg"];

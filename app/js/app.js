@@ -6,6 +6,7 @@ MDS.PHASES = [
 ];
 MDS.TESTS = [
   { id: "room", label: "Brief", phase: "diagnose", scored: false },
+  { id: "clean", label: "Check the data", phase: "diagnose", scored: true },
   { id: "investigate", label: "Investigate", phase: "diagnose", scored: true },
   { id: "find", label: "Find the levers", phase: "diagnose", scored: true },
   { id: "drill", label: "Modelling drill", phase: "diagnose", scored: true },
@@ -17,6 +18,7 @@ MDS.TESTS = [
   { id: "workshop", label: "Workshop", phase: "plan", scored: true },
   { id: "day", label: "A day in the life", phase: "deliver", scored: true },
   { id: "talk", label: "Conversations", phase: "deliver", scored: true },
+  { id: "write", label: "Write it", phase: "deliver", scored: true },
   { id: "exec", label: "Run the transformation", phase: "deliver", scored: true },
   { id: "events", label: "Challenges", phase: "deliver", scored: true }
 ];

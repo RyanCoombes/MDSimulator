@@ -4,7 +4,7 @@
   --shadow:0 1px 2px rgba(16,24,40,.04),0 2px 8px rgba(16,24,40,.05); --shadow2:0 8px 28px rgba(16,24,40,.12);
   --r:12px; --ease:cubic-bezier(.2,.7,.2,1);
   --ink:#141a22; --dim:#4b5566; --faint:#5d6676;
-  --acc:#0f6f86; --acc2:#d9eef2; --good:#1a7a4f; --warn:#8f5c00; --bad:#b33a3a;
+  --s1:#27475e; --acc:#0f6f86; --acc2:#d9eef2; --good:#1a7a4f; --warn:#8f5c00; --bad:#b33a3a;
   --display:"Space Grotesk",system-ui,sans-serif;
   --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;

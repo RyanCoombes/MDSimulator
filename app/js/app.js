@@ -29,28 +29,29 @@ MDS.caseStats = id => {
 };
 MDS.ring = (p, label, cls = "", colour) => `<div class="ring ${cls}" style="--p:${MDS.clamp(p, 0, 100)};--c:${colour || (p >= 70 ? "var(--good)" : p >= 50 ? "var(--warn)" : "var(--acc)")}" role="img" aria-label="${label}"><span>${label}</span></div>`;
 
+/* Status bar: always says where you are in the simulation. */
+MDS.hud = (where, detail) => { const el = document.getElementById("hudCtx"); if (el) el.innerHTML = `<i class="live" aria-hidden="true"></i><b>${MDS.esc(where)}</b>${detail ? `<span>${MDS.esc(detail)}</span>` : ""}`; };
+MDS.pips = (n, of = 4) => `<span class="pips" role="img" aria-label="Difficulty ${n} of ${of}">${Array.from({ length: of }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span>`;
+MDS.LEVELS = { standard: 2, easy: 1, medium: 2, hard: 3, "very hard": 4 };
 MDS.route = () => {
   const h = location.hash.slice(1);
   const view = MDS.$("#view");
   window.scrollTo(0, 0);
   view.style.animation = "none"; void view.offsetWidth; view.style.animation = "";
-  if (h === "frameworks") { MDS.brief(null); MDS.tests.frameworks(view); return; }
-  if (h === "interview") { MDS.brief(null); MDS.tests.interview(view); return; }
-  if (h === "library") { MDS.brief(null); MDS.tests.library(view); return; }
-  if (h === "studies") { MDS.brief(null); MDS.tests.studies(view); return; }
-  if (h === "engage") { MDS.brief(null); MDS.tests.engage(view); return; }
-  if (h === "readiness") { MDS.brief(null); MDS.tests.readiness(view); return; }
+  const DESK = { frameworks: ["Desk study", "Frameworks and lessons"], interview: ["Interview suite", "Mock interviews"], library: ["Desk study", "Case library"], studies: ["Desk study", "Real company accounts"], engage: ["Field work", "Open engagements"], readiness: ["Interview suite", "Readiness by competency"] };
+  if (DESK[h]) { MDS.brief(null); MDS.hud(DESK[h][0], DESK[h][1]); MDS.tests[h](view); return; }
   const [id, test] = h.split("-");
   const sc = MDS.scenarios[id];
   MDS.brief(sc || null);
-  if (!sc) { MDS.home(view); return; }
+  if (!sc) { MDS.hud("Assignment board", "Choose a file"); MDS.home(view); return; }
   const t = MDS.TESTS.find(x => x.id === test) ? test : "room";
-  const st = MDS.caseStats(id);
+  const st = MDS.caseStats(id), T0 = MDS.TESTS.find(x => x.id === t), P0 = MDS.PHASES.findIndex(p => p.id === T0.phase);
+  MDS.hud(`Posting: ${sc.name}`, `Phase ${P0 + 1} ${MDS.PHASES[P0].label} · ${T0.label}`);
   view.innerHTML = `
     <header class="case">
       <div class="row" style="gap:16px;align-items:center">${MDS.ring(st.avg != null ? st.avg : 0, st.avg != null ? st.avg : "–")}
-        <div><div class="eyebrow">${MDS.esc(sc.difficulty)} · ${MDS.esc(sc.focus)}</div><h1>${MDS.esc(sc.name)}</h1><div class="dim small">${MDS.esc(sc.tagline)} ${st.done}/${st.total} tasks attempted.</div></div></div>
-      <div class="row"><button class="btn sm ${MDS.settings.briefOpen ? "" : "ghost"}" id="briefBtn" type="button" aria-expanded="${!!MDS.settings.briefOpen}" aria-controls="brief">📋 Brief &amp; notes</button><a class="btn ghost sm" href="#">All cases</a></div>
+        <div><div class="fileno">File ${MDS.esc(sc.id.slice(0, 2).toUpperCase())}-0${MDS.order.indexOf(sc.id) + 1} · ${MDS.pips(MDS.LEVELS[sc.difficulty.toLowerCase()] || 2)} ${MDS.esc(sc.difficulty)} · ${MDS.esc(sc.focus)}</div><h1>${MDS.esc(sc.name)}</h1><div class="dim small">${MDS.esc(sc.tagline)} ${st.done}/${st.total} tasks attempted.</div></div></div>
+      <div class="row"><button class="btn sm ${MDS.settings.briefOpen ? "" : "ghost"}" id="briefBtn" type="button" aria-expanded="${!!MDS.settings.briefOpen}" aria-controls="brief">Brief &amp; notes</button><a class="btn ghost sm" href="#">Board</a></div>
     </header>
     <nav class="phasenav" aria-label="Tasks">${MDS.PHASES.map((p, pi) => `<div class="phase"><div class="phase-l"><b>${pi + 1}</b> ${p.label}</div><div class="steps">${MDS.TESTS.filter(x => x.phase === p.id).map(x => {
       const s = MDS.getScore(sc.id, x.id);
@@ -61,59 +62,44 @@ MDS.route = () => {
 };
 
 MDS.home = view => {
-  const fw = MDS.getScore("global", "frameworks");
-  const iv = MDS.getScore("global", "interview");
-  const all = MDS.order.flatMap(id => MDS.TESTS.filter(t => t.scored).map(t => MDS.getScore(id, t.id))).concat([fw, iv]).filter(x => x != null);
+  const G = k => MDS.getScore("global", k), fw = G("frameworks"), iv = G("interview");
+  const all = MDS.order.flatMap(id => MDS.TESTS.filter(t => t.scored).map(t => MDS.getScore(id, t.id))).concat([fw, iv, G("studies"), G("library"), G("engage")]).filter(x => x != null);
   const readiness = all.length ? Math.round(all.reduce((a, b) => a + b, 0) / all.length) : 0;
+  const plate = v => MDS.ring(v || 0, v != null ? v : "–");
+  const stamp = (done, total) => done == null ? "" : `<span class="stamp ${done >= total ? "done" : done ? "go" : ""}">${done >= total ? "Complete" : done ? "In progress" : "Not started"}</span>`;
+  const row = (code, title, sub, meta, score, href, label) => `<a class="frow" href="${href}"><span class="code">${code}</span><span class="ftw"><span class="ft">${MDS.esc(title)}</span><span class="fs" style="display:block">${sub}</span></span><span class="fm">${meta}</span>${plate(score)}<span class="fa"><span class="btn sm">${label}</span></span></a>`;
+  const E = MDS.content.engagements || [], es = MDS.state.engage || {};
   view.innerHTML = `
     <div class="stack">
-      <div class="panel hero">
-        <div>
-          <div class="eyebrow">Practice for MD, GM and transformation roles in software</div>
-          <h1 style="margin-top:8px">Run the business before you run the interview.</h1>
-          <p class="dim" style="max-width:62ch">Three newly acquired software companies. Dig through raw data, build your own model, plan the first 100 days, then live through twelve months of delivery: owners going quiet, founders pushing back, people resigning, and a Portfolio Manager who wants honest status.</p>
-          <div class="journey">
-            <div class="jstep"><b>1 · Diagnose</b><span>Investigate the data room and find the value.</span></div>
-            <div class="jstep"><b>2 · Plan</b><span>Model it, map the people, sequence 100 days.</span></div>
-            <div class="jstep"><b>3 · Deliver</b><span>Run the change month by month.</span></div>
-            <div class="jstep"><b>4 · Prove</b><span>Turn each run into an interview story.</span></div>
-          </div>
-        </div>
-        <div style="text-align:center">${MDS.ring(readiness, all.length ? readiness : "–", "lg")}<div class="small dim" style="margin-top:6px">Readiness<br><span class="faint">${all.length} scores so far</span></div><a class="btn ghost sm" href="#readiness" style="margin-top:8px">By competency</a></div>
-      </div>
-      <div class="cases">${MDS.order.map(id => {
-        const sc = MDS.scenarios[id], st = MDS.caseStats(id);
-        const bars = MDS.PHASES.map(p => { const ts = MDS.TESTS.filter(t => t.scored && t.phase === p.id), d = ts.filter(t => MDS.getScore(id, t.id) != null).length; return `<div class="pb">${p.label} ${d}/${ts.length}<div class="bar"><i style="width:${d / ts.length * 100}%"></i></div></div>`; }).join("");
-        return `<div class="panel casecard">
-          <div class="cc-top"><div><div class="diff eyebrow">${MDS.esc(sc.difficulty)}</div><h2 style="margin-top:4px">${MDS.esc(sc.name)}</h2></div>${MDS.ring(st.avg != null ? st.avg : st.done / st.total * 100, st.avg != null ? st.avg : "–")}</div>
-          <div class="dim small">${MDS.esc(sc.tagline)}</div><div class="small"><strong>Focus:</strong> ${MDS.esc(sc.focus)}</div>
-          <div class="phasebars">${bars}</div>
-          <div class="row"><a class="btn" href="#${id}-${st.done ? (MDS.TESTS.find(t => t.scored && MDS.getScore(id, t.id) == null) || { id: "room" }).id : "room"}">${st.done ? "Continue" : "Open case"}</a><a class="btn ghost" href="#${id}-day">A day in the life</a></div></div>`;
-      }).join("")}
-        <div class="panel casecard">
-          <div class="cc-top"><div><div class="diff eyebrow">Nothing handed to you</div><h2 style="margin-top:4px">Open engagements</h2></div>${MDS.ring(MDS.getScore("global", "engage") || 0, MDS.getScore("global", "engage") != null ? MDS.getScore("global", "engage") : "–")}</div>
-          <div class="dim small">Four new companies, easy to very hard. A brief, a few days and no data room. Decide what to ask for, download the messy files, clean them in your own spreadsheet, and bring back figures, a cleaned file and a memo to be checked against the truth.</div>
-          <div><a class="btn" href="#engage">Take an engagement</a></div></div>
-        <div class="panel casecard">
-          <div class="cc-top"><div><div class="diff eyebrow">Real accounts</div><h2 style="margin-top:4px">Real company studies</h2></div>${MDS.ring(MDS.getScore("global", "studies") || 0, MDS.getScore("global", "studies") != null ? MDS.getScore("global", "studies") : "–")}</div>
-          <div class="dim small">${(MDS.content.studies || []).length} real UK software companies, built from their accounts filed at Companies House. Identity hidden: work the numbers, read the signals, make the call, then see what happened. Easy, medium and hard.</div>
-          <div><a class="btn" href="#studies">Start a study</a></div></div>
-        <div class="panel casecard">
-          <div class="cc-top"><div><div class="diff eyebrow">Real cases</div><h2 style="margin-top:4px">Case library</h2></div>${MDS.ring(MDS.getScore("global", "library") || 0, MDS.getScore("global", "library") != null ? MDS.getScore("global", "library") : "–")}</div>
-          <div class="dim small">${MDS.content.cases.length} real, sourced cases (Broadcom–VMware, Unity, Klarna, P&amp;O Ferries, Atlassian, HP–Autonomy and more), each paused at the key decision, with what happened and where to practise it.</div>
-          <div><a class="btn" href="#library">Open the library</a></div></div>
-        <div class="panel casecard">
-          <div class="cc-top"><div><div class="diff eyebrow">Interview room</div><h2 style="margin-top:4px">Mock interviews</h2></div>${MDS.ring(iv || 0, iv != null ? iv : "–")}</div>
-          <div class="dim small">Three rounds for a Business Transformation Leader role: Portfolio Manager, HR, and a walk through your own CV against the job spec. AI interviewer, follow-up questions, competency feedback. Practise out loud.</div>
-          <div><a class="btn" href="#interview">Enter the interview room</a></div></div>
-        <div class="panel casecard">
-          <div class="cc-top"><div><div class="diff eyebrow">Any case</div><h2 style="margin-top:4px">Frameworks and operating models</h2></div>${MDS.ring(fw || 0, fw != null ? fw : "–")}</div>
-          <div class="dim small">${MDS.content.lessons.length} lessons with hands-on exercises: change models, operating models, decision rights, pricing, PS and SaaS metrics, improvement, strategy and facilitation. Then a quiz that explains every option.</div>
-          <div><a class="btn" href="#frameworks">Learn and practise</a></div></div>
-      </div>
-      <div class="panel small dim">
-        <strong>About the scores.</strong> Every task is marked against the case's own evidence. The models behind them are teaching models with invented sensitivities. They show cause and effect and the trade-offs, not a forecast of any real company. Scores are kept in this browser only.
-      </div>
+      <section class="memo">
+        <div class="memo-h"><span>Group portfolio office · standing brief</span><span>To: you, transformation lead</span></div>
+        <div><h1>Run the business before you run the interview.</h1>
+          <p>You are posted into newly acquired software companies. Work the records, build your own model, set up the programme and live through twelve months of delivery: owners going quiet, founders pushing back, people resigning, and a Portfolio Manager who wants honest status. Then take what you learned into the interview suite.</p></div>
+        <div class="memo-side"><span class="lab2">Readiness</span>${MDS.ring(readiness, all.length ? readiness : "–", "lg")}<span class="small faint">${all.length} scores on file</span><a class="btn ghost sm" href="#readiness">By competency</a></div>
+      </section>
+      <section class="board" aria-label="Guided postings">
+        <h2 class="bh">Guided postings <span>Three acquired companies. Diagnose, plan, deliver.</span></h2>
+        ${MDS.order.map((id, i) => { const sc = MDS.scenarios[id], st = MDS.caseStats(id);
+          const seg = MDS.PHASES.map(p => { const ts = MDS.TESTS.filter(t => t.scored && t.phase === p.id), d = ts.filter(t => MDS.getScore(id, t.id) != null).length; return `<i title="${p.label} ${d}/${ts.length}"><b style="width:${d / ts.length * 100}%"></b></i>`; }).join("");
+          const next = st.done ? (MDS.TESTS.find(t => t.scored && MDS.getScore(id, t.id) == null) || { id: "room" }).id : "room";
+          return row(`${id.slice(0, 2).toUpperCase()}-0${i + 1}`, sc.name, `${MDS.esc(sc.tagline)} <span class="faint">${MDS.esc(sc.focus)}.</span>`, `<span>${MDS.pips(MDS.LEVELS[sc.difficulty.toLowerCase()] || 2)} ${MDS.esc(sc.difficulty)} · ${st.done}/${st.total} tasks</span><span class="segbar">${seg}</span>${stamp(st.done, st.total)}`, st.avg, `#${id}-${next}`, st.done ? "Continue" : "Open file"); }).join("")}
+      </section>
+      <section class="board" aria-label="Field work">
+        <h2 class="bh">Field work <span>A brief and a few days. Nothing is handed to you. Ask, download, clean, report.</span></h2>
+        ${E.map((C, i) => row(`FW-0${i + 1}`, C.name, MDS.esc(C.sector), `<span>${MDS.pips(MDS.LEVELS[C.level] || 2)} ${MDS.esc(C.level)} · ${C.budget} days</span>${stamp(es[C.id] ? (es[C.id].done ? 1 : 0.5) : 0, 1)}`, MDS.getScore("engage", C.id), "#engage", es[C.id] && !es[C.id].done ? "Continue" : "Take it")).join("")}
+      </section>
+      <section class="board" aria-label="Desk study">
+        <h2 class="bh">Desk study <span>Real accounts, real cases and the models behind the work.</span></h2>
+        ${row("DS-01", "Real company accounts", `${(MDS.content.studies || []).length} UK software companies from their Companies House filings, unnamed until you've made the call.`, `<span>Easy to hard</span>`, G("studies"), "#studies", "Open")}
+        ${row("DS-02", "Case library", `${MDS.content.cases.length} sourced cases, each paused at the decision that mattered.`, `<span>Read and decide</span>`, G("library"), "#library", "Open")}
+        ${row("DS-03", "Frameworks and lessons", `${MDS.content.lessons.length} lessons with hands-on exercises, then a quiz that explains every option.`, `<span>${Object.keys(MDS.state.lessons || {}).length}/${MDS.content.lessons.length} practised</span>`, fw, "#frameworks", "Open")}
+      </section>
+      <section class="board" aria-label="Interview suite">
+        <h2 class="bh">Interview suite <span>Turn the work into answers.</span></h2>
+        ${row("IV-01", "Mock interviews", "Three rounds and a timed case on real accounts. Add your CV and the job spec to make it about you.", `<span>Live rounds need AI</span>`, iv, "#interview", "Enter")}
+        ${row("IV-02", "Readiness by competency", "Every score mapped to the five things the interview tests, with your weakest area first.", `<span>${all.length} scores on file</span>`, all.length ? readiness : null, "#readiness", "Review")}
+      </section>
+      <p class="small faint" style="margin:0">Scores are marked against each file's own evidence and kept in this browser only. The three guided postings run on teaching models with invented sensitivities: they show cause and effect, not a forecast of any real company.</p>
     </div>`;
 };
 

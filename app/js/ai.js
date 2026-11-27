@@ -6,7 +6,7 @@
 MDS.settings = (() => { try { return JSON.parse(localStorage.getItem("mdsim.settings") || "{}"); } catch (e) { return {}; } })();
 /* Theme: "light" (default), "dark", or "auto" to follow the device. */
 MDS.applyTheme = () => { const t = MDS.settings.theme || "light", el = document.documentElement; if (t === "auto") el.removeAttribute("data-theme"); else el.setAttribute("data-theme", t);
-  const b = document.getElementById("themeBtn"); if (b) b.textContent = t === "dark" ? "☾ Dark" : t === "auto" ? "◐ Auto" : "☀ Light"; };
+  const b = document.getElementById("themeBtn"); if (b) b.textContent = t === "dark" ? "Dark" : t === "auto" ? "Auto" : "Light"; };
 MDS.setTheme = t => { MDS.settings.theme = t; MDS.saveSettings(); MDS.applyTheme(); };
 document.addEventListener("DOMContentLoaded", () => MDS.applyTheme());
 document.addEventListener("click", e => { if (e.target.closest("#themeBtn")) MDS.setTheme({ light: "dark", dark: "auto", auto: "light" }[MDS.settings.theme || "light"]); });

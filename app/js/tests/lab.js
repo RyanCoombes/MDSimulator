@@ -32,7 +32,7 @@ MDS.tests.lab = (sc, el) => {
           <h2>3-year forecast</h2>
           <div class="seg" role="group" aria-label="Case"><button type="button" data-case="base" aria-pressed="true">Base case</button><button type="button" data-case="down" aria-pressed="false">Downside</button></div>
         </div>
-        <div class="legend"><span><i style="background:var(--acc)"></i>Revenue</span><span><i style="background:var(--good)"></i>EBITDA</span><span><i style="background:var(--faint)"></i>Do-nothing EBITDA</span></div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>Revenue</span><span><i style="background:var(--good)"></i>EBITDA</span><span><i style="background:var(--faint)"></i>Do-nothing EBITDA</span></div>
         <div id="chart"></div>
         <p class="small dim" id="caseNote"></p>
         <div class="tblwrap"><table id="pl"></table></div>
@@ -56,7 +56,7 @@ MDS.tests.lab = (sc, el) => {
     const bar = (v, x, col) => { const y0 = sy(0), y1 = sy(v); return `<rect x="${x}" y="${Math.min(y0, y1)}" width="${bw}" height="${Math.max(1, Math.abs(y1 - y0))}" rx="2" fill="${col}"/>`; };
     ys.forEach((y, i) => {
       const x = pad.l + gw * i + gw * 0.12;
-      s += bar(y.rev, x, "var(--acc)") + bar(y.ebitda, x + bw + 3, y.ebitda < 0 ? "var(--bad)" : "var(--good)") + bar(base.yrs[i].ebitda, x + 2 * bw + 6, "var(--faint)");
+      s += bar(y.rev, x, "var(--s1)") + bar(y.ebitda, x + bw + 3, y.ebitda < 0 ? "var(--bad)" : "var(--good)") + bar(base.yrs[i].ebitda, x + 2 * bw + 6, "var(--faint)");
       s += `<text x="${x + bw * 1.5 + 3}" y="${H - 8}" text-anchor="middle">${i === 0 ? "Last yr" : "Y" + i} · ${MDS.pc(y.margin, 0)}</text>`;
     });
     return s + "</svg>";

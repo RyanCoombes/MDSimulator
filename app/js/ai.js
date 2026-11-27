@@ -4,6 +4,12 @@
    3. Off — AI features hide themselves.
    Speech: claude.ai dictation/tts when available, else the browser's own speech APIs. */
 MDS.settings = (() => { try { return JSON.parse(localStorage.getItem("mdsim.settings") || "{}"); } catch (e) { return {}; } })();
+/* Theme: "light" (default), "dark", or "auto" to follow the device. */
+MDS.applyTheme = () => { const t = MDS.settings.theme || "light", el = document.documentElement; if (t === "auto") el.removeAttribute("data-theme"); else el.setAttribute("data-theme", t);
+  const b = document.getElementById("themeBtn"); if (b) b.textContent = t === "dark" ? "☾ Dark" : t === "auto" ? "◐ Auto" : "☀ Light"; };
+MDS.setTheme = t => { MDS.settings.theme = t; MDS.saveSettings(); MDS.applyTheme(); };
+document.addEventListener("DOMContentLoaded", () => MDS.applyTheme());
+document.addEventListener("click", e => { if (e.target.closest("#themeBtn")) MDS.setTheme({ light: "dark", dark: "auto", auto: "light" }[MDS.settings.theme || "light"]); });
 MDS.saveSettings = () => { try { localStorage.setItem("mdsim.settings", JSON.stringify(MDS.settings)); } catch (e) {} };
 
 MDS.ai = (() => {
@@ -120,7 +126,9 @@ MDS.ai = (() => {
 MDS.openSettings = async () => {
   const p = await MDS.ai.get();
   const m = document.createElement("div"); m.className = "modal";
-  m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setT"><div class="eyebrow">Settings</div><h2 id="setT" style="margin:6px 0 10px">AI features</h2>
+  m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setT"><div class="eyebrow">Settings</div><h2 style="margin:6px 0 8px;font-size:18px">Appearance</h2>
+    <div class="seg" role="group" aria-label="Theme" style="margin:0 0 16px">${[["light", "Light"], ["dark", "Dark"], ["auto", "Match my device"]].map(([v, l]) => `<button type="button" data-theme-pick="${v}" aria-pressed="${(MDS.settings.theme || "light") === v}">${l}</button>`).join("")}</div>
+    <h2 id="setT" style="margin:6px 0 10px;font-size:18px">AI features</h2>
     <p class="small dim">Conversations, the Interview room and write-your-own replies use AI. Everything else works without it.</p>
     <div class="seg" role="group" aria-label="AI features" style="margin:6px 0 12px"><button type="button" data-ai="auto" aria-pressed="${MDS.settings.ai !== "off"}">On</button><button type="button" data-ai="off" aria-pressed="${MDS.settings.ai === "off"}">Off</button></div>
     <div class="fb ${p.sample ? "good" : "mid"}" id="setStatus">${MDS.esc(p.note)}</div>
@@ -134,6 +142,7 @@ MDS.openSettings = async () => {
     <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" id="setClose" type="button">Done</button></div></div>`;
   document.body.appendChild(m); requestAnimationFrame(() => m.classList.add("on"));
   const refresh = async () => { MDS.ai.reset(); const q = await MDS.ai.get(); const st = m.querySelector("#setStatus"); st.textContent = q.note; st.className = "fb " + (q.sample ? "good" : "mid"); m.querySelector("#passRow").hidden = !(q.status && q.status.passcode); };
+  m.querySelectorAll("[data-theme-pick]").forEach(x => x.onclick = () => { MDS.setTheme(x.dataset.themePick); m.querySelectorAll("[data-theme-pick]").forEach(y => y.setAttribute("aria-pressed", y === x)); });
   m.querySelectorAll("[data-ai]").forEach(b => b.onclick = () => { MDS.settings.ai = b.dataset.ai; MDS.saveSettings(); m.querySelectorAll("[data-ai]").forEach(x => x.setAttribute("aria-pressed", x === b)); refresh(); });
   m.querySelector("#passSave").onclick = () => { MDS.settings.passcode = m.querySelector("#pass").value; MDS.saveSettings(); refresh(); };
   m.querySelector("#resetAll").onclick = e => { const b = e.target; if (b.dataset.c !== "1") { b.dataset.c = "1"; b.textContent = "Click again to erase all scores and work"; return; } MDS.resetProgress(); b.textContent = "Progress reset"; };

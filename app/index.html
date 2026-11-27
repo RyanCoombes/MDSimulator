@@ -6,10 +6,12 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
+<script>/* Theme before first paint. Light unless the person chose otherwise. */
+try { var t = (JSON.parse(localStorage.getItem("mdsim.settings") || "{}").theme) || "light"; if (t !== "auto") document.documentElement.setAttribute("data-theme", t); } catch (e) { document.documentElement.setAttribute("data-theme", "light"); }</script>
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar"><a class="brand" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="13" width="4" height="9" rx="1" fill="var(--faint)"/><rect x="10" y="8" width="4" height="14" rx="1" fill="var(--acc)"/><rect x="18" y="3" width="4" height="19" rx="1" fill="var(--good)"/></svg>MD <span>Simulator</span></a><span class="row" style="gap:12px"><span class="small faint">Practice cases for software MD, GM and transformation roles</span><button class="btn ghost sm" id="settingsBtn" type="button">⚙ Settings</button></span></div>
+  <div class="topbar"><a class="brand" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="13" width="4" height="9" rx="1" fill="var(--faint)"/><rect x="10" y="8" width="4" height="14" rx="1" fill="var(--acc)"/><rect x="18" y="3" width="4" height="19" rx="1" fill="var(--good)"/></svg>MD <span>Simulator</span></a><span class="row" style="gap:12px"><span class="small faint">Practice cases for software MD, GM and transformation roles</span><button class="btn ghost sm" id="themeBtn" type="button" aria-label="Switch between light and dark">◐ Theme</button><button class="btn ghost sm" id="settingsBtn" type="button">⚙ Settings</button></span></div>
   <main id="view"></main>
 </div>
 <script src="js/core.js"></script>

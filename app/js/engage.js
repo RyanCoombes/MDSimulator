@@ -182,8 +182,8 @@ MDS.tests.engage = el => {
       const f = F[rq.id];
       if (!f) return `<div class="fb mid small"><strong>${MDS.esc(rq.label)}: this doesn't exist.</strong> ${rq.id === "cancellations" ? "Nobody keeps a list of cancellations. Finance stops invoicing when told. You'll have to work churn out from the customer records." : "There are no timesheets and no project log. Someone may be able to tell you from memory."} The time is spent either way.</div>`;
       return `<div class="fb small"><div class="row" style="justify-content:space-between"><strong>${MDS.esc(f.name)}</strong><span class="faint">${f.rows.length - 1} rows</span></div>
-        <div class="tblwrap" style="max-height:150px;overflow:auto;margin:6px 0"><table><thead><tr>${f.rows[0].map(h => `<th style="text-align:left">${MDS.esc(h)}</th>`).join("")}</tr></thead><tbody>${f.rows.slice(1, 6).map(r => `<tr>${f.rows[0].map((_, i) => `<td style="text-align:left;white-space:nowrap">${MDS.esc(r[i] == null ? "" : r[i])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
-        <div class="row"><button class="btn sm" type="button" data-dl="${rq.id}">Download CSV</button><button class="btn ghost sm" type="button" data-cp="${rq.id}">Copy for a spreadsheet</button><span class="faint">First five rows shown.</span></div></div>`;
+        <details style="margin:6px 0" ${rq.id === S.got[S.got.length - 1] ? "open" : ""}><summary class="small" style="cursor:pointer;color:var(--acc)">Explore this file here: search, sort, filter and group</summary><div data-grid="${rq.id}" style="margin-top:8px"></div></details>
+        <div class="row"><button class="btn sm" type="button" data-dl="${rq.id}">Download CSV</button><button class="btn ghost sm" type="button" data-cp="${rq.id}">Copy for a spreadsheet</button><span class="faint">Or take it into your own spreadsheet.</span></div></div>`;
     };
     const draw = () => {
       const R = S.done ? MDS.engScore(C, G, S) : null;
@@ -206,6 +206,7 @@ MDS.tests.engage = el => {
           <textarea id="egMemo" rows="9" ${S.done ? "readonly" : ""} style="width:100%;font:15px/1.5 var(--body);padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)">${MDS.esc(A.memo || "")}</textarea>
           ${S.done ? "" : `<div class="row" style="margin-top:12px;justify-content:space-between"><span class="small dim">You can submit once per attempt. The truth is shown afterwards.</span><button class="btn" type="button" id="egSubmit">Submit my findings</button></div>`}</div>
         <div id="egRes"></div></div>`;
+      MDS.$$("[data-grid]", el).forEach(g => { const f = F[g.dataset.grid]; if (f) MDS.grid(g, f.rows[0], f.rows.slice(1), { height: 300 }); });
       if (R) result(R);
       MDS.ai.available().then(ok => { if (ok) MDS.$$(".aiq", el).forEach(x => { x.hidden = false; }); });
     };

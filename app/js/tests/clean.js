@@ -5,9 +5,10 @@ MDS.cleanData = sc => {
   const names = MDS.shuffle(["Northgate", "Riverside", "Ashdown", "Castle Vale", "Meridian", "Oakfield", "Stonebridge", "Westmoor", "Harrow Lane", "Kingsway", "Larkfield", "Penrose", "Thornbury", "Eastfield"], r);
   const avg = B.recurring / B.customers;
   /* A. customer extract with two duplicates */
-  const cust = names.slice(0, 10).map((n, i) => ({ ref: "C" + (1040 + Math.floor(r() * 900)), name: `${n} ${suffix}`, arr: Math.round(avg * (0.5 + r() * 1.6)), renew: MDS.MONTHS[Math.floor(r() * 12)] }));
-  const d1 = cust[2], d2 = cust[6];
-  const dupes = [{ ref: d1.ref, name: d1.name.replace(suffix, suffix === "LLP" ? "L.L.P." : suffix + " Ltd"), arr: d1.arr, renew: d1.renew, dup: true }, { ref: "C" + (2000 + Math.floor(r() * 900)), name: d2.name.toUpperCase(), arr: d2.arr, renew: d2.renew, dup: true }];
+  const tails = [suffix, suffix === "LLP" ? "Law LLP" : suffix + " Group", suffix === "LLP" ? "Solicitors" : suffix + " Trust"], owners = ["A. Shaw", "P. Khan", "J. Reid", "M. Fox"], regions = ["North", "Midlands", "South", "Scotland"];
+  const cust = Array.from({ length: 34 }, (_, i) => ({ ref: "C" + (1040 + i * 23 + Math.floor(r() * 9)), name: `${names[i % 10]} ${tails[Math.floor(i / 10) % 3]}`, region: pick(regions), owner: pick(owners), arr: Math.round(avg * (0.5 + r() * 1.6)), renew: MDS.MONTHS[Math.floor(r() * 12)] }));
+  const dsrc = MDS.shuffle(cust, r).slice(0, 4), d1 = dsrc[0], d2 = dsrc[2];
+  const dupes = dsrc.map((c, i) => Object.assign({}, c, i < 2 ? { name: c.name.includes("LLP") ? c.name.replace("LLP", "L.L.P.") : c.name + " Ltd" } : { ref: "C" + (2600 + i * 31 + Math.floor(r() * 9)), name: c.name.toUpperCase(), owner: pick(owners) }, { dup: true }));
   const rowsA = MDS.shuffle(cust.concat(dupes), r);
   const cleanArr = cust.reduce((a, c) => a + c.arr, 0);
   /* B. monthly recurring revenue with an annual invoice booked in one month */
@@ -25,8 +26,8 @@ MDS.cleanData = sc => {
   const churn = lostTotal / B.recurring * 100;
   return { rowsA, cleanArr, months, spikeM, annual, fixed, hr, diffs, employed: hr - 4, gm, claim, lost, churn, opening: B.recurring,
     qs: [
-      { id: "dup", sec: "A", q: "How many rows in the customer extract are duplicates of another row?", a: 2, tol: 0, unit: "rows", work: `${d1.name} appears twice under the same reference with a different legal suffix. ${d2.name} appears again in capitals under a new reference, with the same value and renewal month.` },
-      { id: "arr", sec: "A", q: "What is the recurring revenue in this extract once duplicates are removed?", a: cleanArr, tol: 1, unit: "£k", work: `Total as listed £${cleanArr + d1.arr + d2.arr}k, less £${d1.arr}k and £${d2.arr}k.` },
+      { id: "dup", sec: "A", q: "How many rows in the customer extract are duplicates of another row?", a: 4, tol: 0, unit: "rows", work: `Two customers appear twice under the same reference with a different legal suffix (for example ${d1.name}). Two more appear again in capitals under a new reference, with the same value and renewal month (for example ${d2.name}). Sorting by reference finds the first kind, and sorting by value finds the second.` },
+      { id: "arr", sec: "A", q: "What is the recurring revenue in this extract once duplicates are removed?", a: cleanArr, tol: 1, unit: "£k", work: `Total as listed £${cleanArr + dsrc.reduce((a, c) => a + c.arr, 0)}k, less the four duplicates (£${dsrc.map(c => c.arr).join("k, £")}k).` },
       { id: "mon", sec: "B", q: "Which month's recurring revenue is misstated?", a: spikeM, choice: MDS.MONTHS, work: `${MDS.MONTHS[spikeM]} is about £${annual}k above every other month: a whole year's invoice was booked in one month.` },
       { id: "fix", sec: "B", q: "What should that month show if the annual invoice were spread evenly over twelve months?", a: fixed, tol: Math.max(2, fixed * 0.02), unit: "£k", work: `£${months[spikeM].v}k − £${annual}k + (£${annual}k ÷ 12) = £${fixed.toFixed(0)}k. The note under the table gives the invoice value.` },
       { id: "hc", sec: "C", q: "How many people does the business employ today, for your model?", a: hr - 4, tol: 0, unit: "people", work: `HR list ${hr}, less two leavers, one contractor and one person who hasn't started. The person on maternity leave is still an employee.` },
@@ -51,17 +52,19 @@ MDS.tests.clean = (sc, el) => {
   el.innerHTML = `<div class="stack">
     <div class="panel"><h2>Check the data</h2><p class="dim" style="margin:0">Nobody has ever reconciled these records. Before you build anything on them, find what's wrong and decide which figure to trust. Four extracts, six questions and one judgement call. Your first attempt is scored.</p></div>
     <div class="panel"><div class="eyebrow">A · Customer extract from the CRM</div>
-      <div class="tblwrap"><table><thead><tr><th>Ref</th><th style="text-align:left">Customer</th><th>Recurring £k</th><th>Renews</th></tr></thead><tbody>${D.rowsA.map(c => `<tr><td>${c.ref}</td><td style="text-align:left">${MDS.esc(c.name)}</td><td>${c.arr}</td><td>${c.renew}</td></tr>`).join("")}</tbody></table></div>${sec("A")}</div>
+      <p class="small dim" style="margin:4px 0 8px">${D.rowsA.length} rows. Search, sort by any column heading, filter, or group to find what's wrong.</p><div id="gridA"></div>${sec("A")}</div>
     <div class="panel"><div class="eyebrow">B · Recurring revenue by month, from the ledger (£k)</div>
       <div class="tblwrap"><table><thead><tr>${D.months.map(m => `<th>${m.m}</th>`).join("")}</tr></thead><tbody><tr>${D.months.map(m => `<td>${m.v}</td>`).join("")}</tr></tbody></table></div>
       <p class="small faint">Bookkeeper's note: "One customer pays annually in advance (£${D.annual}k). I book it when the cash arrives."</p>${sec("B")}</div>
     <div class="panel"><div class="eyebrow">C · Headcount: HR list ${D.hr}, payroll ${D.hr - 4}</div>
       <div class="tblwrap"><table><thead><tr><th style="text-align:left">Name</th><th style="text-align:left">Why the two lists differ</th></tr></thead><tbody>${D.diffs.map(([n, w]) => `<tr><td style="text-align:left">${MDS.esc(n)}</td><td style="text-align:left;white-space:normal;font-family:var(--body)">${MDS.esc(w)}</td></tr>`).join("")}</tbody></table></div>${sec("C")}</div>
     <div class="panel"><div class="eyebrow">D · Cancellations last year (opening recurring revenue ${MDS.k(D.opening)})</div>
-      <div class="tblwrap"><table><thead><tr><th style="text-align:left">Customer</th><th>Recurring lost £k</th><th style="text-align:left">Reason logged</th></tr></thead><tbody>${D.lost.map(l => `<tr><td style="text-align:left">${MDS.esc(l.name)}</td><td>${l.arr}</td><td style="text-align:left;white-space:normal;font-family:var(--body)">${MDS.esc(l.why)}</td></tr>`).join("")}</tbody></table></div>${sec("D")}
+      <div id="gridD"></div>${sec("D")}
       <p style="margin-top:14px"><strong>${MDS.esc(D.judge.q)}</strong></p>
       <div class="stack teach" id="cj">${order.map(i => `<button type="button" class="opt" data-j="${i}" ${A.marked ? "disabled" : ""} aria-pressed="${A.j === i}" style="text-align:left;font:inherit;color:inherit">${MDS.esc(D.judge.o[i][0])}<span class="small why" hidden>${MDS.esc(D.judge.o[i][2])}</span></button>`).join("")}</div></div>
     <div class="panel"><div class="row" style="justify-content:space-between"><div class="small dim">Six questions at 12.5 points each, and 25 for the judgement call.</div><button class="btn" type="button" id="cmark" ${A.marked ? "disabled" : ""}>Mark my answers</button></div><div id="cres"></div></div></div>`;
+  MDS.grid(MDS.$("#gridA", el), ["Ref", "Customer", "Region", "Account owner", "Recurring £k", "Renews"], D.rowsA.map(c => [c.ref, c.name, c.region, c.owner, c.arr, c.renew]), { height: 380 });
+  MDS.grid(MDS.$("#gridD", el), ["Customer", "Recurring lost £k", "Reason logged"], D.lost.map(l => [l.name, l.arr, l.why]), { height: 220 });
   const val = x => { const e = MDS.$("#cq-" + x.id, el); return e.value; };
   const show = () => {
     let ok = 0;

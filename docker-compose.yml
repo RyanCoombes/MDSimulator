@@ -15,7 +15,7 @@ services:
         USER mdsim
         EXPOSE 8080
         CMD ["python3", "server.py", "--port", "8080"]
-    image: mdsimulator:local
+    pull_policy: build
     container_name: mdsimulator
     restart: unless-stopped
     ports:
